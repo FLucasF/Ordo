@@ -8,7 +8,7 @@
 ; updated or removed.
 
 #define AppName "Tarefas"
-#define AppVersion "1.2.0"
+#define AppVersion "1.2.1"
 #define AppExe "task_manager.exe"
 
 [Setup]
