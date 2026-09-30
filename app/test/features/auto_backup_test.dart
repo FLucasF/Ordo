@@ -42,6 +42,17 @@ void main() {
     expect(auto.dir.listSync().where((f) => f.path.endsWith('.part')), isEmpty);
   });
 
+  test('a copy made before a sync is listed with its time, newest first, next to the daily ones', () async {
+    final auto = AutoBackup(Directory(p.join(dir.path, 'backups')));
+    await auto.runIfDue(DateTime(2026, 9, 29, 8), () async => Uint8List(10));
+    await auto.saveNow(DateTime(2026, 9, 29, 21, 5, 30), Uint8List(20));
+    final listed = auto.list();
+    expect(listed.map((b) => b.$1), [DateTime(2026, 9, 29, 21, 5, 30), DateTime(2026, 9, 29)]);
+    expect(listed.first.$2.lengthSync(), 20);
+    // The daily one is still made once a day.
+    expect(await auto.runIfDue(DateTime(2026, 9, 29, 22), () async => Uint8List(1)), isNull);
+  });
+
   testWidgets('"Backups automáticos" lists the kept copies with "Restaurar"', (tester) async {
     final auto = AutoBackup(Directory(p.join(dir.path, 'backups')));
     await tester.runAsync(() => auto.runIfDue(DateTime(2026, 9, 25), () async => Uint8List(2048)));

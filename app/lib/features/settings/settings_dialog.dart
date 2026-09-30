@@ -34,6 +34,7 @@ import '../subscriptions/subscriptions.dart';
 import 'notification_settings.dart';
 import '../../core/clock.dart';
 import '../common/color_choice.dart';
+import '../sync/sync_dialog.dart';
 
 /// Tabs of the settings that apply to a local app.
 enum SettingsTab { account, features, smartLists, notifications, dateTime, appearance, more, imports, shortcuts, about }
@@ -295,6 +296,15 @@ class _AccountTab extends ConsumerWidget {
           ),
         ),
         _Section(t.settingsBackup),
+        ListTile(
+          leading: const Icon(Icons.sync),
+          title: Text(t.syncTitle),
+          subtitle: Text(
+            t.syncSameWifi,
+            style: TextStyle(fontSize: TtText.small, color: tt.textTertiary),
+          ),
+          onTap: () => unawaited(showDeviceSync(context)),
+        ),
         ListTile(
           leading: const Icon(Icons.download_outlined),
           title: Text(t.settingsBackupGenerate),

@@ -4674,4 +4674,94 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get listDeleteMenu => 'Deletar lista';
+
+  @override
+  String get syncTitle => 'Sincronizar com outro aparelho';
+
+  @override
+  String get syncMenu => 'Sincronizar aparelhos';
+
+  @override
+  String get syncIntro =>
+      'Deixe o celular e o computador iguais pelo Wi-Fi, sem internet e sem conta: um aparelho envia tudo o que tem, e o outro fica igual a ele.';
+
+  @override
+  String get syncSend => 'Enviar deste aparelho';
+
+  @override
+  String get syncSendHint => 'O outro aparelho fica igual a este.';
+
+  @override
+  String get syncReceive => 'Receber neste aparelho';
+
+  @override
+  String get syncReceiveHint =>
+      'Este aparelho fica igual ao outro. Antes, é feita uma cópia de segurança dos dados daqui (em Configurações → Conta → Backups automáticos).';
+
+  @override
+  String get syncSameWifi => 'Os dois precisam estar no mesmo Wi-Fi, com o Tarefas aberto e na mesma versão.';
+
+  @override
+  String syncWaiting(String name) {
+    return 'No outro aparelho, abra Sincronizar → Enviar deste aparelho, escolha \"$name\" e digite este código:';
+  }
+
+  @override
+  String syncAddress(String name, String address) {
+    return 'Se \"$name\" não aparecer lá, toque em Digitar endereço e use: $address';
+  }
+
+  @override
+  String get syncFirewall => 'No Windows, se o Firewall perguntar, clique em Permitir acesso.';
+
+  @override
+  String get syncReceiving => 'Recebendo os dados…';
+
+  @override
+  String syncReceived(String name) {
+    return 'Pronto! Este aparelho ficou igual a \"$name\".';
+  }
+
+  @override
+  String get syncReceiveFailed => 'Os dados recebidos não puderam ser usados (as versões do app são diferentes?). Nada mudou aqui.';
+
+  @override
+  String get syncSearching => 'Procurando aparelhos no Wi-Fi…';
+
+  @override
+  String get syncTypeAddress => 'Digitar endereço';
+
+  @override
+  String get syncAddressLabel => 'Endereço (ex.: 192.168.0.10:50000)';
+
+  @override
+  String syncEnterCode(String name) {
+    return 'Digite o código que aparece em \"$name\"';
+  }
+
+  @override
+  String get syncSendButton => 'Enviar';
+
+  @override
+  String get syncSending => 'Enviando… o outro aparelho está ficando igual a este.';
+
+  @override
+  String syncDone(String name) {
+    return 'Pronto! \"$name\" ficou igual a este aparelho.';
+  }
+
+  @override
+  String get syncWrongCode => 'Código errado. Confira o código na tela do outro aparelho.';
+
+  @override
+  String get syncRefused => 'O outro aparelho parou de aceitar depois de muitas tentativas. Lá, feche e abra Receber de novo.';
+
+  @override
+  String get syncFailed => 'Não deu certo. Confira se os dois estão no mesmo Wi-Fi, com o Tarefas aberto e na mesma versão.';
+
+  @override
+  String get syncCodeLabel => 'Código';
+
+  @override
+  String get syncWaitingOther => 'Esperando o outro aparelho enviar…';
 }

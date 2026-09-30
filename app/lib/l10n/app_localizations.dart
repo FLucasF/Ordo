@@ -8802,6 +8802,162 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Deletar lista'**
   String get listDeleteMenu;
+
+  /// No description provided for @syncTitle.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sincronizar com outro aparelho'**
+  String get syncTitle;
+
+  /// No description provided for @syncMenu.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sincronizar aparelhos'**
+  String get syncMenu;
+
+  /// No description provided for @syncIntro.
+  ///
+  /// In pt, this message translates to:
+  /// **'Deixe o celular e o computador iguais pelo Wi-Fi, sem internet e sem conta: um aparelho envia tudo o que tem, e o outro fica igual a ele.'**
+  String get syncIntro;
+
+  /// No description provided for @syncSend.
+  ///
+  /// In pt, this message translates to:
+  /// **'Enviar deste aparelho'**
+  String get syncSend;
+
+  /// No description provided for @syncSendHint.
+  ///
+  /// In pt, this message translates to:
+  /// **'O outro aparelho fica igual a este.'**
+  String get syncSendHint;
+
+  /// No description provided for @syncReceive.
+  ///
+  /// In pt, this message translates to:
+  /// **'Receber neste aparelho'**
+  String get syncReceive;
+
+  /// No description provided for @syncReceiveHint.
+  ///
+  /// In pt, this message translates to:
+  /// **'Este aparelho fica igual ao outro. Antes, é feita uma cópia de segurança dos dados daqui (em Configurações → Conta → Backups automáticos).'**
+  String get syncReceiveHint;
+
+  /// No description provided for @syncSameWifi.
+  ///
+  /// In pt, this message translates to:
+  /// **'Os dois precisam estar no mesmo Wi-Fi, com o Tarefas aberto e na mesma versão.'**
+  String get syncSameWifi;
+
+  /// No description provided for @syncWaiting.
+  ///
+  /// In pt, this message translates to:
+  /// **'No outro aparelho, abra Sincronizar → Enviar deste aparelho, escolha \"{name}\" e digite este código:'**
+  String syncWaiting(String name);
+
+  /// No description provided for @syncAddress.
+  ///
+  /// In pt, this message translates to:
+  /// **'Se \"{name}\" não aparecer lá, toque em Digitar endereço e use: {address}'**
+  String syncAddress(String name, String address);
+
+  /// No description provided for @syncFirewall.
+  ///
+  /// In pt, this message translates to:
+  /// **'No Windows, se o Firewall perguntar, clique em Permitir acesso.'**
+  String get syncFirewall;
+
+  /// No description provided for @syncReceiving.
+  ///
+  /// In pt, this message translates to:
+  /// **'Recebendo os dados…'**
+  String get syncReceiving;
+
+  /// No description provided for @syncReceived.
+  ///
+  /// In pt, this message translates to:
+  /// **'Pronto! Este aparelho ficou igual a \"{name}\".'**
+  String syncReceived(String name);
+
+  /// No description provided for @syncReceiveFailed.
+  ///
+  /// In pt, this message translates to:
+  /// **'Os dados recebidos não puderam ser usados (as versões do app são diferentes?). Nada mudou aqui.'**
+  String get syncReceiveFailed;
+
+  /// No description provided for @syncSearching.
+  ///
+  /// In pt, this message translates to:
+  /// **'Procurando aparelhos no Wi-Fi…'**
+  String get syncSearching;
+
+  /// No description provided for @syncTypeAddress.
+  ///
+  /// In pt, this message translates to:
+  /// **'Digitar endereço'**
+  String get syncTypeAddress;
+
+  /// No description provided for @syncAddressLabel.
+  ///
+  /// In pt, this message translates to:
+  /// **'Endereço (ex.: 192.168.0.10:50000)'**
+  String get syncAddressLabel;
+
+  /// No description provided for @syncEnterCode.
+  ///
+  /// In pt, this message translates to:
+  /// **'Digite o código que aparece em \"{name}\"'**
+  String syncEnterCode(String name);
+
+  /// No description provided for @syncSendButton.
+  ///
+  /// In pt, this message translates to:
+  /// **'Enviar'**
+  String get syncSendButton;
+
+  /// No description provided for @syncSending.
+  ///
+  /// In pt, this message translates to:
+  /// **'Enviando… o outro aparelho está ficando igual a este.'**
+  String get syncSending;
+
+  /// No description provided for @syncDone.
+  ///
+  /// In pt, this message translates to:
+  /// **'Pronto! \"{name}\" ficou igual a este aparelho.'**
+  String syncDone(String name);
+
+  /// No description provided for @syncWrongCode.
+  ///
+  /// In pt, this message translates to:
+  /// **'Código errado. Confira o código na tela do outro aparelho.'**
+  String get syncWrongCode;
+
+  /// No description provided for @syncRefused.
+  ///
+  /// In pt, this message translates to:
+  /// **'O outro aparelho parou de aceitar depois de muitas tentativas. Lá, feche e abra Receber de novo.'**
+  String get syncRefused;
+
+  /// No description provided for @syncFailed.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não deu certo. Confira se os dois estão no mesmo Wi-Fi, com o Tarefas aberto e na mesma versão.'**
+  String get syncFailed;
+
+  /// No description provided for @syncCodeLabel.
+  ///
+  /// In pt, this message translates to:
+  /// **'Código'**
+  String get syncCodeLabel;
+
+  /// No description provided for @syncWaitingOther.
+  ///
+  /// In pt, this message translates to:
+  /// **'Esperando o outro aparelho enviar…'**
+  String get syncWaitingOther;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

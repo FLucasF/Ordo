@@ -50,7 +50,12 @@ void main() {
     await tester.pump();
     final five = height();
     expect(five, greaterThan(four));
-    await editor.apply(editor.transaction..deleteNodes([editor.document.nodeAtPath([4])!, editor.document.nodeAtPath([3])!]));
+    await editor.apply(
+      editor.transaction..deleteNodes([
+        editor.document.nodeAtPath([4])!,
+        editor.document.nodeAtPath([3])!,
+      ]),
+    );
     await tester.pump();
     await tester.pump();
     expect(height(), lessThan(four));

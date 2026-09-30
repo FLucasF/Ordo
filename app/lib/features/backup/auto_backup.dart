@@ -12,7 +12,8 @@ class AutoBackup {
   final Directory dir;
   final int keep;
 
-  static final _name = RegExp(r'^tarefas_auto_(\d{4})(\d{2})(\d{2})\.zip$');
+  /// "tarefas_auto_20260929.zip" (the day's), or with the time (a copy made before a sync).
+  static final _name = RegExp(r'^tarefas_auto_(\d{4})(\d{2})(\d{2})(?:_(\d{2})(\d{2})(\d{2}))?\.zip$');
 
   static String _stamp(DateTime day) =>
       '${day.year.toString().padLeft(4, '0')}${day.month.toString().padLeft(2, '0')}${day.day.toString().padLeft(2, '0')}';
@@ -24,7 +25,8 @@ class AutoBackup {
     for (final file in dir.listSync().whereType<File>()) {
       final m = _name.firstMatch(p.basename(file.path));
       if (m == null) continue;
-      out.add((DateTime(int.parse(m.group(1)!), int.parse(m.group(2)!), int.parse(m.group(3)!)), file));
+      int part(int i) => int.parse(m.group(i) ?? '0');
+      out.add((DateTime(part(1), part(2), part(3), part(4), part(5), part(6)), file));
     }
     return out..sort((a, b) => b.$1.compareTo(a.$1));
   }
@@ -42,6 +44,20 @@ class AutoBackup {
     for (final (_, old) in list().skip(keep)) {
       await old.delete();
     }
+    return target;
+  }
+}
+
+extension AutoBackupNow on AutoBackup {
+  /// A copy made now whatever the day (before this device's data is replaced by another's), listed
+  /// and restored with the daily ones.
+  Future<File> saveNow(DateTime now, Uint8List bytes) async {
+    String two(int n) => n.toString().padLeft(2, '0');
+    final target = File(p.join(dir.path, 'tarefas_auto_${AutoBackup._stamp(now)}_${two(now.hour)}${two(now.minute)}${two(now.second)}.zip'));
+    await dir.create(recursive: true);
+    final partial = File('${target.path}.part');
+    await partial.writeAsBytes(bytes, flush: true);
+    await partial.rename(target.path);
     return target;
   }
 }

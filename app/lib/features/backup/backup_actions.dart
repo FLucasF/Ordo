@@ -16,10 +16,12 @@ import '../common/feedback.dart';
 import '../settings/settings_dialog.dart';
 import '../countdown/countdown_card.dart' show countdownImagesProvider;
 import '../subscriptions/subscriptions.dart' show subscriptionStoreProvider;
+import '../sync/sync_dialog.dart';
 import 'auto_backup.dart';
 import 'backup_service.dart';
 
-/// Account menu (avatar): Configurações and Estatísticas. Backup lives in Settings → Conta.
+/// Account menu (avatar): Configurações, Estatísticas and Sincronizar aparelhos. Backup lives in
+/// Settings → Conta.
 void showAccountMenu(BuildContext context, WidgetRef ref, Offset position) {
   final t = AppLocalizations.of(context);
   unawaited(() async {
@@ -29,6 +31,7 @@ void showAccountMenu(BuildContext context, WidgetRef ref, Offset position) {
       items: [
         PopupMenuItem(value: 'settings', height: 36, child: Text(t.settingsTitle)),
         PopupMenuItem(value: 'statistics', height: 36, child: Text(t.statsTitle)),
+        PopupMenuItem(value: 'sync', height: 36, child: Text(t.syncMenu)),
       ],
     );
     if (!context.mounted) return;
@@ -37,11 +40,14 @@ void showAccountMenu(BuildContext context, WidgetRef ref, Offset position) {
         await showSettings(context);
       case 'statistics':
         context.go(Routes.statisticsOf('overview'));
+      case 'sync':
+        await showDeviceSync(context);
     }
   }());
 }
 
-Future<BackupService> _service(WidgetRef ref) async => BackupService(
+/// The backup of this app's data: the database, the attachments and the other folders.
+Future<BackupService> backupServiceOf(WidgetRef ref) async => BackupService(
   ref.read(databaseProvider),
   tempDir: await getTemporaryDirectory(),
   attachments: ref.read(attachmentStoreProvider),
@@ -51,7 +57,7 @@ Future<BackupService> _service(WidgetRef ref) async => BackupService(
 /// "Gerar Backup": saves a zip with the database and the attachments.
 Future<void> exportBackup(BuildContext context, WidgetRef ref) async {
   final t = AppLocalizations.of(context);
-  final bytes = await (await _service(ref)).export();
+  final bytes = await (await backupServiceOf(ref)).export();
   final now = DateTime.now();
   final stamp =
       '${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}_'
@@ -73,7 +79,7 @@ Future<void> importBackup(BuildContext context, WidgetRef ref) async {
   if (bytes == null || !context.mounted) return;
   if (!await confirm(context, message: t.backupImportConfirm)) return;
   try {
-    await (await _service(ref)).import(bytes);
+    await (await backupServiceOf(ref)).import(bytes);
     if (context.mounted) showToast(context, t.backupImported);
   } on InvalidBackup {
     if (context.mounted) showToast(context, t.backupInvalid);
@@ -85,7 +91,7 @@ Future<void> runAutoBackup(WidgetRef ref) async {
   final auto = ref.read(autoBackupProvider);
   if (auto == null) return;
   try {
-    final service = await _service(ref);
+    final service = await backupServiceOf(ref);
     await auto.runIfDue(DateTime.now(), () => service.export(withFiles: false));
   } on Object catch (e) {
     debugPrint('Automatic backup failed: $e');
@@ -115,7 +121,12 @@ Future<void> showAutoBackups(BuildContext context, WidgetRef ref) async {
                 ListTile(
                   dense: true,
                   contentPadding: EdgeInsets.zero,
-                  title: Text(DateLabels.numeric(day, withYear: true)),
+                  // A copy made before a sync has its time too.
+                  title: Text(
+                    day == DateTime(day.year, day.month, day.day)
+                        ? DateLabels.numeric(day, withYear: true)
+                        : '${DateLabels.numeric(day, withYear: true)} ${day.hour.toString().padLeft(2, '0')}:${day.minute.toString().padLeft(2, '0')}',
+                  ),
                   subtitle: Text(AttachmentStore.formatSize(file.lengthSync())),
                   trailing: TextButton(onPressed: () => Navigator.pop(context, file), child: Text(t.autoBackupRestore)),
                 ),
@@ -128,7 +139,7 @@ Future<void> showAutoBackups(BuildContext context, WidgetRef ref) async {
   if (picked == null || !context.mounted) return;
   if (!await confirm(context, message: t.backupImportConfirm)) return;
   try {
-    await (await _service(ref)).import(await picked.readAsBytes());
+    await (await backupServiceOf(ref)).import(await picked.readAsBytes());
     if (context.mounted) showToast(context, t.backupImported);
   } on InvalidBackup {
     if (context.mounted) showToast(context, t.backupInvalid);
