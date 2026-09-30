@@ -27,7 +27,13 @@ import 'package:task_manager/l10n/app_localizations.dart';
 void main() {
   test('a backup goes to the receiver with its code; a wrong code is refused, and after 5 it stops listening', () async {
     final received = <(Uint8List, String)>[];
-    final receiver = SyncReceiver(onReceive: (bytes, from) async => received.add((bytes, from)), discoveryPort: 47899, code: '123456', name: 'PC');
+    final receiver = SyncReceiver(
+      onReceive: (bytes, from) async => received.add((bytes, from)),
+      discoveryPort: 47899,
+      code: '123456',
+      name: 'PC',
+      address: InternetAddress.loopbackIPv4,
+    );
     await receiver.start();
     addTearDown(receiver.stop);
     final peer = SyncPeer(name: 'PC', address: InternetAddress.loopbackIPv4, port: receiver.port);
@@ -47,7 +53,12 @@ void main() {
   });
 
   test('a failure while replacing the data goes back to the sender', () async {
-    final receiver = SyncReceiver(onReceive: (_, _) async => throw StateError('schema'), discoveryPort: 47898, code: '111111');
+    final receiver = SyncReceiver(
+      onReceive: (_, _) async => throw StateError('schema'),
+      discoveryPort: 47898,
+      code: '111111',
+      address: InternetAddress.loopbackIPv4,
+    );
     await receiver.start();
     addTearDown(receiver.stop);
     final peer = SyncPeer(name: 'x', address: InternetAddress.loopbackIPv4, port: receiver.port);
@@ -55,7 +66,7 @@ void main() {
   });
 
   test('the sender finds the receiver by asking on the network', () async {
-    final receiver = SyncReceiver(onReceive: (_, _) async {}, discoveryPort: 47897, name: 'DESKTOP-LUCAS');
+    final receiver = SyncReceiver(onReceive: (_, _) async {}, discoveryPort: 47897, name: 'DESKTOP-LUCAS', address: InternetAddress.loopbackIPv4);
     await receiver.start();
     addTearDown(receiver.stop);
     final found = await discoverPeers(

@@ -56,14 +56,18 @@ Future<List<InternetAddress>> localAddresses() async {
 /// The receiving side, while its screen is open. [onReceive] gets the backup and the sender's name,
 /// and replaces this device's data with it; an exception there goes back to the sender as "ERR".
 class SyncReceiver {
-  SyncReceiver({required this.onReceive, this.discoveryPort = syncDiscoveryPort, String? code, String? name})
+  SyncReceiver({required this.onReceive, this.discoveryPort = syncDiscoveryPort, String? code, String? name, InternetAddress? address})
     : code = code ?? _newCode(),
-      name = name ?? syncDeviceName();
+      name = name ?? syncDeviceName(),
+      address = address ?? InternetAddress.anyIPv4;
 
   final Future<void> Function(Uint8List backup, String from) onReceive;
   final int discoveryPort;
   final String code;
   final String name;
+
+  /// Where it listens: every network by default (the loopback in tests, to stay off the firewall).
+  final InternetAddress address;
 
   ServerSocket? _server;
   RawDatagramSocket? _udp;
@@ -76,11 +80,11 @@ class SyncReceiver {
   static String _newCode() => Random.secure().nextInt(1000000).toString().padLeft(6, '0');
 
   Future<void> start() async {
-    _server = await ServerSocket.bind(InternetAddress.anyIPv4, 0);
+    _server = await ServerSocket.bind(address, 0);
     _server!.listen((socket) => unawaited(_serve(socket)));
     // Being found is a nicety: without it, the address shown can be typed on the other device.
     try {
-      final udp = await RawDatagramSocket.bind(InternetAddress.anyIPv4, discoveryPort, reuseAddress: true);
+      final udp = await RawDatagramSocket.bind(address, discoveryPort, reuseAddress: true);
       _udp = udp;
       udp.listen((event) {
         if (event != RawSocketEvent.read) return;
