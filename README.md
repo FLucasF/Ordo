@@ -30,7 +30,7 @@ Os dados ficam **só no seu aparelho**: não tem conta, login nem servidor. Para
 
 ### Baixar e instalar (jeito fácil)
 
-1. Abra a página de [**Releases**](https://github.com/FLucasF/toDO-manager/releases/latest) e baixe o **`TarefasSetup-1.2.1.exe`**.
+1. Abra a página de [**Releases**](https://github.com/FLucasF/toDO-manager/releases/latest) e baixe o **`TarefasSetup-1.3.0.exe`**.
 2. Dê dois cliques no arquivo baixado.
 3. O Windows pode mostrar o aviso azul do **SmartScreen** ("O Windows protegeu o computador"), porque o instalador não tem assinatura digital paga. Clique em **Mais informações → Executar assim mesmo**.
 4. Siga o instalador: **Avançar → Instalar → Concluir**. Ele não pede senha de administrador e cria o atalho **Tarefas** no menu Iniciar. Se você marcar a opção, cria também na área de trabalho.
@@ -72,7 +72,7 @@ Funciona no Android 7.0 ou mais novo.
 
 ### Baixar e instalar (jeito fácil)
 
-1. **No celular**, abra a página de [**Releases**](https://github.com/FLucasF/toDO-manager/releases/latest) e toque em **`Tarefas-1.2.1.apk`** para baixar.
+1. **No celular**, abra a página de [**Releases**](https://github.com/FLucasF/toDO-manager/releases/latest) e toque em **`Tarefas-1.3.0.apk`** para baixar.
 2. Quando terminar, toque na notificação do download, ou abra o app **Arquivos → Downloads** e toque no arquivo.
 3. O Android avisa que, por segurança, o app de onde você está instalando (Chrome ou Arquivos) não pode instalar apps. Toque em **Configurações**, ligue **Permitir desta fonte** e volte.
 4. Toque em **Instalar** e depois em **Abrir**.
