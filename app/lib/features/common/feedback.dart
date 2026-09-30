@@ -53,7 +53,10 @@ void showToast(BuildContext context, String message, {Future<void> Function()? u
     ..showSnackBar(
       SnackBar(
         content: Text(message),
-        duration: const Duration(seconds: 3),
+        // With "Desfazer", a bit longer to reach it; then it goes away on its own (Flutter keeps a toast
+        // with an action until tapped unless told otherwise).
+        duration: Duration(seconds: undo == null ? 3 : 5),
+        persist: false,
         action: undo == null ? null : SnackBarAction(label: t.toastUndo, onPressed: () => unawaited(undo())),
       ),
     );
