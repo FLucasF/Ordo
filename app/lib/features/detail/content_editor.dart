@@ -83,10 +83,14 @@ class _ContentEditorState extends State<ContentEditor> {
     super.initState();
     _lastSaved = widget.markdown;
     _editor = _build(widget.markdown);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _fit());
   }
 
   /// Height given to the editor. appflowy's overlay always fills its box, so the box follows the content:
-  /// it grows from the scroll metrics and is reset small on every edit so it can also shrink.
+  /// after each edit it is measured to where the text ends (a mark after the last block), and it grows
+  /// from the scroll metrics when that mark is out of sight. It never drops small and grows back on
+  /// each key: on a phone that jumped at every letter and appflowy, keeping the caret in sight in a box
+  /// shorter than its line, froze.
   static const _minHeight = 32.0;
 
   /// appflowy loops forever when the caret's line is taller than the box, so with a heading (or an
@@ -94,17 +98,40 @@ class _ContentEditorState extends State<ContentEditor> {
   static const _headingMinHeight = 72.0;
   late double _height = _floor();
 
+  final _box = GlobalKey();
+
+  /// After the last block; a new one for each document (the old editor's may still be in the tree).
+  GlobalKey _end = GlobalKey();
+
+  /// Fits the box to where the text ends (the mark after the last block, plus what is scrolled).
+  void _fit() {
+    final end = _end.currentContext;
+    final box = _box.currentContext?.findRenderObject();
+    if (!mounted || end == null || box is! RenderBox || !box.hasSize) return;
+    final mark = end.findRenderObject();
+    if (mark is! RenderBox || !mark.attached) return;
+    final scrolled = Scrollable.maybeOf(end)?.position.pixels ?? 0;
+    final content = mark.localToGlobal(Offset.zero, ancestor: box).dy + scrolled;
+    final height = content < _floor() ? _floor() : content;
+    if ((height - _height).abs() > 0.5) setState(() => _height = height);
+  }
+
   double _floor() => _editor.document.root.children.any((n) => n.type == HeadingBlockKeys.type || n.type == AttachmentBlockKeys.type)
       ? _headingMinHeight
       : _minHeight;
 
   EditorState _build(String markdown) {
     final state = EditorState(document: markdown.trim().isEmpty ? Document.blank(withInitialText: true) : markdownToEditorDocument(markdown));
+    _end = GlobalKey();
     _subscription?.cancel();
     _subscription = state.transactionStream.listen((_) {
       _scheduleSave();
+      // A heading (or attachment) just added needs its taller floor at once: appflowy loops when the
+      // caret's line is taller than the box. It never goes down here, only in [_fit].
       final floor = _floor();
-      if (mounted && _height != floor) setState(() => _height = floor);
+      if (mounted && _height < floor) setState(() => _height = floor);
+      // Once the edit is laid out.
+      WidgetsBinding.instance.addPostFrameCallback((_) => _fit());
     });
     return state;
   }
@@ -130,6 +157,7 @@ class _ContentEditorState extends State<ContentEditor> {
       _editor.dispose();
       _editor = _build(widget.markdown);
       _lastSaved = widget.markdown;
+      WidgetsBinding.instance.addPostFrameCallback((_) => _fit());
     }
   }
 
@@ -281,6 +309,7 @@ class _ContentEditorState extends State<ContentEditor> {
         return false;
       },
       child: SizedBox(
+        key: _box,
         height: _height,
         child: Stack(
           children: [
@@ -294,6 +323,7 @@ class _ContentEditorState extends State<ContentEditor> {
             AppFlowyEditor(
               editorState: _editor,
               editorStyle: style,
+              footer: SizedBox(key: _end, height: 0),
               blockComponentBuilders: {
                 ...standardBlockComponentBuilderMap,
                 AttachmentBlockKeys.type: AttachmentBlockBuilder(
