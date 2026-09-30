@@ -189,7 +189,13 @@ A duração e o som do Pomodoro ficam no **…** da tela Foco.
 
 - **Configurações → Conta → Gerar Backup** salva um `.zip` com tudo, inclusive anexos. Em **Importar backups locais**, esse arquivo substitui os dados do aparelho (o app pede confirmação).
 - **Backups automáticos:** o app faz sozinho uma cópia por dia, sem os anexos, e guarda as 7 mais recentes. Elas ficam listadas em Configurações → Conta → Backups automáticos, com o botão **Restaurar**.
-- **Para passar os dados do PC para o celular**, ou o contrário: gere o backup num aparelho, copie o `.zip` e importe no outro. Não há sincronização automática entre aparelhos.
+- **Deixar o celular e o PC iguais (pelo Wi-Fi):** toque no avatar → **Sincronizar aparelhos** (ou *Configurações → Conta*).
+  1. No aparelho que vai **ficar igual ao outro**, toque em **Receber neste aparelho**. Aparece um código de 6 números.
+  2. No aparelho que **tem os dados certos**, toque em **Enviar deste aparelho**, escolha o outro na lista e digite o código.
+  3. Pronto: tudo (tarefas, hábitos, finanças, anexos, configurações) vai de um para o outro. Antes de trocar, quem recebe guarda uma cópia dos próprios dados, que aparece com a hora em *Backups automáticos*, para desfazer.
+
+  Os dois precisam estar no **mesmo Wi-Fi**, com o app aberto e **na mesma versão**. Não usa internet nem conta: os dados vão direto de um aparelho para o outro pela rede de casa, sem criptografia, então use em redes de confiança (não em Wi-Fi público). É uma cópia completa, não uma junção: use como fonte o aparelho onde você mexeu por último. No Windows, na primeira vez que receber, o Firewall pergunta; clique em **Permitir acesso**. Se um não achar o outro, use **Digitar endereço** com o endereço que aparece na tela de quem recebe.
+- **Por arquivo:** gere o backup num aparelho, copie o `.zip` e importe no outro.
 - **Vindo do TickTick:** lá, gere o backup em *Configurações → Conta → Backup & Recuperação*. Aqui, importe em *Configurações → Integrações e Importação → Backup do TickTick (.csv)*.
 
 ---
