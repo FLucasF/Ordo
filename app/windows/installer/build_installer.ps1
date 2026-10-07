@@ -3,12 +3,16 @@
 #   2. copies the Visual C++ runtime next to the app (app-local, so it runs on a Windows without it)
 #   3. compiles tarefas.iss with Inno Setup 6
 # Run from the app folder:  powershell -ExecutionPolicy Bypass -File windows\installer\build_installer.ps1
+#   -KeepIconFonts: skips shrinking the icon fonts (font-subset.exe), for a machine whose Smart App
+#   Control blocks that tool; the app is about 1.6 MB bigger.
+param([switch]$KeepIconFonts)
 
 $ErrorActionPreference = 'Stop'
 $app = Resolve-Path (Join-Path $PSScriptRoot '..\..')
 Set-Location $app
 
-flutter build windows --release
+# Windows PowerShell mangles a "--flag" splatted from an array: each call spelled out.
+if ($KeepIconFonts) { flutter build windows --release '--no-tree-shake-icons' } else { flutter build windows --release }
 if ($LASTEXITCODE -ne 0) { throw 'flutter build windows failed' }
 
 # The newest x64 CRT from any Visual Studio 2022 install (the redistributable Microsoft allows to ship).

@@ -30,7 +30,7 @@ Os dados ficam **só no seu aparelho**: não tem conta, login nem servidor. Para
 
 ### Baixar e instalar (jeito fácil)
 
-1. Abra a página de [**Releases**](https://github.com/FLucasF/toDO-manager/releases/latest) e baixe o **`TarefasSetup-1.3.0.exe`**.
+1. Abra a página de [**Releases**](https://github.com/FLucasF/toDO-manager/releases/latest) e baixe o **`TarefasSetup-1.4.0.exe`**.
 2. Dê dois cliques no arquivo baixado.
 3. O Windows pode mostrar o aviso azul do **SmartScreen** ("O Windows protegeu o computador"), porque o instalador não tem assinatura digital paga. Clique em **Mais informações → Executar assim mesmo**.
 4. Siga o instalador: **Avançar → Instalar → Concluir**. Ele não pede senha de administrador e cria o atalho **Tarefas** no menu Iniciar. Se você marcar a opção, cria também na área de trabalho.
@@ -72,7 +72,7 @@ Funciona no Android 7.0 ou mais novo.
 
 ### Baixar e instalar (jeito fácil)
 
-1. **No celular**, abra a página de [**Releases**](https://github.com/FLucasF/toDO-manager/releases/latest) e toque em **`Tarefas-1.3.0.apk`** para baixar.
+1. **No celular**, abra a página de [**Releases**](https://github.com/FLucasF/toDO-manager/releases/latest) e toque em **`Tarefas-1.4.0.apk`** para baixar.
 2. Quando terminar, toque na notificação do download, ou abra o app **Arquivos → Downloads** e toque no arquivo.
 3. O Android avisa que, por segurança, o app de onde você está instalando (Chrome ou Arquivos) não pode instalar apps. Toque em **Configurações**, ligue **Permitir desta fonte** e volte.
 4. Toque em **Instalar** e depois em **Abrir**.
@@ -82,6 +82,8 @@ Se aparecer um aviso do **Play Protect** ("app desconhecido"), toque em **Mais d
 
 - **Atualizar:** baixe o APK da versão nova e instale por cima. Suas tarefas continuam.
 - **Desinstalar:** no Android, desinstalar **apaga os dados** do app. Antes, faça um backup (veja [Backup](#backup-e-troca-de-aparelho)).
+
+- **Widget de calendário:** segure um espaço vazio da tela inicial → **Widgets** → **Tarefas → Calendário**. No próprio widget escolha **Dia**, **Semana** ou **Mês** (cada widget guarda a sua escolha); **‹ ›** avançam e voltam, o título volta para hoje, o **+** cria uma tarefa, e tocar num dia abre o app nele.
 
 > **Aparelhos autorizados (Android):** este app está registrado no Google numa conta de *distribuição limitada*. A partir de 30/09/2026, no Brasil, **só os celulares autorizados pelo dono do app** (até 20) conseguem instalar e atualizar. Para autorizar um celular, o dono gera um QR code ou um link no Android Developer Console. A pessoa abre no celular, aceita e manda de volta o código que aparece. Se quiser usar o app, peça esse link.
 
@@ -115,6 +117,7 @@ adb install -r app/build/app/outputs/flutter-apk/app-release.apk
 - Para **criar uma lista**, use o **+** ao lado de "Listas". Nela você escolhe a cor, o ícone, a pasta e se é lista de tarefas ou de notas.
 - Para **adicionar uma tarefa**, escreva no campo do topo da lista e aperte Enter. No Windows, a tecla `N` abre a adição rápida de qualquer lugar.
 - **Abrir, concluir e organizar:** clique numa tarefa para abrir o detalhe; a caixinha conclui. O botão direito (ou o **…**) abre o menu: data, prioridade, mover, etiquetas, foco, duplicar, converter em nota…
+- **Mudar a ordem:** arraste a tarefa para cima ou para baixo (no celular, segure e arraste; segurar e soltar sem mover abre o menu). Solte bem à direita de outra tarefa para virar subtarefa dela. Numa lista ordenada por data ou prioridade, como Hoje, arrastar passa a lista para a ordem **Personalizado**.
 - **Editar e apagar qualquer coisa:** tudo o que você adiciona (lançamentos, contas, hábitos, contagens, listas, etiquetas, filtros…) tem o **⋯** na própria linha, com Editar e Deletar. Ao abrir para editar, o formulário tem a **lixeira** vermelha. O que não dá para desfazer pede confirmação antes.
 - **Criar:** em cada tela, o botão azul no canto de cima diz o que cria (**+ Novo lançamento**, **+ Novo hábito**, **+ Nova tarefa**…). No celular é o **+** redondo embaixo.
 
