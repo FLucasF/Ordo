@@ -14,6 +14,7 @@ import '../domain/enums.dart';
 import '../domain/finance/finance.dart';
 import '../domain/snapshot.dart';
 import '../domain/views.dart';
+import 'routes.dart';
 
 /// Overridden in `main` with the opened database (and in tests with an in-memory one).
 final databaseProvider = Provider<AppDatabase>((ref) => throw UnimplementedError('databaseProvider must be overridden'));
@@ -133,7 +134,10 @@ ViewOptions optionsFor(Ref ref, Snapshot snapshot, Scope scope) {
       return ViewOptions(grouping: list.groupBy, sorting: list.sortBy, showCompleted: list.showCompleted, showDetails: list.showDetails);
     }
   }
-  return ref.watch(scopeOptionsProvider)[scope] ?? (scope is ListScope || scope is FolderScope ? const ViewOptions() : smartListDefaultOptions);
+  // Changed in this run, or saved before (Hoje, filters, tags keep theirs between runs).
+  return ref.watch(scopeOptionsProvider)[scope] ??
+      ref.watch(preferencesProvider).value?.scopeViewOptions[Routes.of(scope)] ??
+      (scope is ListScope || scope is FolderScope ? const ViewOptions() : smartListDefaultOptions);
 }
 
 /// Date and list filters of Concluído and Não será feito, per smart list.

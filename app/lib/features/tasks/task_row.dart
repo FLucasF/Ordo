@@ -71,6 +71,7 @@ class TaskRowTile extends ConsumerStatefulWidget {
     required this.onToggleCollapse,
     required this.onMenu,
     this.countdown = false,
+    this.longPressMenu = true,
   });
 
   final TaskRow row;
@@ -84,6 +85,9 @@ class TaskRowTile extends ConsumerStatefulWidget {
 
   /// Show the date as a countdown ("em 3 dias").
   final bool countdown;
+
+  /// A long press opens [onMenu]; off where the long press starts a drag instead.
+  final bool longPressMenu;
 
   @override
   ConsumerState<TaskRowTile> createState() => _TaskRowTileState();
@@ -113,7 +117,7 @@ class _TaskRowTileState extends ConsumerState<TaskRowTile> {
 
     return GestureDetector(
       onSecondaryTapDown: (d) => widget.onMenu(d.globalPosition),
-      onLongPressStart: (d) => widget.onMenu(d.globalPosition),
+      onLongPressStart: widget.longPressMenu ? (d) => widget.onMenu(d.globalPosition) : null,
       child: MouseRegion(
         onEnter: (_) => setState(() => _hover = true),
         onExit: (_) => setState(() => _hover = false),

@@ -1611,5 +1611,6 @@
   "widgetWeek": "Semana",
   "widgetMonth": "Mês",
   "widgetEmpty": "Nada neste dia",
-  "widgetAllDay": "Dia todo"
+  "widgetAllDay": "Dia todo",
+  "reorderSortCustom": "Agora a ordem desta lista é a sua (Ordenar por: Personalizado)."
 }

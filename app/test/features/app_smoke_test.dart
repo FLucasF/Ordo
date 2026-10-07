@@ -16,6 +16,7 @@ import 'package:task_manager/data/db/database.dart';
 import 'package:task_manager/data/repository.dart';
 import 'package:task_manager/domain/color_labels.dart';
 import 'package:task_manager/domain/enums.dart';
+import 'package:task_manager/domain/snapshot.dart';
 import 'package:task_manager/features/common/shell_widgets.dart';
 import 'package:task_manager/features/countdown/countdown_page.dart';
 import 'package:task_manager/features/detail/content_editor.dart';
@@ -142,6 +143,60 @@ void main() {
     final s2 = await tester.runAsync(repo.loadSnapshot);
     final b = s2!.tasks.firstWhere((t) => t.title == 'b');
     expect(s2.taskById[b.parentId]?.title, 'a');
+    await _dispose(tester);
+  });
+
+  List<String> byOrder(Snapshot s) => [for (final t in s.tasks.toList()..sort((x, y) => x.sortOrder.compareTo(y.sortOrder))) t.title];
+
+  testWidgets('phone: a long press and a move reorders; a long press that stays opens the menu', (tester) async {
+    final repo = Repository(db, clock: clock);
+    await tester.runAsync(() async {
+      for (final title in ['a', 'b', 'c']) {
+        await repo.createTask(listId: inboxListId, title: title, atTop: false);
+      }
+    });
+    await pumpApp(tester, '/p/inbox/tasks', size: const Size(412, 900));
+    final aRow = tester.getTopLeft(find.text('a').first);
+    final gesture = await tester.startGesture(tester.getCenter(find.text('c').first));
+    await tester.pump(const Duration(milliseconds: 700));
+    final start = tester.getCenter(find.text('c').first);
+    final to = Offset(aRow.dx + 5, aRow.dy + 5);
+    for (var i = 1; i <= 8; i++) {
+      await gesture.moveTo(Offset.lerp(start, to, i / 8)!);
+      await tester.pump(const Duration(milliseconds: 16));
+    }
+    await gesture.up();
+    for (var i = 0; i < 5; i++) {
+      await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 20)));
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+    expect(byOrder((await tester.runAsync(repo.loadSnapshot))!), ['c', 'a', 'b']);
+
+    final press = await tester.startGesture(tester.getCenter(find.text('b').first));
+    await tester.pump(const Duration(milliseconds: 700));
+    await press.up();
+    await tester.pumpAndSettle();
+    expect(find.text('Selecionar'), findsOneWidget);
+    await _dispose(tester);
+  });
+
+  testWidgets('Hoje sorted by date: a drag reorders the day and switches to the custom order, kept after reopening', (tester) async {
+    final repo = Repository(db, clock: clock);
+    await tester.runAsync(() async {
+      for (final title in ['a', 'b', 'c']) {
+        await repo.createTask(listId: inboxListId, title: title, dueDate: DateTime(2026, 9, 24), atTop: false);
+      }
+    });
+    await pumpApp(tester, '/q/today/tasks');
+    final aRow = tester.getTopLeft(find.text('a').first);
+    await dragTo(tester, find.text('c').first, Offset(aRow.dx + 5, aRow.dy + 5));
+    expect(byOrder((await tester.runAsync(repo.loadSnapshot))!), ['c', 'a', 'b']);
+    expect(find.textContaining('Personalizado'), findsOneWidget);
+    // The custom order is saved for Hoje: reopened, the list keeps it.
+    await _dispose(tester);
+    await pumpApp(tester, '/q/today/tasks');
+    expect(tester.getTopLeft(find.text('c').first).dy, lessThan(tester.getTopLeft(find.text('a').first).dy));
+    expect(tester.getTopLeft(find.text('a').first).dy, lessThan(tester.getTopLeft(find.text('b').first).dy));
     await _dispose(tester);
   });
 

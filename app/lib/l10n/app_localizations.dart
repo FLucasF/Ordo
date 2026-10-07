@@ -8988,6 +8988,12 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Dia todo'**
   String get widgetAllDay;
+
+  /// No description provided for @reorderSortCustom.
+  ///
+  /// In pt, this message translates to:
+  /// **'Agora a ordem desta lista é a sua (Ordenar por: Personalizado).'**
+  String get reorderSortCustom;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

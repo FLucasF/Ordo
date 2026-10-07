@@ -9,6 +9,7 @@ import '../domain/reminder_plan.dart';
 import '../domain/subscriptions.dart';
 import '../domain/summary.dart';
 import '../domain/task_defaults.dart';
+import '../domain/enums.dart' show Grouping, Sorting;
 import '../domain/views.dart';
 import 'db/database.dart';
 
@@ -149,6 +150,7 @@ class Preferences {
     this.closeToTray = true,
     this.launchAtStartup = false,
     this.customShortcuts = const {},
+    this.scopeViewOptions = const {},
     this.showListColor = true,
   });
 
@@ -257,6 +259,10 @@ class Preferences {
   /// Shortcuts changed in Settings → Atalhos: action name → its keys (empty = none).
   final Map<String, List<String>> customShortcuts;
 
+  /// Grouping and sorting of the views that aren't lists (Hoje, filters, tags…), by their route; a
+  /// list keeps its own in its row.
+  final Map<String, ViewOptions> scopeViewOptions;
+
   /// "Cor da Lista": the list's color as a stripe on task rows outside the list.
   final bool showListColor;
 
@@ -313,6 +319,7 @@ class PreferencesRepository {
   static const _focusRunKey = 'focus.run';
   static const _reminderSoundKey = 'notifications.reminderSound';
   static const _closeToTrayKey = 'desktop.closeToTray';
+  static const _scopeViewOptionsKey = 'view.scopeOptions';
   static const _launchAtStartupKey = 'desktop.launchAtStartup';
   static const _shortcutsKey = 'shortcuts.custom';
   static const _listColorKey = 'appearance.listColor';
@@ -393,6 +400,18 @@ class PreferencesRepository {
       reminderSound: ReminderSound.values.where((s) => s.name == raw[_reminderSoundKey]).firstOrNull ?? ReminderSound.alarmClock,
       closeToTray: raw[_closeToTrayKey] != false,
       launchAtStartup: raw[_launchAtStartupKey] == true,
+      scopeViewOptions: {
+        if (raw[_scopeViewOptionsKey] case final Map<String, Object?> map)
+          for (final MapEntry(:key, :value) in map.entries)
+            if (value case final Map<String, Object?> o)
+              key: ViewOptions(
+                grouping: Grouping.values.where((g) => g.name == o['g']).firstOrNull ?? Grouping.date,
+                sorting: Sorting.values.where((x) => x.name == o['s']).firstOrNull ?? Sorting.date,
+                showCompleted: o['c'] != false,
+                descending: o['d'] == true,
+                showDetails: o['x'] == true,
+              ),
+      },
       customShortcuts: {
         if (raw[_shortcutsKey] case final Map<String, Object?> map)
           for (final e in map.entries)
@@ -490,6 +509,11 @@ class PreferencesRepository {
   Future<void> setSummaryConfig(SummaryConfig c) => _set(_summaryConfigKey, c.toJson());
 
   Future<void> setCustomShortcuts(Map<String, List<String>> shortcuts) => _set(_shortcutsKey, shortcuts);
+
+  Future<void> setScopeViewOptions(Map<String, ViewOptions> options) => _set(_scopeViewOptionsKey, {
+    for (final MapEntry(:key, value: o) in options.entries)
+      key: {'g': o.grouping.name, 's': o.sorting.name, 'c': o.showCompleted, 'd': o.descending, 'x': o.showDetails},
+  });
 
   Future<void> setShowListColor({required bool enabled}) => _set(_listColorKey, enabled);
 

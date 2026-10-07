@@ -213,22 +213,7 @@ class _Header extends ConsumerWidget {
     );
   }
 
-  Future<void> _setOptions(WidgetRef ref, ViewOptions options) async {
-    final s = scope;
-    if (s is ListScope) {
-      await ref
-          .read(repositoryProvider)
-          .setListViewOptions(
-            s.listId,
-            grouping: options.grouping,
-            sorting: options.sorting,
-            showCompleted: options.showCompleted,
-            showDetails: options.showDetails,
-          );
-    } else {
-      ref.read(scopeOptionsProvider.notifier).set(scope, options);
-    }
-  }
+  Future<void> _setOptions(WidgetRef ref, ViewOptions options) => setScopeViewOptions(ref, scope, options);
 
   Future<void> _showSortMenu(BuildContext context, WidgetRef ref) async {
     final t = AppLocalizations.of(context);
@@ -798,9 +783,17 @@ class _Group extends ConsumerWidget {
     final routeBase = Routes.of(scope);
     final options = ref.watch(viewOptionsProvider(scope));
     final countdown = ref.watch(preferencesProvider).value?.dateDisplay == DateDisplay.countdown;
-    // Manual order only makes sense with custom sorting and custom/no grouping (as in TickTick).
-    final canReorder =
-        !group.isClosed && options.sorting == Sorting.custom && (options.grouping == Grouping.custom || options.grouping == Grouping.none);
+    // A task drops before another of its own group (any task, with custom or no grouping). Sorted by
+    // anything else, the drop switches the view to the custom order (as TickTick does).
+    final anyGroup = options.grouping == Grouping.custom || options.grouping == Grouping.none;
+    final groupIds = {for (final r in group.rows) r.task.id};
+    bool canReorder(String dragged) => !group.isClosed && (anyGroup || groupIds.contains(dragged));
+    Future<void> reordered() async {
+      if (options.sorting == Sorting.custom) return;
+      await setScopeViewOptions(ref, scope, options.copyWith(sorting: Sorting.custom));
+      if (context.mounted) showToast(context, t.reorderSortCustom);
+    }
+
     final isSectionGroup = group.header is UnsectionedHeader || group.header is SectionHeader;
     final selection = ref.watch(taskSelectionProvider);
     final multi = selection.isNotEmpty;
@@ -853,13 +846,29 @@ class _Group extends ConsumerWidget {
           ),
         ),
         countdown: countdown,
+        // A phone's long press drags the row; the menu comes from a long press that doesn't move.
+        longPressMenu: !isNarrow || multi || row.task.deletedAt != null,
       );
-      if (isNarrow || row.task.deletedAt != null) return tileWidget;
-      final droppable = _DropRow(row: row, sectionId: group.sectionId, reorderEnabled: canReorder, child: tileWidget);
-      // Desktop: drag a task onto a list or onto "Hoje" in the sidebar.
-      return Draggable<String>(
-        data: row.task.id,
-        dragAnchorStrategy: pointerDragAnchorStrategy,
+      if (row.task.deletedAt != null || (isNarrow && multi)) return tileWidget;
+      final droppable = _DropRow(row: row, sectionId: group.sectionId, canReorder: canReorder, onReordered: reordered, child: tileWidget);
+      // Drag a task before another (and, on a computer, onto a list or "Hoje" in the sidebar). On a
+      // phone the drag starts with a long press; let go without moving, it opens the menu.
+      return _RowDraggable(
+        taskId: row.task.id,
+        touch: isNarrow,
+        onMenu: (p) => fireAndForget(
+          showTaskMenu(
+            context,
+            ref,
+            row.task,
+            p,
+            onAddSubtask: (id) => context.go('$routeBase/$id'),
+            onSelect: () {
+              FocusManager.instance.primaryFocus?.unfocus();
+              ref.read(taskSelectionProvider.notifier).toggle(row.task.id);
+            },
+          ),
+        ),
         feedback: Material(
           color: Colors.transparent,
           child: Container(
@@ -1027,13 +1036,98 @@ Widget _maybeSectionTarget({required bool enabled, required Future<void> Functio
 
 enum _DropMode { before, subtask }
 
+/// Saves a view's options: a list in its row, the other views in the preferences.
+Future<void> setScopeViewOptions(WidgetRef ref, Scope scope, ViewOptions options) async {
+  if (scope is ListScope) {
+    await ref
+        .read(repositoryProvider)
+        .setListViewOptions(
+          scope.listId,
+          grouping: options.grouping,
+          sorting: options.sorting,
+          showCompleted: options.showCompleted,
+          showDetails: options.showDetails,
+        );
+  } else {
+    ref.read(scopeOptionsProvider.notifier).set(scope, options);
+    final saved = ref.read(preferencesProvider).value?.scopeViewOptions ?? const {};
+    await ref.read(preferencesRepositoryProvider).setScopeViewOptions({...saved, Routes.of(scope): options});
+  }
+}
+
+/// A task row that drags: at once with a mouse; after a long press on a phone, where letting go
+/// without moving opens [onMenu] instead. Near the top or the bottom of the list, it scrolls.
+class _RowDraggable extends StatefulWidget {
+  const _RowDraggable({required this.taskId, required this.touch, required this.onMenu, required this.feedback, required this.child});
+
+  final String taskId;
+  final bool touch;
+  final void Function(Offset at) onMenu;
+  final Widget feedback;
+  final Widget child;
+
+  @override
+  State<_RowDraggable> createState() => _RowDraggableState();
+}
+
+class _RowDraggableState extends State<_RowDraggable> {
+  Offset? _down;
+
+  /// Scrolls the list a little while the finger (or the mouse) is near one of its edges.
+  void _autoScroll(Offset global) {
+    final scrollable = Scrollable.maybeOf(context);
+    final box = scrollable?.context.findRenderObject();
+    if (scrollable == null || box is! RenderBox || !box.hasSize) return;
+    final y = box.globalToLocal(global).dy;
+    const edge = 56.0;
+    final position = scrollable.position;
+    final step = y < edge ? -(edge - y) / 3 : (y > box.size.height - edge ? (y - box.size.height + edge) / 3 : 0.0);
+    if (step == 0) return;
+    position.jumpTo((position.pixels + step).clamp(position.minScrollExtent, position.maxScrollExtent));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!widget.touch) {
+      return Draggable<String>(
+        data: widget.taskId,
+        dragAnchorStrategy: pointerDragAnchorStrategy,
+        onDragUpdate: (d) => _autoScroll(d.globalPosition),
+        feedback: widget.feedback,
+        child: widget.child,
+      );
+    }
+    return Listener(
+      onPointerDown: (e) => _down = e.position,
+      child: LongPressDraggable<String>(
+        data: widget.taskId,
+        dragAnchorStrategy: pointerDragAnchorStrategy,
+        hapticFeedbackOnStart: true,
+        onDragUpdate: (d) => _autoScroll(d.globalPosition),
+        // Let go where it began: it was a long press for the menu.
+        onDraggableCanceled: (_, offset) {
+          final down = _down;
+          if (down != null && (offset - down).distance < 16) widget.onMenu(down);
+        },
+        feedback: widget.feedback,
+        child: widget.child,
+      ),
+    );
+  }
+}
+
 /// Drop target of a task row: before it (reorder) or, dropped further right, as its subtask.
 class _DropRow extends ConsumerStatefulWidget {
-  const _DropRow({required this.row, required this.sectionId, required this.reorderEnabled, required this.child});
+  const _DropRow({required this.row, required this.sectionId, required this.canReorder, required this.onReordered, required this.child});
 
   final TaskRow row;
   final String? sectionId;
-  final bool reorderEnabled;
+
+  /// Whether the dragged task may drop before this one.
+  final bool Function(String dragged) canReorder;
+
+  /// After a drop before this one (the view switches to the custom order).
+  final Future<void> Function() onReordered;
   final Widget child;
 
   @override
@@ -1045,12 +1139,12 @@ class _DropRowState extends ConsumerState<_DropRow> {
 
   double get _indent => 16 + TtSizes.subtaskIndent * widget.row.depth;
 
-  _DropMode? _modeAt(Offset global) {
+  _DropMode? _modeAt(Offset global, String dragged) {
     final box = context.findRenderObject() as RenderBox?;
     if (box == null) return null;
     final x = box.globalToLocal(global).dx;
     if (x > _indent + 60) return _DropMode.subtask;
-    return widget.reorderEnabled ? _DropMode.before : null;
+    return widget.canReorder(dragged) ? _DropMode.before : null;
   }
 
   @override
@@ -1059,19 +1153,23 @@ class _DropRowState extends ConsumerState<_DropRow> {
     return DragTarget<String>(
       onWillAcceptWithDetails: (d) => d.data != task.id && task.status == TaskStatus.open,
       onMove: (d) {
-        final mode = _modeAt(d.offset);
+        final mode = _modeAt(d.offset, d.data);
         if (mode != _mode) setState(() => _mode = mode);
       },
       onLeave: (_) => setState(() => _mode = null),
       onAcceptWithDetails: (d) {
-        final mode = _modeAt(d.offset);
+        final mode = _modeAt(d.offset, d.data);
         setState(() => _mode = null);
         final repo = ref.read(repositoryProvider);
         switch (mode) {
           case _DropMode.subtask:
             fireAndForget(guarded(context, () => repo.makeSubtask(d.data, task.id)));
           case _DropMode.before:
-            fireAndForget(guarded(context, () => repo.moveBefore(d.data, task.id, sectionId: Value(widget.sectionId ?? task.sectionId))));
+            fireAndForget(() async {
+              if (await guarded(context, () => repo.moveBefore(d.data, task.id, sectionId: Value(widget.sectionId ?? task.sectionId)))) {
+                await widget.onReordered();
+              }
+            }());
           case null:
             break;
         }

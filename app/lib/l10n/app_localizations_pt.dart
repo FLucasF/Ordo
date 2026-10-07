@@ -4779,4 +4779,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get widgetAllDay => 'Dia todo';
+
+  @override
+  String get reorderSortCustom => 'Agora a ordem desta lista é a sua (Ordenar por: Personalizado).';
 }
