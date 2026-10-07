@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The calendar widget's card: dark and a little see-through, rounded as the launcher's. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="#EB232733" />
+    <corners android:radius="22dp" />
+</shape>

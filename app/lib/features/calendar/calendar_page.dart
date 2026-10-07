@@ -22,7 +22,6 @@ import '../../domain/reminders.dart';
 import '../../domain/task_dates.dart';
 import '../../domain/views.dart';
 import '../../l10n/app_localizations.dart';
-import '../common/color_choice.dart';
 import '../common/labels.dart';
 import '../common/shell_widgets.dart';
 import '../common/time_zone_picker.dart';
@@ -376,36 +375,8 @@ class _CalendarPageState extends ConsumerState<CalendarPage> {
     }
   }
 
-  Color _colorOf(CalendarEntry e, Snapshot s, CalendarOptions o) {
-    final tt = context.tt;
-    switch (e.kind) {
-      case CalendarEntryKind.habit:
-        return parseHexColor(s.habits.where((h) => h.id == e.id).firstOrNull?.color) ?? tt.primary;
-      case CalendarEntryKind.countdown:
-        return parseHexColor(s.countdowns.where((c) => c.id == e.id).firstOrNull?.color) ?? tt.palette.priorityMedium;
-      case CalendarEntryKind.focus:
-        return tt.textTertiary;
-      case CalendarEntryKind.event:
-        return subscriptionColor(context, ref, e.id);
-      // Bills to pay in red, invoices in orange, money coming in (income, loans) in green.
-      case CalendarEntryKind.finance:
-        return switch (e.id.split(':').first) {
-          'bill' => tt.overdue,
-          'invoice' => tt.palette.priorityMedium,
-          _ => tt.palette.green,
-        };
-      case CalendarEntryKind.task || CalendarEntryKind.checklistItem:
-        final task = e.task;
-        if (task == null) return tt.primary;
-        // The task's own color (Google's event color) over the list's.
-        if (parseHexColor(task.color) case final own?) return own;
-        return switch (o.colorBy) {
-          CalendarColorBy.list => parseHexColor(s.listById[task.listId]?.color) ?? tt.primary,
-          CalendarColorBy.tag => s.tagsOf(task.id).map((tag) => parseHexColor(tag.color)).nonNulls.firstOrNull ?? tt.primary,
-          CalendarColorBy.priority => task.priority == Priority.none ? tt.primary : tt.priorityColor(task.priority),
-        };
-    }
-  }
+  Color _colorOf(CalendarEntry e, Snapshot s, CalendarOptions o) =>
+      calendarEntryColor(e, s, o, context.tt, (ref.read(preferencesProvider).value ?? Preferences.defaults).subscriptions);
 
   Future<void> _showDay(DateTime day, List<CalendarEntry> entries, CalendarActions actions) async {
     final labels = DateLabels(AppLocalizations.of(context));

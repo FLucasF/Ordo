@@ -4764,4 +4764,19 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get syncWaitingOther => 'Esperando o outro aparelho enviar…';
+
+  @override
+  String get widgetDay => 'Dia';
+
+  @override
+  String get widgetWeek => 'Semana';
+
+  @override
+  String get widgetMonth => 'Mês';
+
+  @override
+  String get widgetEmpty => 'Nada neste dia';
+
+  @override
+  String get widgetAllDay => 'Dia todo';
 }

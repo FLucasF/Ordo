@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A thin line on the top and left of each day, as the month grid's. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item><shape android:shape="rectangle"><solid android:color="#26FFFFFF" /></shape></item>
+    <item android:left="0.5dp" android:top="0.5dp"><shape android:shape="rectangle"><solid android:color="#FF232733" /></shape></item>
+</layer-list>

@@ -8958,6 +8958,36 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Esperando o outro aparelho enviar…'**
   String get syncWaitingOther;
+
+  /// No description provided for @widgetDay.
+  ///
+  /// In pt, this message translates to:
+  /// **'Dia'**
+  String get widgetDay;
+
+  /// No description provided for @widgetWeek.
+  ///
+  /// In pt, this message translates to:
+  /// **'Semana'**
+  String get widgetWeek;
+
+  /// No description provided for @widgetMonth.
+  ///
+  /// In pt, this message translates to:
+  /// **'Mês'**
+  String get widgetMonth;
+
+  /// No description provided for @widgetEmpty.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nada neste dia'**
+  String get widgetEmpty;
+
+  /// No description provided for @widgetAllDay.
+  ///
+  /// In pt, this message translates to:
+  /// **'Dia todo'**
+  String get widgetAllDay;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

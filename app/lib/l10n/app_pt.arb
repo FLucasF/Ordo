@@ -1606,5 +1606,10 @@
   "syncRefused": "O outro aparelho parou de aceitar depois de muitas tentativas. Lá, feche e abra Receber de novo.",
   "syncFailed": "Não deu certo. Confira se os dois estão no mesmo Wi-Fi, com o Tarefas aberto e na mesma versão.",
   "syncCodeLabel": "Código",
-  "syncWaitingOther": "Esperando o outro aparelho enviar…"
+  "syncWaitingOther": "Esperando o outro aparelho enviar…",
+  "widgetDay": "Dia",
+  "widgetWeek": "Semana",
+  "widgetMonth": "Mês",
+  "widgetEmpty": "Nada neste dia",
+  "widgetAllDay": "Dia todo"
 }

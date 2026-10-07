@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- The home-screen widget, as the launcher's widget list shows it. -->
+    <string name="calendar_widget_label">Calendário</string>
+    <string name="calendar_widget_description">Seu calendário do Tarefas: dia, semana ou mês</string>
+</resources>

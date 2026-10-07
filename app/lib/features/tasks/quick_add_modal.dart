@@ -125,6 +125,41 @@ class _QuickAddModalState extends ConsumerState<_QuickAddModal> {
     final list = s.listById[_listId];
     final schedule = _schedule;
 
+    final narrow = MediaQuery.sizeOf(context).width < TtSizes.narrowBreakpoint;
+    final extras = <Widget>[
+      if (_files.isNotEmpty)
+        _icon(
+          Icons.attach_file,
+          t.slashAttachment,
+          color: tt.primary,
+          onPressed: () => setState(() => _files = const []),
+          label: Text('${_files.length}'),
+        ),
+      if (_asNote) _icon(Icons.sticky_note_2_outlined, t.addAsNote, color: tt.primary, onPressed: () => setState(() => _asNote = false)),
+      // "…": Anexo, Adicionar a partir do modelo, Converter para nota.
+      PopupMenuButton<String>(
+        tooltip: '',
+        icon: Icon(Icons.more_horiz, size: 18, color: tt.textTertiary),
+        onSelected: (v) async {
+          switch (v) {
+            case 'attach':
+              final result = await FilePicker.platform.pickFiles(allowMultiple: true);
+              final paths = [for (final f in result?.files ?? const <PlatformFile>[]) ?f.path];
+              if (paths.isNotEmpty && mounted) setState(() => _files = [..._files, ...paths]);
+            case 'note':
+              setState(() => _asNote = !_asNote);
+            default:
+              await _fromTemplate();
+          }
+        },
+        itemBuilder: (_) => [
+          PopupMenuItem(value: 'attach', height: 36, child: Text(t.slashAttachment)),
+          PopupMenuItem(value: 'template', height: 36, child: Text(t.templateAddFrom)),
+          CheckedPopupMenuItem(value: 'note', checked: _asNote, child: Text(t.addAsNote)),
+        ],
+      ),
+    ];
+
     return Dialog(
       alignment: const Alignment(0, -0.6),
       child: SizedBox(
@@ -145,140 +180,115 @@ class _QuickAddModalState extends ConsumerState<_QuickAddModal> {
                 onSubmitted: (_) => unawaited(_add()),
               ),
               const SizedBox(height: 12),
-              Row(
+              // A phone has the tools on one line and Cancelar / Adicionar on the next; a window, all on one.
+              _ToolsAndButtons(
+                narrow: narrow,
                 children: [
-                  Expanded(
-                    child: Wrap(
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      children: [
-                        _icon(
-                          Icons.calendar_today_outlined,
-                          t.pickerTabDate,
-                          color: schedule == null ? null : tt.primary,
-                          onPressed: () => unawaited(_pickDate()),
-                          label: schedule == null
-                              ? null
-                              : Text(
-                                  DateLabels(t).detailDate(schedule.dueDate!, isAllDay: schedule.isAllDay, today: today),
-                                  style: const TextStyle(fontSize: TtText.small),
-                                ),
-                        ),
-                        PopupMenuButton<Priority>(
-                          tooltip: t.menuPriority,
-                          onSelected: (p) => setState(() => _priority = p),
-                          itemBuilder: (_) => [
-                            for (final p in Priority.values.reversed)
-                              PopupMenuItem(
-                                value: p,
-                                height: 36,
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.flag, size: 18, color: tt.priorityColor(p)),
-                                    const SizedBox(width: 10),
-                                    Text(labels.priority(p)),
-                                  ],
-                                ),
+                  Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      _icon(
+                        Icons.calendar_today_outlined,
+                        t.pickerTabDate,
+                        color: schedule == null ? null : tt.primary,
+                        onPressed: () => unawaited(_pickDate()),
+                        label: schedule == null
+                            ? null
+                            : Text(
+                                DateLabels(t).detailDate(schedule.dueDate!, isAllDay: schedule.isAllDay, today: today),
+                                style: const TextStyle(fontSize: TtText.small),
                               ),
-                          ],
-                          child: Padding(
-                            padding: const EdgeInsets.all(8),
-                            child: Icon(
-                              _priority == Priority.none ? Icons.outlined_flag : Icons.flag,
-                              size: 18,
-                              color: _priority == Priority.none ? tt.textTertiary : tt.priorityColor(_priority),
-                            ),
-                          ),
-                        ),
-                        PopupMenuButton<String>(
-                          tooltip: t.searchFilterLists,
-                          onSelected: (id) => setState(() => _listId = id),
-                          itemBuilder: (_) => [
-                            for (final l in s.activeLists)
-                              CheckedPopupMenuItem(value: l.id, checked: l.id == _listId, child: Text(labels.listName(l))),
-                          ],
-                          child: Padding(
-                            padding: const EdgeInsets.all(8),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(Icons.list, size: 18, color: parseHexColor(list?.color) ?? tt.textTertiary),
-                                if (list != null) ...[
-                                  const SizedBox(width: 4),
-                                  ConstrainedBox(
-                                    constraints: const BoxConstraints(maxWidth: 120),
-                                    child: Text(
-                                      labels.listName(list),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(fontSize: TtText.small, color: tt.textSecondary),
-                                    ),
-                                  ),
+                      ),
+                      PopupMenuButton<Priority>(
+                        tooltip: t.menuPriority,
+                        onSelected: (p) => setState(() => _priority = p),
+                        itemBuilder: (_) => [
+                          for (final p in Priority.values.reversed)
+                            PopupMenuItem(
+                              value: p,
+                              height: 36,
+                              child: Row(
+                                children: [
+                                  Icon(Icons.flag, size: 18, color: tt.priorityColor(p)),
+                                  const SizedBox(width: 10),
+                                  Text(labels.priority(p)),
                                 ],
-                              ],
+                              ),
                             ),
+                        ],
+                        child: Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: Icon(
+                            _priority == Priority.none ? Icons.outlined_flag : Icons.flag,
+                            size: 18,
+                            color: _priority == Priority.none ? tt.textTertiary : tt.priorityColor(_priority),
                           ),
                         ),
-                        PopupMenuButton<String>(
-                          tooltip: t.searchFilterTag,
-                          onSelected: (id) => setState(() => _tags.contains(id) ? _tags.remove(id) : _tags.add(id)),
-                          itemBuilder: (_) => [
-                            for (final tag in s.activeTags)
-                              CheckedPopupMenuItem(value: tag.id, checked: _tags.contains(tag.id), child: Text(tag.name)),
-                          ],
-                          child: Padding(
-                            padding: const EdgeInsets.all(8),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(Icons.sell_outlined, size: 18, color: _tags.isEmpty ? tt.textTertiary : tt.primary),
-                                if (_tags.isNotEmpty) ...[
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    '${_tags.length}',
-                                    style: TextStyle(fontSize: TtText.small, color: tt.primary),
+                      ),
+                      PopupMenuButton<String>(
+                        tooltip: t.searchFilterLists,
+                        onSelected: (id) => setState(() => _listId = id),
+                        itemBuilder: (_) => [
+                          for (final l in s.activeLists) CheckedPopupMenuItem(value: l.id, checked: l.id == _listId, child: Text(labels.listName(l))),
+                        ],
+                        child: Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.list, size: 18, color: parseHexColor(list?.color) ?? tt.textTertiary),
+                              if (list != null) ...[
+                                const SizedBox(width: 4),
+                                ConstrainedBox(
+                                  constraints: const BoxConstraints(maxWidth: 120),
+                                  child: Text(
+                                    labels.listName(list),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(fontSize: TtText.small, color: tt.textSecondary),
                                   ),
-                                ],
+                                ),
                               ],
-                            ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                  if (_files.isNotEmpty)
-                    _icon(
-                      Icons.attach_file,
-                      t.slashAttachment,
-                      color: tt.primary,
-                      onPressed: () => setState(() => _files = const []),
-                      label: Text('${_files.length}'),
-                    ),
-                  if (_asNote) _icon(Icons.sticky_note_2_outlined, t.addAsNote, color: tt.primary, onPressed: () => setState(() => _asNote = false)),
-                  // "…": Anexo, Adicionar a partir do modelo, Converter para nota.
-                  PopupMenuButton<String>(
-                    tooltip: '',
-                    icon: Icon(Icons.more_horiz, size: 18, color: tt.textTertiary),
-                    onSelected: (v) async {
-                      switch (v) {
-                        case 'attach':
-                          final result = await FilePicker.platform.pickFiles(allowMultiple: true);
-                          final paths = [for (final f in result?.files ?? const <PlatformFile>[]) ?f.path];
-                          if (paths.isNotEmpty && mounted) setState(() => _files = [..._files, ...paths]);
-                        case 'note':
-                          setState(() => _asNote = !_asNote);
-                        default:
-                          await _fromTemplate();
-                      }
-                    },
-                    itemBuilder: (_) => [
-                      PopupMenuItem(value: 'attach', height: 36, child: Text(t.slashAttachment)),
-                      PopupMenuItem(value: 'template', height: 36, child: Text(t.templateAddFrom)),
-                      CheckedPopupMenuItem(value: 'note', checked: _asNote, child: Text(t.addAsNote)),
+                      ),
+                      PopupMenuButton<String>(
+                        tooltip: t.searchFilterTag,
+                        onSelected: (id) => setState(() => _tags.contains(id) ? _tags.remove(id) : _tags.add(id)),
+                        itemBuilder: (_) => [
+                          for (final tag in s.activeTags) CheckedPopupMenuItem(value: tag.id, checked: _tags.contains(tag.id), child: Text(tag.name)),
+                        ],
+                        child: Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.sell_outlined, size: 18, color: _tags.isEmpty ? tt.textTertiary : tt.primary),
+                              if (_tags.isNotEmpty) ...[
+                                const SizedBox(width: 4),
+                                Text(
+                                  '${_tags.length}',
+                                  style: TextStyle(fontSize: TtText.small, color: tt.primary),
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
+                      ),
+                      if (narrow) ...extras,
                     ],
                   ),
-                  TextButton(onPressed: () => Navigator.pop(context), child: Text(t.actionCancel)),
-                  const SizedBox(width: 6),
-                  FilledButton(onPressed: () => unawaited(_add()), child: Text(t.quickAddButton)),
+                  Wrap(
+                    alignment: WrapAlignment.end,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: 6,
+                    children: [
+                      if (!narrow) ...extras,
+                      TextButton(onPressed: () => Navigator.pop(context), child: Text(t.actionCancel)),
+                      FilledButton(onPressed: () => unawaited(_add()), child: Text(t.quickAddButton)),
+                    ],
+                  ),
                 ],
               ),
             ],
@@ -287,4 +297,31 @@ class _QuickAddModalState extends ConsumerState<_QuickAddModal> {
       ),
     );
   }
+}
+
+/// The tools and the buttons: side by side in a window; on a phone, the buttons under the tools.
+class _ToolsAndButtons extends StatelessWidget {
+  const _ToolsAndButtons({required this.narrow, required this.children});
+
+  final bool narrow;
+
+  /// The tools, then the buttons.
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) => narrow
+      ? Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            children.first,
+            Align(alignment: Alignment.centerRight, child: children.last),
+          ],
+        )
+      : Row(
+          children: [
+            Expanded(child: children.first),
+            children.last,
+          ],
+        );
 }

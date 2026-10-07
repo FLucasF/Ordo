@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -25,6 +26,13 @@ import '../features/reminders/reminder_popup.dart';
 import '../features/templates/templates.dart';
 import '../features/shell/app_shell.dart';
 import '../l10n/app_localizations.dart';
+import '../core/ids.dart';
+import '../domain/finance/finance_calendar.dart';
+import '../domain/subscriptions.dart';
+import '../features/calendar/calendar_widgets.dart';
+import '../features/date_picker/date_picker.dart';
+import '../features/tasks/quick_add_modal.dart';
+import '../platform/calendar_home_widget.dart';
 import '../platform/desktop_shell.dart';
 import '../platform/notifications.dart';
 import '../platform/window_title.dart';
@@ -122,6 +130,7 @@ class _TasksAppState extends ConsumerState<TasksApp> {
   late final GoRouter _router = buildRouter(initialLocation: widget.initialLocation);
   final _windowTitle = WindowTitle();
   Timer? _syncDebounce;
+  Timer? _widgetDebounce;
   Timer? _periodicSync;
   StreamSubscription<ReminderResponse>? _responses;
 
@@ -181,6 +190,14 @@ class _TasksAppState extends ConsumerState<TasksApp> {
       _plan = planReminders(snapshot, _poppedUntil);
       _armPopupTimer();
     }, fireImmediately: true);
+    // Android: the home-screen calendar widget follows the data, and its taps open the app there.
+    if (Platform.isAndroid) {
+      ref.listenManual(snapshotProvider, (_, _) => _widgetSoon(), fireImmediately: true);
+      ref.listenManual(preferencesProvider, (_, _) => _widgetSoon());
+      ref.listenManual(financeProvider, (_, _) => _widgetSoon());
+      ref.listenManual(subscriptionFilesProvider, (_, _) => _widgetSoon());
+      WidgetsBinding.instance.addPostFrameCallback((_) => unawaited(listenCalendarWidget(_onWidgetAction)));
+    }
     final setup = ref.read(reminderSetupProvider);
     if (setup == null) return;
     // OS reminders follow the data; a periodic pass schedules reminders that enter the planning window.
@@ -267,6 +284,54 @@ class _TasksAppState extends ConsumerState<TasksApp> {
     if (task != null && task.deletedAt == null) _router.go(Routes.of(ListScope(task.listId), taskId: task.id));
   }
 
+  /// Rewrites what the home-screen widget shows, a moment after the data settles.
+  void _widgetSoon() {
+    _widgetDebounce?.cancel();
+    _widgetDebounce = Timer(const Duration(seconds: 1), () {
+      final snapshot = ref.read(snapshotProvider).value;
+      if (snapshot == null) return;
+      final prefs = ref.read(preferencesProvider).value ?? Preferences.defaults;
+      final now = ref.read(clockProvider).now();
+      final today = startOfDay(now);
+      final (:from, :to) = calendarWidgetRange(today);
+      final t = reminderTexts;
+      final options = prefs.calendarOptions;
+      final files = ref.read(subscriptionFilesProvider).value ?? const {};
+      final finance = ref.read(financeProvider).value;
+      final data = calendarWidgetData(
+        snapshot: snapshot,
+        options: options,
+        subscriptions: prefs.subscriptions,
+        colors: buildTheme(dark: true, series: prefs.colorSeries, accent: parseHexColor(prefs.customAccent)).extension<TtColors>()!,
+        t: t,
+        now: now,
+        events: [for (final sub in prefs.subscriptions) ...subscribedEvents(sub, from, to, icsEvents: files[sub.id])],
+        extra: options.showFinance && prefs.has(AppFeature.finance) && finance != null
+            ? financeCalendarEntries(t, financeDues(finance, from, to, today))
+            : const [],
+      );
+      unawaited(exportCalendarWidget(data).catchError((Object e) => debugPrint('Calendar widget not updated: $e')));
+    });
+  }
+
+  /// A tap on the widget: the Calendar on that day and view; "+" also opens the quick add for it.
+  void _onWidgetAction(WidgetAction a) {
+    ref.read(calendarAnchorProvider.notifier).set(a.day);
+    _router.go(Routes.calendarOf(CalendarMode.fromRoute(a.mode)));
+    if (a.action != 'create') return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final context = _router.routerDelegate.navigatorKey.currentContext;
+      if (context == null) return;
+      unawaited(
+        showQuickAddModal(
+          context,
+          target: const AddTarget(listId: inboxListId, hint: AddPlainHint()),
+          schedule: DateSelection(dueDate: a.day),
+        ),
+      );
+    });
+  }
+
   void _syncSoon(ReminderSetup setup) {
     _syncDebounce?.cancel();
     _syncDebounce = Timer(const Duration(milliseconds: 400), () {
@@ -324,6 +389,7 @@ class _TasksAppState extends ConsumerState<TasksApp> {
   @override
   void dispose() {
     _syncDebounce?.cancel();
+    _widgetDebounce?.cancel();
     _periodicSync?.cancel();
     _popupTimer?.cancel();
     _muteTimer?.cancel();

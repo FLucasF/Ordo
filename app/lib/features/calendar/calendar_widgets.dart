@@ -4,9 +4,13 @@ import '../../app/format/date_labels.dart';
 import '../../app/theme/app_theme.dart';
 import '../../data/db/database.dart';
 import '../../domain/calendar.dart';
+import '../../domain/enums.dart';
+import '../../domain/snapshot.dart';
+import '../../domain/subscriptions.dart';
 import '../../domain/finance/finance_calendar.dart';
 import '../../domain/finance/money.dart';
 import '../../l10n/app_localizations.dart';
+import '../common/color_choice.dart';
 import '../date_picker/date_picker.dart';
 
 /// What the calendar views do on a click, a drop or a resize; the page implements them.
@@ -238,4 +242,36 @@ Rect? globalRectOf(BuildContext context) {
   final box = context.findRenderObject();
   if (box is! RenderBox || !box.hasSize || !box.attached) return null;
   return box.localToGlobal(Offset.zero) & box.size;
+}
+
+/// An entry's color in the calendar (and in the phone's widget): a habit's, a countdown's, a subscribed
+/// calendar's, Finanças' (bills red, invoices orange, money coming in green), or a task's own color
+/// over its list's, tag's or priority's as the options say.
+Color calendarEntryColor(CalendarEntry e, Snapshot s, CalendarOptions o, TtColors tt, List<CalendarSubscription> subscriptions) {
+  switch (e.kind) {
+    case CalendarEntryKind.habit:
+      return parseHexColor(s.habits.where((h) => h.id == e.id).firstOrNull?.color) ?? tt.primary;
+    case CalendarEntryKind.countdown:
+      return parseHexColor(s.countdowns.where((c) => c.id == e.id).firstOrNull?.color) ?? tt.palette.priorityMedium;
+    case CalendarEntryKind.focus:
+      return tt.textTertiary;
+    case CalendarEntryKind.event:
+      return parseHexColor(subscriptions.where((c) => c.id == e.id).firstOrNull?.color) ?? tt.palette.green;
+    case CalendarEntryKind.finance:
+      return switch (e.id.split(':').first) {
+        'bill' => tt.overdue,
+        'invoice' => tt.palette.priorityMedium,
+        _ => tt.palette.green,
+      };
+    case CalendarEntryKind.task || CalendarEntryKind.checklistItem:
+      final task = e.task;
+      if (task == null) return tt.primary;
+      // The task's own color (Google's event color) over the list's.
+      if (parseHexColor(task.color) case final own?) return own;
+      return switch (o.colorBy) {
+        CalendarColorBy.list => parseHexColor(s.listById[task.listId]?.color) ?? tt.primary,
+        CalendarColorBy.tag => s.tagsOf(task.id).map((tag) => parseHexColor(tag.color)).nonNulls.firstOrNull ?? tt.primary,
+        CalendarColorBy.priority => task.priority == Priority.none ? tt.primary : tt.priorityColor(task.priority),
+      };
+  }
 }
