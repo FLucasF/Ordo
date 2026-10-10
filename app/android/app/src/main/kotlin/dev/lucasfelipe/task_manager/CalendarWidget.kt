@@ -193,69 +193,86 @@ class CalendarWidget : AppWidgetProvider() {
         }
 
         /**
-         * The day's entries, then (in the room left) the next days', as an agenda: only whole lines,
-         * a day's "+N" when its lines don't all fit, so the widget fills its size and never cuts a line.
+         * The day as a timeline: the all-day entries, then the timed ones in order. Each entry's line has
+         * its fixed height; under it, room that grows with the widget in proportion to how long it lasts
+         * (and a little for a free hour between two entries). So a small widget is a plain list and a
+         * bigger one makes the entries taller, never leaving an empty space below. Only whole lines;
+         * what doesn't fit becomes "+N".
          */
         private fun drawDay(context: Context, views: RemoteViews, data: Data, day: LocalDate, today: LocalDate, id: Int, body: Int) {
             views.setTextViewText(R.id.widget_title, "${data.weekday(day.dayOfWeek)}, ${day.dayOfMonth} ${data.month(day.monthValue).lowercase()}")
-            // Heights in dp of a line, a following day's heading and a "+N".
-            val lineHeight = 32
-            val headingHeight = 28
-            val moreHeight = 18
-            var room = body
-            var code = 0
-
-            fun lines(d: LocalDate, entries: JSONArray) {
-                val fit = room / lineHeight
-                val shown = if (entries.length() > fit) (room - moreHeight) / lineHeight else entries.length()
-                for (i in 0 until shown.coerceAtLeast(0)) {
-                    val e = entries.getJSONObject(i)
-                    val line = RemoteViews(context.packageName, R.layout.widget_day_line)
-                    val start = e.optInt("s", -1)
-                    line.setTextViewText(R.id.widget_line_time, if (start < 0) data.label("allDay", "Dia todo") else "%02d:%02d".format(start / 60, start % 60))
-                    line.setTextViewText(R.id.widget_line_title, e.optString("t"))
-                    tint(line, R.id.widget_line_title, color(e))
-                    if (e.optBoolean("d")) line.setFloat(R.id.widget_line_title, "setAlpha", 0.5f)
-                    line.setOnClickPendingIntent(R.id.widget_line, openApp(context, id, code++, "open", d, "d"))
-                    views.addView(R.id.widget_body, line)
-                    room -= lineHeight
-                }
-                if (shown < entries.length()) {
-                    val more = RemoteViews(context.packageName, R.layout.widget_more)
-                    more.setTextViewText(R.id.widget_more, "+${entries.length() - shown.coerceAtLeast(0)}")
-                    views.addView(R.id.widget_body, more)
-                    room = 0
-                }
-            }
-
+            views.setOnClickPendingIntent(R.id.widget_body, openApp(context, id, 9_998, "open", day, "d"))
+            views.setOnClickPendingIntent(R.id.widget_add, openApp(context, id, 9_999, "create", day, "d"))
             val entries = data.entries(day)
             if (entries.length() == 0) {
                 val empty = RemoteViews(context.packageName, R.layout.widget_note)
                 empty.setTextViewText(R.id.widget_note, data.label("empty", "Nada neste dia"))
                 views.addView(R.id.widget_body, empty)
-                room -= lineHeight
-            } else {
-                lines(day, entries)
+                return
             }
-            // The following days fill what is left (up to two months ahead; the app writes four).
-            var next = day.plusDays(1)
-            while (room >= headingHeight + lineHeight && next.isBefore(day.plusDays(61))) {
-                val more = data.entries(next)
-                if (more.length() > 0) {
-                    val heading = RemoteViews(context.packageName, R.layout.widget_day_heading)
-                    heading.setTextViewText(
-                        R.id.widget_day_heading,
-                        if (next == today.plusDays(1)) data.label("tomorrow", "Amanhã")
-                        else "${data.weekday(next.dayOfWeek)}, ${next.dayOfMonth} ${data.month(next.monthValue).take(3).lowercase()}",
-                    )
-                    views.addView(R.id.widget_body, heading)
-                    room -= headingHeight
-                    lines(next, more)
+
+            // Half hours an entry lasts (1 for all-day ones), up to four hours.
+            fun halfHours(e: JSONObject): Int {
+                val start = e.optInt("s", -1)
+                val end = e.optInt("e", -1)
+                return if (start < 0 || end <= start) 1 else ((end - start + 15) / 30).coerceIn(1, 8)
+            }
+            fun time(minute: Int) = "%02d:%02d".format(minute / 60, minute % 60)
+
+            // Heights in dp of a line, the end line of an entry of an hour or more, and a "+N".
+            val lineHeight = 32
+            val endHeight = 16
+            val moreHeight = 18
+            fun height(i: Int) = if (halfHours(entries.getJSONObject(i)) > 1) lineHeight + endHeight else lineHeight
+            var room = body
+            var shown = 0
+            while (shown < entries.length() && room >= height(shown)) room -= height(shown++)
+            if (shown < entries.length()) {
+                while (shown > 0 && room < moreHeight) room += height(--shown)
+            }
+
+            // The minute the timed entries so far end (-1 before the first).
+            var cursor = -1
+            for (i in 0 until shown) {
+                val e = entries.getJSONObject(i)
+                val start = e.optInt("s", -1)
+                val end = e.optInt("e", -1)
+                val open = openApp(context, id, i, "open", day, "d")
+                // A free hour or more before it: a little room (a bit more from three hours).
+                if (start >= 0 && cursor >= 0 && start - cursor >= 60) {
+                    repeat(if (start - cursor >= 180) 2 else 1) {
+                        views.addView(R.id.widget_body, RemoteViews(context.packageName, R.layout.widget_gap))
+                    }
                 }
-                next = next.plusDays(1)
+                val halves = halfHours(e)
+                val top = RemoteViews(context.packageName, R.layout.widget_block_top)
+                top.setTextViewText(R.id.widget_block_time, if (start < 0) data.label("allDay", "Dia todo") else time(start))
+                top.setTextViewText(R.id.widget_block_title, e.optString("t"))
+                tint(top, R.id.widget_block_title, color(e))
+                if (e.optBoolean("d")) top.setFloat(R.id.widget_block_title, "setAlpha", 0.5f)
+                top.setOnClickPendingIntent(R.id.widget_block_top, open)
+                views.addView(R.id.widget_body, top)
+                // Below the line: half an hour of room each (the last one with the end, from an hour on).
+                for (h in 1..halves) {
+                    val layout = when {
+                        halves == 1 -> R.layout.widget_block_last
+                        h < halves -> R.layout.widget_block_mid
+                        else -> R.layout.widget_block_end
+                    }
+                    val row = RemoteViews(context.packageName, layout)
+                    if (layout == R.layout.widget_block_end) row.setTextViewText(R.id.widget_block_end_time, time(end))
+                    tint(row, R.id.widget_block_box, color(e))
+                    if (e.optBoolean("d")) row.setFloat(R.id.widget_block_box, "setAlpha", 0.5f)
+                    row.setOnClickPendingIntent(R.id.widget_block_row, open)
+                    views.addView(R.id.widget_body, row)
+                }
+                if (start >= 0) cursor = maxOf(cursor, if (end > start) end else start + 30)
             }
-            views.setOnClickPendingIntent(R.id.widget_body, openApp(context, id, 9_998, "open", day, "d"))
-            views.setOnClickPendingIntent(R.id.widget_add, openApp(context, id, 9_999, "create", day, "d"))
+            if (shown < entries.length()) {
+                val more = RemoteViews(context.packageName, R.layout.widget_more)
+                more.setTextViewText(R.id.widget_more, "+${entries.length() - shown}")
+                views.addView(R.id.widget_body, more)
+            }
         }
 
         /** A day of the month or the week: its number (today on a blue circle) and its first entries. */

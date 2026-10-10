@@ -83,7 +83,7 @@ Se aparecer um aviso do **Play Protect** ("app desconhecido"), toque em **Mais d
 - **Atualizar:** baixe o APK da versão nova e instale por cima. Suas tarefas continuam.
 - **Desinstalar:** no Android, desinstalar **apaga os dados** do app. Antes, faça um backup (veja [Backup](#backup-e-troca-de-aparelho)).
 
-- **Widget de calendário:** segure um espaço vazio da tela inicial → **Widgets** → **Tarefas → Calendário**. No próprio widget escolha **Dia**, **Semana** ou **Mês** (cada widget guarda a sua escolha); **‹ ›** avançam e voltam, o título volta para hoje, o **+** cria uma tarefa, e tocar num dia abre o app nele. No modo **Dia**, o espaço que sobra mostra os próximos dias, como uma agenda; o que não cabe vira "+N", sem cortar nada.
+- **Widget de calendário:** segure um espaço vazio da tela inicial → **Widgets** → **Tarefas → Calendário**. No próprio widget escolha **Dia**, **Semana** ou **Mês** (cada widget guarda a sua escolha); **‹ ›** avançam e voltam, o título volta para hoje, o **+** cria uma tarefa, e tocar num dia abre o app nele. No modo **Dia**, cada compromisso fica tão alto quanto dura (um das 8h às 12h vira um bloco com início e fim): pequeno, o widget é uma lista; aumentando, os blocos crescem e ocupam o espaço todo. O que não cabe vira "+N", sem cortar nada.
 
 > **Aparelhos autorizados (Android):** este app está registrado no Google numa conta de *distribuição limitada*. A partir de 30/09/2026, no Brasil, **só os celulares autorizados pelo dono do app** (até 20) conseguem instalar e atualizar. Para autorizar um celular, o dono gera um QR code ou um link no Android Developer Console. A pessoa abre no celular, aceita e manda de volta o código que aparece. Se quiser usar o app, peça esse link.
 

@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- The first line of an entry that lasts: its start and title; widget_block_mid and widget_block_end follow. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/widget_line"
+    android:id="@+id/widget_block_top"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:paddingTop="3dp"
-    android:paddingBottom="3dp">
+    android:paddingBottom="0dp">
 
     <TextView
-        android:id="@+id/widget_line_time"
+        android:id="@+id/widget_block_time"
         android:layout_width="58dp"
         android:layout_height="wrap_content"
         android:singleLine="true"
@@ -17,11 +18,11 @@
         android:textSize="12sp" />
 
     <TextView
-        android:id="@+id/widget_line_title"
+        android:id="@+id/widget_block_title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:background="@drawable/widget_chip_bg"
+        android:background="@drawable/widget_block_top_bg"
         android:ellipsize="end"
         android:paddingStart="8dp"
         android:paddingTop="4dp"

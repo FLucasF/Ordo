@@ -18,6 +18,20 @@ void main() {
     final repo = Repository(db, clock: FixedClock(now));
     await repo.createTask(listId: inboxListId, title: 'Reunião', dueDate: DateTime(2026, 10, 6, 15), isAllDay: false);
     await repo.createTask(listId: inboxListId, title: 'Café', dueDate: DateTime(2026, 10, 6, 9), isAllDay: false);
+    await repo.createTask(
+      listId: inboxListId,
+      title: 'Trabalho',
+      startDate: DateTime(2026, 10, 6, 8),
+      dueDate: DateTime(2026, 10, 6, 12),
+      isAllDay: false,
+    );
+    await repo.createTask(
+      listId: inboxListId,
+      title: 'Plantão',
+      startDate: DateTime(2026, 10, 6, 22),
+      dueDate: DateTime(2026, 10, 7, 6),
+      isAllDay: false,
+    );
     await repo.createTask(listId: inboxListId, title: 'Aniversário', dueDate: DateTime(2026, 10, 6));
     await repo.createTask(listId: inboxListId, title: 'Longe demais', dueDate: DateTime(2027, 6, 1));
     final snapshot = await repo.loadSnapshot();
@@ -32,8 +46,13 @@ void main() {
     );
     final days = data['days']! as Map<String, Object?>;
     final tuesday = days['2026-10-06']! as List<Object?>;
-    expect([for (final e in tuesday) (e! as Map)['t']], ['Aniversário', 'Café', 'Reunião']);
-    expect([for (final e in tuesday) (e! as Map)['s']], [-1, 9 * 60, 15 * 60]);
+    expect([for (final e in tuesday) (e! as Map)['t']], ['Aniversário', 'Trabalho', 'Café', 'Reunião', 'Plantão']);
+    expect([for (final e in tuesday) (e! as Map)['s']], [-1, 8 * 60, 9 * 60, 15 * 60, 22 * 60]);
+    // The end: that day's (a task without a duration takes the calendar's 30 minutes), midnight when it goes on.
+    expect([for (final e in tuesday) (e! as Map)['e']], [-1, 12 * 60, 9 * 60 + 30, 15 * 60 + 30, 24 * 60]);
+    // The next day it is there all day.
+    final wednesday = [for (final e in days['2026-10-07']! as List<Object?>) e! as Map];
+    expect([for (final e in wednesday) (e['t'], e['s'], e['e'])], [('Plantão', -1, -1)]);
     expect((tuesday.first! as Map)['c'], matches(RegExp(r'^#[0-9A-F]{6}$')));
     expect(days.containsKey('2027-06-01'), isFalse, reason: 'beyond the four months written');
     final labels = data['labels']! as Map<String, Object?>;

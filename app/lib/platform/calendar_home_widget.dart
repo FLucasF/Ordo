@@ -34,7 +34,7 @@ String _day(DateTime d) => '${d.year.toString().padLeft(4, '0')}-${d.month.toStr
 String _hex(Color c) => '#${(c.toARGB32() & 0xFFFFFF).toRadixString(16).padLeft(6, '0').toUpperCase()}';
 
 /// What the widget shows: the texts, the week's first day, today, and each day's entries (all-day
-/// ones first, then by time) as {title, color, start minute (-1 all day), done}.
+/// ones first, then by time) as {title, color, start and end minutes (-1 all day), done}.
 Map<String, Object?> calendarWidgetData({
   required Snapshot snapshot,
   required CalendarOptions options,
@@ -53,11 +53,18 @@ Map<String, Object?> calendarWidgetData({
     final color = _hex(calendarEntryColor(e, snapshot, options, colors, subscriptions));
     for (var d = e.firstDay; !d.isAfter(e.lastDay); d = DateTime(d.year, d.month, d.day + 1)) {
       if (d.isBefore(from) || !d.isBefore(to)) continue;
-      // On its first day a timed entry shows its start; on the next ones it's there all day.
+      // On its first day a timed entry shows its start (and its end, that day or midnight); on the
+      // next ones it's there all day.
       final timed = !e.isAllDay && d == e.firstDay;
+      final start = e.start.hour * 60 + e.start.minute;
+      final end = !e.end.isAfter(e.start)
+          ? -1
+          : startOfDay(e.end) == d
+          ? e.end.hour * 60 + e.end.minute
+          : 24 * 60;
       byDay.putIfAbsent(_day(d), () => []).add((
         e,
-        {'t': e.title.isEmpty ? t.untitled : e.title, 'c': color, 's': timed ? e.start.hour * 60 + e.start.minute : -1, 'd': e.isDone},
+        {'t': e.title.isEmpty ? t.untitled : e.title, 'c': color, 's': timed ? start : -1, 'e': timed ? end : -1, 'd': e.isDone},
       ));
     }
   }
@@ -73,7 +80,6 @@ Map<String, Object?> calendarWidgetData({
       'month': t.widgetMonth,
       'empty': t.widgetEmpty,
       'allDay': t.widgetAllDay,
-      'tomorrow': t.relativeTomorrow,
       'months': [for (var m = 1; m <= 12; m++) labels.monthLong(DateTime(2026, m))],
       // Monday first, as DateTime.weekday.
       'weekdays': [for (var d = 0; d < 7; d++) labels.weekdayShort(DateTime(2026, 9, 28 + d))],

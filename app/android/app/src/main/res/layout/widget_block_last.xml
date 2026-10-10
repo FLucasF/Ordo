@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The rest of a short entry (no end shown): no height of its own, it grows with the widget. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_block_row"
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_weight="1"
+    android:orientation="horizontal"
+    android:paddingBottom="3dp">
+
+    <TextView
+        android:layout_width="58dp"
+        android:layout_height="match_parent" />
+
+    <TextView
+        android:id="@+id/widget_block_box"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@drawable/widget_block_end_bg" />
+</LinearLayout>
