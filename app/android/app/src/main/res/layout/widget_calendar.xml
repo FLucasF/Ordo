@@ -106,4 +106,15 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:orientation="vertical" />
+
+    <!-- The day's entries when they don't all fit: a list that scrolls (Android 12 and later). -->
+    <ListView
+        android:id="@+id/widget_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:divider="@null"
+        android:dividerHeight="0dp"
+        android:scrollbars="none"
+        android:visibility="gone" />
 </LinearLayout>

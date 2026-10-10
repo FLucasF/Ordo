@@ -11,7 +11,10 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.util.SizeF
+import android.view.View
 import android.widget.RemoteViews
+import androidx.annotation.RequiresApi
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
@@ -106,17 +109,34 @@ class CalendarWidget : AppWidgetProvider() {
             Data(null)
         }
 
+        /**
+         * Heights in dp the widget is laid out for (Android 12 and later): the home screen picks the
+         * tallest one its real size holds. What launchers report as the size can be well off.
+         */
+        private val HEIGHTS = intArrayOf(110, 140, 170, 200, 240, 280, 320, 360, 400, 450, 500, 560, 620, 700, 800, 920)
+
         private fun draw(context: Context, manager: AppWidgetManager, id: Int) {
             val data = read(context)
             val prefs = prefs(context)
             val mode = prefs.getString("mode_$id", "m") ?: "m"
             val offset = prefs.getInt("offset_$id", 0)
             val today = LocalDate.now()
-            val options = manager.getAppWidgetOptions(id)
-            // Portrait height, in dp, as the launcher gives it.
-            val height = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, 300).coerceAtLeast(110)
+            val views = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                RemoteViews(HEIGHTS.associate { h -> SizeF(40f, h.toFloat()) to layout(context, data, mode, offset, today, id, h) })
+            } else {
+                // Portrait height, in dp, as the launcher gives it.
+                val height = manager.getAppWidgetOptions(id).getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, 300).coerceAtLeast(110)
+                layout(context, data, mode, offset, today, id, height)
+            }
+            manager.updateAppWidget(id, views)
+        }
 
+        /** The widget for a [height] in dp. */
+        private fun layout(context: Context, data: Data, mode: String, offset: Int, today: LocalDate, id: Int, height: Int): RemoteViews {
             val views = RemoteViews(context.packageName, R.layout.widget_calendar)
+            // The home screen applies this over what it shows: the day's list (if it was there) goes.
+            views.setViewVisibility(R.id.widget_body, View.VISIBLE)
+            views.setViewVisibility(R.id.widget_list, View.GONE)
             views.removeAllViews(R.id.widget_body)
             views.removeAllViews(R.id.widget_weekdays)
 
@@ -142,7 +162,7 @@ class CalendarWidget : AppWidgetProvider() {
                 "w" -> drawWeek(context, views, data, weekStart(today, data).plusWeeks(offset.toLong()), today, id, body)
                 else -> drawMonth(context, views, data, today.withDayOfMonth(1).plusMonths(offset.toLong()), today, id, body)
             }
-            manager.updateAppWidget(id, views)
+            return views
         }
 
         private fun weekStart(day: LocalDate, data: Data): LocalDate =
@@ -196,8 +216,8 @@ class CalendarWidget : AppWidgetProvider() {
          * The day as a timeline: the all-day entries, then the timed ones in order. Each entry's line has
          * its fixed height; under it, room that grows with the widget in proportion to how long it lasts
          * (and a little for a free hour between two entries). So a small widget is a plain list and a
-         * bigger one makes the entries taller, never leaving an empty space below. Only whole lines;
-         * what doesn't fit becomes "+N".
+         * bigger one makes the entries taller, never leaving an empty space below. When they don't all
+         * fit, a list that scrolls (before Android 12, the lines that fit and "+N").
          */
         private fun drawDay(context: Context, views: RemoteViews, data: Data, day: LocalDate, today: LocalDate, id: Int, body: Int) {
             views.setTextViewText(R.id.widget_title, "${data.weekday(day.dayOfWeek)}, ${day.dayOfMonth} ${data.month(day.monthValue).lowercase()}")
@@ -227,6 +247,10 @@ class CalendarWidget : AppWidgetProvider() {
             var room = body
             var shown = 0
             while (shown < entries.length() && room >= height(shown)) room -= height(shown++)
+            if (shown < entries.length() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                listDay(context, views, data, day, entries, id)
+                return
+            }
             if (shown < entries.length()) {
                 while (shown > 0 && room < moreHeight) room += height(--shown)
             }
@@ -273,6 +297,41 @@ class CalendarWidget : AppWidgetProvider() {
                 more.setTextViewText(R.id.widget_more, "+${entries.length() - shown}")
                 views.addView(R.id.widget_body, more)
             }
+        }
+
+        /** The day's entries in a list that scrolls; a tap opens the day in the app. */
+        @RequiresApi(Build.VERSION_CODES.S)
+        private fun listDay(context: Context, views: RemoteViews, data: Data, day: LocalDate, entries: JSONArray, id: Int) {
+            fun time(minute: Int) = "%02d:%02d".format(minute / 60, minute % 60)
+            val items = RemoteViews.RemoteCollectionItems.Builder().setHasStableIds(true).setViewTypeCount(1)
+            for (i in 0 until entries.length()) {
+                val e = entries.getJSONObject(i)
+                val start = e.optInt("s", -1)
+                val end = e.optInt("e", -1)
+                val line = RemoteViews(context.packageName, R.layout.widget_list_line)
+                line.setTextViewText(R.id.widget_list_time, if (start < 0) data.label("allDay", "Dia todo") else time(start))
+                // Set either way: the list reuses its lines.
+                val lasts = start >= 0 && end - start >= 60
+                line.setTextViewText(R.id.widget_list_end, if (lasts) time(end) else "")
+                line.setViewVisibility(R.id.widget_list_end, if (lasts) View.VISIBLE else View.GONE)
+                line.setTextViewText(R.id.widget_list_title, e.optString("t"))
+                tint(line, R.id.widget_list_title, color(e))
+                line.setFloat(R.id.widget_list_title, "setAlpha", if (e.optBoolean("d")) 0.5f else 1f)
+                line.setOnClickFillInIntent(R.id.widget_list_line, Intent())
+                items.addItem(i.toLong(), line)
+            }
+            views.setViewVisibility(R.id.widget_body, View.GONE)
+            views.setViewVisibility(R.id.widget_list, View.VISIBLE)
+            views.setRemoteAdapter(R.id.widget_list, items.build())
+            // The lines fill in nothing: the template already opens the day (it must be mutable to take them).
+            val intent = Intent(context, MainActivity::class.java)
+                .setAction("dev.lucasfelipe.task_manager.widget.LIST")
+                .putExtra(EXTRA_ACTION, "open|$day|d")
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            views.setPendingIntentTemplate(
+                R.id.widget_list,
+                PendingIntent.getActivity(context, id * 10_000 + 9_997, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE),
+            )
         }
 
         /** A day of the month or the week: its number (today on a blue circle) and its first entries. */
