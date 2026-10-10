@@ -13,6 +13,8 @@ import 'package:task_manager/data/repository.dart';
 import 'package:task_manager/domain/finance/finance_enums.dart';
 import 'package:task_manager/domain/views.dart';
 import 'package:task_manager/features/backup/backup_service.dart';
+import 'package:task_manager/data/diet_repository.dart';
+import 'package:task_manager/domain/diet/diet.dart';
 
 void main() {
   late Directory temp;
@@ -117,6 +119,15 @@ void main() {
     await a.addEntry(kind: FinKind.expense, amount: 150000, date: DateTime(2026, 9, 10), recurringId: rent, recurringDue: DateTime(2026, 9, 10));
     final loan = await a.createLoan(borrower: 'João', principal: 100000, total: 130000, lentOn: DateTime(2026, 9, 1), dueOn: DateTime(2026, 10, 1));
     await a.addLoanPayment(loanId: loan, amount: 13000, date: DateTime(2026, 9, 20));
+    // Dieta too: an own food and a day's entry.
+    final diet = DietRepository(source, clock: clock);
+    final bread = await diet.createFood(name: 'Pão de queijo', per100g: const Nutrients(kcal: 363, protein: 5.1));
+    await diet.addEntry(
+      day: DateTime(2026, 9, 24),
+      meal: Meal.breakfast,
+      food: Food(id: bread, name: 'Pão de queijo', per100g: const Nutrients(kcal: 363, protein: 5.1), custom: true),
+      quantity: 80,
+    );
     final bytes = await BackupService(
       source,
       tempDir: temp,
@@ -135,6 +146,9 @@ void main() {
     expect(s.recurrings.single.id, rent);
     expect(s.loans.single.borrower, 'João');
     expect(s.loanPayments.single.amount, 13000);
+    final d = await DietRepository(target, clock: clock).load();
+    expect(d.foods.single.name, 'Pão de queijo');
+    expect((d.entries.single.grams, d.entries.single.kcal), (80.0, 363.0));
     await target.close();
   });
 }

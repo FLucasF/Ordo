@@ -40,6 +40,11 @@ abstract final class Routes {
 
   static String financeOf(String tab) => '$finance/$tab';
 
+  /// Dieta (`/diet/{tab}`): the diary of the day's meals, or the foods.
+  static const diet = '/diet';
+
+  static String dietOf(String tab) => '$diet/$tab';
+
   /// Eisenhower Matrix (`#m/all/matrix`).
   static const matrix = '/matrix';
 

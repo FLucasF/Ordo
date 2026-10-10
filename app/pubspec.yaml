@@ -94,6 +94,7 @@ flutter:
   # The "Despertador" sound (tool/make_alarm_sound.py), played by the app on Windows.
   assets:
     - assets/sounds/
+    - assets/taco.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

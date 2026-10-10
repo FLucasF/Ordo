@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/widget_empty"
+    android:id="@+id/widget_note"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="center"
+    android:layout_height="wrap_content"
+    android:paddingTop="6dp"
+    android:paddingBottom="6dp"
+    android:singleLine="true"
     android:textColor="#80FFFFFF"
     android:textSize="13sp" />

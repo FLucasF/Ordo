@@ -183,6 +183,7 @@ class Sidebar extends ConsumerWidget {
               (Icons.hourglass_bottom, t.navCountdown, Routes.countdown, AppFeature.countdown),
               (Icons.timer_outlined, t.navFocus, Routes.focus, AppFeature.focus),
               (Icons.account_balance_wallet_outlined, t.navFinance, Routes.finance, AppFeature.finance),
+              (Icons.restaurant_outlined, t.navDiet, Routes.diet, AppFeature.diet),
             ])
               if (prefs.has(feature))
                 _SidebarItem(

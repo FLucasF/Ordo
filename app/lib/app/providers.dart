@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as p;
 
@@ -15,6 +17,8 @@ import '../domain/finance/finance.dart';
 import '../domain/snapshot.dart';
 import '../domain/views.dart';
 import 'routes.dart';
+import '../data/diet_repository.dart';
+import '../domain/diet/diet.dart';
 
 /// Overridden in `main` with the opened database (and in tests with an in-memory one).
 final databaseProvider = Provider<AppDatabase>((ref) => throw UnimplementedError('databaseProvider must be overridden'));
@@ -40,6 +44,17 @@ final financeRepositoryProvider = Provider<FinanceRepository>(
 
 /// Finanças, apart from the tasks' snapshot.
 final financeProvider = StreamProvider<FinanceSnapshot>((ref) => ref.watch(financeRepositoryProvider).watch());
+
+final dietRepositoryProvider = Provider<DietRepository>((ref) => DietRepository(ref.watch(databaseProvider), clock: ref.watch(clockProvider)));
+
+/// The user's foods and the diary (Dieta).
+final dietProvider = StreamProvider<DietSnapshot>((ref) => ref.watch(dietRepositoryProvider).watch());
+
+/// The TACO table bundled with the app (assets/taco.json), read once.
+// Read as bytes: loadString's shared cache (and its isolate) isn't needed for 84 KB read once.
+final tacoProvider = FutureProvider<List<Food>>(
+  (ref) async => parseTaco(utf8.decode((await rootBundle.load('assets/taco.json')).buffer.asUint8List())),
+);
 
 final preferencesProvider = StreamProvider<Preferences>((ref) => ref.watch(preferencesRepositoryProvider).watch());
 

@@ -4782,4 +4782,163 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get reorderSortCustom => 'Agora a ordem desta lista é a sua (Ordenar por: Personalizado).';
+
+  @override
+  String get navDiet => 'Dieta';
+
+  @override
+  String get featureDietHint => 'Diário de refeições com a Tabela TACO: calorias e macros do dia';
+
+  @override
+  String get dietTabDiary => 'Diário';
+
+  @override
+  String get dietTabFoods => 'Alimentos';
+
+  @override
+  String get dietAddFood => 'Adicionar alimento';
+
+  @override
+  String dietAddTo(String meal) {
+    return 'Adicionar em $meal';
+  }
+
+  @override
+  String get dietNewFood => 'Novo alimento';
+
+  @override
+  String get dietEditFood => 'Editar alimento';
+
+  @override
+  String get dietEditEntry => 'Editar alimento do dia';
+
+  @override
+  String get dietMealBreakfast => 'Café da manhã';
+
+  @override
+  String get dietMealMorningSnack => 'Lanche da manhã';
+
+  @override
+  String get dietMealLunch => 'Almoço';
+
+  @override
+  String get dietMealAfternoonSnack => 'Lanche da tarde';
+
+  @override
+  String get dietMealDinner => 'Jantar';
+
+  @override
+  String get dietMealSupper => 'Ceia';
+
+  @override
+  String get dietMeal => 'Refeição';
+
+  @override
+  String get dietKcal => 'Calorias';
+
+  @override
+  String get dietProtein => 'Proteínas';
+
+  @override
+  String get dietCarbs => 'Carboidratos';
+
+  @override
+  String get dietFat => 'Gorduras';
+
+  @override
+  String get dietFiber => 'Fibras';
+
+  @override
+  String get dietSearchHint => 'Buscar alimento (ex.: arroz, banana, frango)';
+
+  @override
+  String get dietQuantity => 'Quantidade';
+
+  @override
+  String get dietGrams => 'gramas';
+
+  @override
+  String get dietNotFound => 'Não achei: cadastrar alimento';
+
+  @override
+  String get dietPer100 => 'Valores por 100 g (deixe em branco o que não souber)';
+
+  @override
+  String get dietName => 'Nome';
+
+  @override
+  String get dietNameRequired => 'Dê um nome ao alimento.';
+
+  @override
+  String get dietMeasureName => 'Medida caseira (opcional, ex.: colher de sopa)';
+
+  @override
+  String get dietMeasureGrams => 'Gramas dessa medida';
+
+  @override
+  String get dietDayEmpty => 'Nada lançado neste dia.';
+
+  @override
+  String get dietMyFoods => 'Meus alimentos';
+
+  @override
+  String get dietMyFoodsEmpty => 'Você ainda não cadastrou alimentos. Use + Novo alimento ou \"Não achei\" ao lançar.';
+
+  @override
+  String get dietMine => 'Meu alimento';
+
+  @override
+  String get dietSource => 'Tabela TACO: NEPA/Unicamp, 4ª edição. Valores por 100 g da parte comestível.';
+
+  @override
+  String get dietEntryDeleted => 'Alimento removido do dia';
+
+  @override
+  String get dietFoodDeleted => 'Alimento excluído';
+
+  @override
+  String get dietIncomplete => 'Alguns alimentos não têm todos os valores na tabela: o total é um mínimo.';
+
+  @override
+  String get dietChangeFood => 'Trocar';
+
+  @override
+  String dietPerHundred(String kcal) {
+    return '$kcal kcal/100 g';
+  }
+
+  @override
+  String dietPortionResult(String grams, String kcal) {
+    return '= $grams g · $kcal kcal';
+  }
+
+  @override
+  String get dietQuantityRequired => 'Escolha um alimento e uma quantidade maior que zero.';
+
+  @override
+  String get dietSaveAndUse => 'Cadastrar e usar';
+
+  @override
+  String get dietAddToDay => 'Adicionar ao dia';
+
+  @override
+  String get dietDayTotals => 'Totais do dia';
+
+  @override
+  String get dietEnergy => 'Energia';
+
+  @override
+  String dietLegendProtein(String pct) {
+    return 'Prot. $pct';
+  }
+
+  @override
+  String dietLegendCarbs(String pct) {
+    return 'Carb. $pct';
+  }
+
+  @override
+  String dietLegendFat(String pct) {
+    return 'Gord. $pct';
+  }
 }

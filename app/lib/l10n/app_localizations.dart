@@ -8994,6 +8994,300 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Agora a ordem desta lista é a sua (Ordenar por: Personalizado).'**
   String get reorderSortCustom;
+
+  /// No description provided for @navDiet.
+  ///
+  /// In pt, this message translates to:
+  /// **'Dieta'**
+  String get navDiet;
+
+  /// No description provided for @featureDietHint.
+  ///
+  /// In pt, this message translates to:
+  /// **'Diário de refeições com a Tabela TACO: calorias e macros do dia'**
+  String get featureDietHint;
+
+  /// No description provided for @dietTabDiary.
+  ///
+  /// In pt, this message translates to:
+  /// **'Diário'**
+  String get dietTabDiary;
+
+  /// No description provided for @dietTabFoods.
+  ///
+  /// In pt, this message translates to:
+  /// **'Alimentos'**
+  String get dietTabFoods;
+
+  /// No description provided for @dietAddFood.
+  ///
+  /// In pt, this message translates to:
+  /// **'Adicionar alimento'**
+  String get dietAddFood;
+
+  /// No description provided for @dietAddTo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Adicionar em {meal}'**
+  String dietAddTo(String meal);
+
+  /// No description provided for @dietNewFood.
+  ///
+  /// In pt, this message translates to:
+  /// **'Novo alimento'**
+  String get dietNewFood;
+
+  /// No description provided for @dietEditFood.
+  ///
+  /// In pt, this message translates to:
+  /// **'Editar alimento'**
+  String get dietEditFood;
+
+  /// No description provided for @dietEditEntry.
+  ///
+  /// In pt, this message translates to:
+  /// **'Editar alimento do dia'**
+  String get dietEditEntry;
+
+  /// No description provided for @dietMealBreakfast.
+  ///
+  /// In pt, this message translates to:
+  /// **'Café da manhã'**
+  String get dietMealBreakfast;
+
+  /// No description provided for @dietMealMorningSnack.
+  ///
+  /// In pt, this message translates to:
+  /// **'Lanche da manhã'**
+  String get dietMealMorningSnack;
+
+  /// No description provided for @dietMealLunch.
+  ///
+  /// In pt, this message translates to:
+  /// **'Almoço'**
+  String get dietMealLunch;
+
+  /// No description provided for @dietMealAfternoonSnack.
+  ///
+  /// In pt, this message translates to:
+  /// **'Lanche da tarde'**
+  String get dietMealAfternoonSnack;
+
+  /// No description provided for @dietMealDinner.
+  ///
+  /// In pt, this message translates to:
+  /// **'Jantar'**
+  String get dietMealDinner;
+
+  /// No description provided for @dietMealSupper.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ceia'**
+  String get dietMealSupper;
+
+  /// No description provided for @dietMeal.
+  ///
+  /// In pt, this message translates to:
+  /// **'Refeição'**
+  String get dietMeal;
+
+  /// No description provided for @dietKcal.
+  ///
+  /// In pt, this message translates to:
+  /// **'Calorias'**
+  String get dietKcal;
+
+  /// No description provided for @dietProtein.
+  ///
+  /// In pt, this message translates to:
+  /// **'Proteínas'**
+  String get dietProtein;
+
+  /// No description provided for @dietCarbs.
+  ///
+  /// In pt, this message translates to:
+  /// **'Carboidratos'**
+  String get dietCarbs;
+
+  /// No description provided for @dietFat.
+  ///
+  /// In pt, this message translates to:
+  /// **'Gorduras'**
+  String get dietFat;
+
+  /// No description provided for @dietFiber.
+  ///
+  /// In pt, this message translates to:
+  /// **'Fibras'**
+  String get dietFiber;
+
+  /// No description provided for @dietSearchHint.
+  ///
+  /// In pt, this message translates to:
+  /// **'Buscar alimento (ex.: arroz, banana, frango)'**
+  String get dietSearchHint;
+
+  /// No description provided for @dietQuantity.
+  ///
+  /// In pt, this message translates to:
+  /// **'Quantidade'**
+  String get dietQuantity;
+
+  /// No description provided for @dietGrams.
+  ///
+  /// In pt, this message translates to:
+  /// **'gramas'**
+  String get dietGrams;
+
+  /// No description provided for @dietNotFound.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não achei: cadastrar alimento'**
+  String get dietNotFound;
+
+  /// No description provided for @dietPer100.
+  ///
+  /// In pt, this message translates to:
+  /// **'Valores por 100 g (deixe em branco o que não souber)'**
+  String get dietPer100;
+
+  /// No description provided for @dietName.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nome'**
+  String get dietName;
+
+  /// No description provided for @dietNameRequired.
+  ///
+  /// In pt, this message translates to:
+  /// **'Dê um nome ao alimento.'**
+  String get dietNameRequired;
+
+  /// No description provided for @dietMeasureName.
+  ///
+  /// In pt, this message translates to:
+  /// **'Medida caseira (opcional, ex.: colher de sopa)'**
+  String get dietMeasureName;
+
+  /// No description provided for @dietMeasureGrams.
+  ///
+  /// In pt, this message translates to:
+  /// **'Gramas dessa medida'**
+  String get dietMeasureGrams;
+
+  /// No description provided for @dietDayEmpty.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nada lançado neste dia.'**
+  String get dietDayEmpty;
+
+  /// No description provided for @dietMyFoods.
+  ///
+  /// In pt, this message translates to:
+  /// **'Meus alimentos'**
+  String get dietMyFoods;
+
+  /// No description provided for @dietMyFoodsEmpty.
+  ///
+  /// In pt, this message translates to:
+  /// **'Você ainda não cadastrou alimentos. Use + Novo alimento ou \"Não achei\" ao lançar.'**
+  String get dietMyFoodsEmpty;
+
+  /// No description provided for @dietMine.
+  ///
+  /// In pt, this message translates to:
+  /// **'Meu alimento'**
+  String get dietMine;
+
+  /// No description provided for @dietSource.
+  ///
+  /// In pt, this message translates to:
+  /// **'Tabela TACO: NEPA/Unicamp, 4ª edição. Valores por 100 g da parte comestível.'**
+  String get dietSource;
+
+  /// No description provided for @dietEntryDeleted.
+  ///
+  /// In pt, this message translates to:
+  /// **'Alimento removido do dia'**
+  String get dietEntryDeleted;
+
+  /// No description provided for @dietFoodDeleted.
+  ///
+  /// In pt, this message translates to:
+  /// **'Alimento excluído'**
+  String get dietFoodDeleted;
+
+  /// No description provided for @dietIncomplete.
+  ///
+  /// In pt, this message translates to:
+  /// **'Alguns alimentos não têm todos os valores na tabela: o total é um mínimo.'**
+  String get dietIncomplete;
+
+  /// No description provided for @dietChangeFood.
+  ///
+  /// In pt, this message translates to:
+  /// **'Trocar'**
+  String get dietChangeFood;
+
+  /// No description provided for @dietPerHundred.
+  ///
+  /// In pt, this message translates to:
+  /// **'{kcal} kcal/100 g'**
+  String dietPerHundred(String kcal);
+
+  /// No description provided for @dietPortionResult.
+  ///
+  /// In pt, this message translates to:
+  /// **'= {grams} g · {kcal} kcal'**
+  String dietPortionResult(String grams, String kcal);
+
+  /// No description provided for @dietQuantityRequired.
+  ///
+  /// In pt, this message translates to:
+  /// **'Escolha um alimento e uma quantidade maior que zero.'**
+  String get dietQuantityRequired;
+
+  /// No description provided for @dietSaveAndUse.
+  ///
+  /// In pt, this message translates to:
+  /// **'Cadastrar e usar'**
+  String get dietSaveAndUse;
+
+  /// No description provided for @dietAddToDay.
+  ///
+  /// In pt, this message translates to:
+  /// **'Adicionar ao dia'**
+  String get dietAddToDay;
+
+  /// No description provided for @dietDayTotals.
+  ///
+  /// In pt, this message translates to:
+  /// **'Totais do dia'**
+  String get dietDayTotals;
+
+  /// No description provided for @dietEnergy.
+  ///
+  /// In pt, this message translates to:
+  /// **'Energia'**
+  String get dietEnergy;
+
+  /// No description provided for @dietLegendProtein.
+  ///
+  /// In pt, this message translates to:
+  /// **'Prot. {pct}'**
+  String dietLegendProtein(String pct);
+
+  /// No description provided for @dietLegendCarbs.
+  ///
+  /// In pt, this message translates to:
+  /// **'Carb. {pct}'**
+  String dietLegendCarbs(String pct);
+
+  /// No description provided for @dietLegendFat.
+  ///
+  /// In pt, this message translates to:
+  /// **'Gord. {pct}'**
+  String dietLegendFat(String pct);
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

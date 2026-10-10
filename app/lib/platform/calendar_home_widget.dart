@@ -73,6 +73,7 @@ Map<String, Object?> calendarWidgetData({
       'month': t.widgetMonth,
       'empty': t.widgetEmpty,
       'allDay': t.widgetAllDay,
+      'tomorrow': t.relativeTomorrow,
       'months': [for (var m = 1; m <= 12; m++) labels.monthLong(DateTime(2026, m))],
       // Monday first, as DateTime.weekday.
       'weekdays': [for (var d = 0; d < 7; d++) labels.weekdayShort(DateTime(2026, 9, 28 + d))],

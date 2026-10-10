@@ -39,6 +39,8 @@ import 'package:task_manager/features/settings/settings_dialog.dart';
 import 'package:task_manager/features/tasks/task_list_pane.dart';
 import 'package:task_manager/features/templates/templates.dart';
 import 'package:task_manager/domain/reminder_plan.dart';
+import 'package:task_manager/data/diet_repository.dart';
+import 'package:task_manager/domain/diet/diet.dart';
 
 Future<void> _loadFont(String family, List<String> files) async {
   final loader = FontLoader(family);
@@ -161,12 +163,14 @@ void main() {
     Future<void> Function(WidgetTester tester)? interact,
     Future<void> Function(PreferencesRepository prefs)? configure,
     Future<void> Function(FinanceRepository finance)? finance,
+    Future<void> Function(DietRepository diet)? diet,
   }) async {
     final db = AppDatabase(NativeDatabase.memory());
     addTearDown(db.close);
     final ids = await tester.runAsync(() => seed(Repository(db, clock: clock)));
     if (configure != null) await tester.runAsync(() => configure(PreferencesRepository(db, clock: clock)));
     if (finance != null) await tester.runAsync(() => finance(FinanceRepository(db, clock: clock)));
+    if (diet != null) await tester.runAsync(() => diet(DietRepository(db, clock: clock)));
     tester.view.physicalSize = size;
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
@@ -263,6 +267,82 @@ void main() {
       (tester) => shoot(tester, 'finance_${tab}_phone', '/finance/$tab', size: const Size(412, 915), finance: financeData),
     );
   }
+
+  /// The TACO table loads from the assets (slower with other tests running): pumps until [finder] shows.
+  Future<void> waitFor(WidgetTester tester, Finder finder) async {
+    for (var i = 0; i < 100 && finder.evaluate().isEmpty; i++) {
+      await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 50)));
+      await tester.pump();
+    }
+  }
+
+  Future<void> dietData(DietRepository d) async {
+    final taco = parseTaco(File('assets/taco.json').readAsStringSync());
+    Food food(String name) => taco.firstWhere((f) => f.name == name);
+    final day = DateTime(2026, 9, 24);
+    await d.addEntry(
+      day: day,
+      meal: Meal.breakfast,
+      food: food('Pão, trigo, francês'),
+      quantity: 1,
+      measure: food('Pão, trigo, francês').defaultMeasure,
+    );
+    await d.addEntry(day: day, meal: Meal.breakfast, food: food('Café, infusão 10%'), quantity: 200);
+    await d.addEntry(
+      day: day,
+      meal: Meal.lunch,
+      food: food('Arroz, tipo 1, cozido'),
+      quantity: 4,
+      measure: food('Arroz, tipo 1, cozido').defaultMeasure,
+    );
+    await d.addEntry(day: day, meal: Meal.lunch, food: food('Feijão, carioca, cozido'), quantity: 120);
+    final whey = await d.createFood(
+      name: 'Whey da loja',
+      per100g: const Nutrients(kcal: 400, protein: 80, carbs: 8, fat: 6),
+      measureName: 'scoop',
+      measureGrams: 30,
+    );
+    await d.addEntry(
+      day: day,
+      meal: Meal.afternoonSnack,
+      food: Food(id: whey, name: 'Whey da loja', per100g: const Nutrients(kcal: 400, protein: 80, carbs: 8, fat: 6), custom: true),
+      quantity: 1,
+      measure: const FoodMeasure(name: 'scoop', grams: 30, isDefault: true),
+    );
+  }
+
+  testWidgets('diet', (tester) => shoot(tester, 'diet', '/diet', diet: dietData));
+  testWidgets('diet phone', (tester) => shoot(tester, 'diet_phone', '/diet', size: const Size(412, 915), diet: dietData));
+  testWidgets(
+    'diet foods',
+    (tester) => shoot(
+      tester,
+      'diet_foods',
+      '/diet/foods',
+      diet: dietData,
+      interact: (tester) async {
+        await tester.enterText(find.byType(TextField).first, 'banana');
+        await waitFor(tester, find.textContaining('Banana, prata'));
+      },
+    ),
+  );
+  testWidgets(
+    'diet add',
+    (tester) => shoot(
+      tester,
+      'diet_add',
+      '/diet',
+      diet: dietData,
+      interact: (tester) async {
+        await tester.tap(find.widgetWithText(CreateButton, 'Adicionar alimento'));
+        await tester.pumpAndSettle();
+        await tester.enterText(find.byType(TextField).last, 'frango peito grelhado');
+        await waitFor(tester, find.textContaining('Frango, peito, sem pele, grelhado'));
+        await tester.tap(find.textContaining('Frango, peito, sem pele, grelhado').last);
+        await tester.pumpAndSettle();
+      },
+    ),
+  );
   testWidgets('calendar week with finance', (tester) => shoot(tester, 'calendar_week_finance', '/calendar/w', finance: financeData));
   testWidgets('desktop today', (tester) => shoot(tester, 'desktop_today', '/q/today/tasks'));
   // The light theme, where colors and contrast go wrong first.

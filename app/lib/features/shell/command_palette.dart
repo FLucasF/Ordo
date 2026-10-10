@@ -110,6 +110,7 @@ class _CommandPaletteState extends ConsumerState<_CommandPalette> {
         (Icons.timer_outlined, t.navFocus, Routes.focus, AppFeature.focus),
         (Icons.hourglass_bottom, t.navCountdown, Routes.countdown, AppFeature.countdown),
         (Icons.account_balance_wallet_outlined, t.navFinance, Routes.finance, AppFeature.finance),
+        (Icons.restaurant_outlined, t.navDiet, Routes.diet, AppFeature.diet),
         (Icons.insights_outlined, t.statsTitle, Routes.statistics, null),
       ])
         if (feature == null || prefs.has(feature))

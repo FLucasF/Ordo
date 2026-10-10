@@ -7,6 +7,7 @@ import '../../domain/enums.dart';
 import '../../domain/finance/finance_enums.dart';
 import 'converters.dart';
 import 'database.steps.dart';
+import 'diet_tables.dart';
 import 'finance_tables.dart';
 import 'tables.dart';
 
@@ -38,6 +39,8 @@ part 'database.g.dart';
     FinCardPayments,
     Loans,
     LoanPayments,
+    DietFoods,
+    DietEntries,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -46,7 +49,7 @@ class AppDatabase extends _$AppDatabase {
   /// Bump on every schema change and run `dart run drift_dev make-migrations` to freeze the new
   /// schema and generate its migration test.
   @override
-  int get schemaVersion => 18;
+  int get schemaVersion => 19;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -123,6 +126,10 @@ class AppDatabase extends _$AppDatabase {
         ]) {
           await m.createTable(table);
         }
+      },
+      from18To19: (m, schema) async {
+        await m.createTable(schema.dietFoods);
+        await m.createTable(schema.dietEntries);
       },
     ),
     beforeOpen: (details) async {
