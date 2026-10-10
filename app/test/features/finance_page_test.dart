@@ -393,14 +393,29 @@ void main() {
       final market = await repo.createCategory(name: 'Mercado', kind: FinKind.expense, icon: '🛒');
       await repo.addEntry(kind: FinKind.expense, amount: 40000, date: DateTime(2026, 8, 3), categoryId: market);
       await repo.addEntry(kind: FinKind.expense, amount: 60000, date: DateTime(2026, 9, 3), categoryId: market);
-      await repo.addEntry(kind: FinKind.income, amount: 300000, date: DateTime(2026, 9, 1));
-      await repo.createLoan(borrower: 'Ana', principal: 50000, total: 55000, lentOn: DateTime(2026, 9, 1), dueOn: DateTime(2026, 10, 1));
+      final salary = await repo.createCategory(name: 'Salário', kind: FinKind.income, icon: '💼');
+      await repo.addEntry(kind: FinKind.income, amount: 300000, date: DateTime(2026, 9, 1), categoryId: salary);
+      final ana = await repo.createLoan(borrower: 'Ana', principal: 50000, total: 55000, lentOn: DateTime(2026, 9, 1), dueOn: DateTime(2026, 10, 1));
+      // R$ 110 of R$ 550 brings R$ 10 of profit.
+      await repo.addLoanPayment(loanId: ana, amount: 11000, date: DateTime(2026, 9, 5));
     });
     await pumpApp(tester, '/finance/reports');
     expect(find.text('Gastos por categoria'), findsOneWidget);
     expect(find.text('🛒 Mercado'), findsWidgets);
     expect(find.text('100%'), findsOneWidget);
     expect(find.text('Receitas × despesas'), findsOneWidget);
+    // Geral: the income, the loans' profit apart and the expenses of September.
+    expect(find.text('Juros de empréstimos'), findsOneWidget);
+    expect(find.text(r'R$ 10,00'), findsWidgets);
+    expect(find.text(r'R$ 3.000,00'), findsOneWidget);
+    expect(find.text('💼 Salário'), findsNothing);
+    // Detalhado: what came in and went out by category, the profit still a line of its own.
+    await tester.tap(find.text('Detalhado'));
+    await settle(tester);
+    expect(find.text('Receitas · Setembro 2026'), findsOneWidget);
+    expect(find.text('Despesas · Setembro 2026'), findsOneWidget);
+    expect(find.text('💼 Salário'), findsOneWidget);
+    expect(find.text('Juros de empréstimos'), findsOneWidget);
     expect(find.text('Comparação entre meses'), findsOneWidget);
     // Mercado and the total.
     expect(find.text('+50%'), findsNWidgets(2));
@@ -409,7 +424,7 @@ void main() {
       200,
       scrollable: find.byWidgetPredicate((w) => w is Scrollable && w.axisDirection == AxisDirection.down).last,
     );
-    expect(find.text(r'R$ 550,00'), findsOneWidget);
+    expect(find.text(r'R$ 440,00'), findsOneWidget);
     expect(tester.takeException(), isNull);
     await dispose(tester);
   });

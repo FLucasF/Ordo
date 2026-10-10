@@ -30,7 +30,7 @@ Os dados ficam **só no seu aparelho**: não tem conta, login nem servidor. Para
 
 ### Baixar e instalar (jeito fácil)
 
-1. Abra a página de [**Releases**](https://github.com/FLucasF/toDO-manager/releases/latest) e baixe o **`TarefasSetup-1.5.0.exe`**.
+1. Abra a página de [**Releases**](https://github.com/FLucasF/toDO-manager/releases/latest) e baixe o **`TarefasSetup-1.5.1.exe`**.
 2. Dê dois cliques no arquivo baixado.
 3. O Windows pode mostrar o aviso azul do **SmartScreen** ("O Windows protegeu o computador"), porque o instalador não tem assinatura digital paga. Clique em **Mais informações → Executar assim mesmo**.
 4. Siga o instalador: **Avançar → Instalar → Concluir**. Ele não pede senha de administrador e cria o atalho **Tarefas** no menu Iniciar. Se você marcar a opção, cria também na área de trabalho.
@@ -72,7 +72,7 @@ Funciona no Android 7.0 ou mais novo.
 
 ### Baixar e instalar (jeito fácil)
 
-1. **No celular**, abra a página de [**Releases**](https://github.com/FLucasF/toDO-manager/releases/latest) e toque em **`Tarefas-1.5.0.apk`** para baixar.
+1. **No celular**, abra a página de [**Releases**](https://github.com/FLucasF/toDO-manager/releases/latest) e toque em **`Tarefas-1.5.1.apk`** para baixar.
 2. Quando terminar, toque na notificação do download, ou abra o app **Arquivos → Downloads** e toque no arquivo.
 3. O Android avisa que, por segurança, o app de onde você está instalando (Chrome ou Arquivos) não pode instalar apps. Toque em **Configurações**, ligue **Permitir desta fonte** e volte.
 4. Toque em **Instalar** e depois em **Abrir**.
@@ -167,7 +167,7 @@ Escreva tudo no título, e o app entende:
   - **Cartões:** dia de fechamento e de vencimento, fatura de cada mês (aberta, fechada, paga ou vencida), compras **parceladas** distribuídas nas faturas seguintes e **Pagar fatura** (o pagamento não conta como gasto de novo). A compra conta no mês da fatura;
   - **Contas fixas:** aluguel, assinaturas, salário, mensais ou anuais, com lembrete. Ao **Pagar** (ou **Receber**), vira lançamento;
   - **Empréstimos:** quem pegou, valor, data, vencimento e juros (em % ou pelo total a receber); o app mostra o lucro, os pagamentos (inclusive parciais), o saldo e se está em dia, atrasado ou quitado, e avisa no vencimento e no atraso;
-  - **Relatórios:** gastos por categoria, receitas × despesas dos últimos meses, comparação entre dois meses e o resumo dos empréstimos.
+  - **Relatórios:** gastos por categoria; receitas × despesas dos últimos meses, em **Geral** ou **Detalhado** (o que entrou e o que saiu por categoria), com os juros recebidos dos empréstimos como uma parte separada das receitas; comparação entre dois meses e o resumo dos empréstimos. Contas fixas entram quando você marca **Pagar**.
 - **Dieta:** diário do que você comeu, com a **Tabela TACO** (NEPA/Unicamp, 4ª edição: 597 alimentos, valores por 100 g).
   - **+ Adicionar alimento:** escolha a refeição, busque (sem precisar de acento: "feijao" acha "Feijão") e diga a quantidade em gramas ou numa medida caseira ("colher de sopa cheia", "unidade"…). A conta aparece na hora;
   - **Não achei:** cadastre um alimento seu (calorias, proteínas, carboidratos, gorduras e fibras por 100 g, e uma medida caseira) e ele já entra na refeição;

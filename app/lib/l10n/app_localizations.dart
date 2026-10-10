@@ -8383,6 +8383,24 @@ abstract class AppLocalizations {
   /// **'{amount} de juros a receber'**
   String finInterestToCome(String amount);
 
+  /// No description provided for @finLoanInterest.
+  ///
+  /// In pt, this message translates to:
+  /// **'Juros de empréstimos'**
+  String get finLoanInterest;
+
+  /// No description provided for @finChartGeneral.
+  ///
+  /// In pt, this message translates to:
+  /// **'Geral'**
+  String get finChartGeneral;
+
+  /// No description provided for @finChartDetailed.
+  ///
+  /// In pt, this message translates to:
+  /// **'Detalhado'**
+  String get finChartDetailed;
+
   /// No description provided for @finLentTotal.
   ///
   /// In pt, this message translates to:

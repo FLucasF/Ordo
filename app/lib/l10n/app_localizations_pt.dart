@@ -4429,6 +4429,15 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
+  String get finLoanInterest => 'Juros de empréstimos';
+
+  @override
+  String get finChartGeneral => 'Geral';
+
+  @override
+  String get finChartDetailed => 'Detalhado';
+
+  @override
   String finLentTotal(String amount) {
     return '$amount emprestados no total';
   }

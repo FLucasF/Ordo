@@ -228,7 +228,7 @@ void main() {
         [for (final x in expensesByCategory(s, DateTime(2026, 9))) (x.category?.name, x.amount)],
         [('Mercado', 45000), ('Lazer', 10000), (null, 2000)],
       );
-      final months = monthlyTotals(s, DateTime(2026, 9), 6);
+      final months = monthlyFlows(s, DateTime(2026, 9), 6);
       expect(months.map((m) => m.month), [for (var m = 4; m <= 9; m++) DateTime(2026, m)]);
       expect((months.last.totals.income, months.last.totals.expense), (500000, 57000));
       expect(months[4].totals.expense, 30000);
@@ -236,6 +236,33 @@ void main() {
       expect([for (final r in compared) (r.category?.name, r.first, r.second)], [('Mercado', 30000, 45000), ('Lazer', 0, 10000), (null, 0, 2000)]);
       expect(changeBasisPoints(30000, 45000), 5000);
       expect(changeBasisPoints(0, 100), isNull);
+    });
+
+    test('the profit of loan payments is income of the month paid, apart; the money lent and paid back is not', () async {
+      final joao = await repo.createLoan(
+        borrower: 'João',
+        principal: 100000,
+        total: 130000,
+        lentOn: DateTime(2026, 7, 1),
+        dueOn: DateTime(2026, 9, 1),
+      );
+      // R$ 130 in August brings R$ 30 of profit; the remaining R$ 1.170 in September, R$ 270.
+      await repo.addLoanPayment(loanId: joao, amount: 13000, date: DateTime(2026, 8, 10));
+      await repo.addLoanPayment(loanId: joao, amount: 117000, date: DateTime(2026, 9, 3));
+      // Beyond the total is all profit.
+      final ana = await repo.createLoan(borrower: 'Ana', principal: 10000, total: 11000, lentOn: DateTime(2026, 9, 1), dueOn: DateTime(2026, 9, 20));
+      await repo.addLoanPayment(loanId: ana, amount: 11500, date: DateTime(2026, 9, 20));
+      await repo.addEntry(kind: FinKind.income, amount: 500000, date: DateTime(2026, 9, 1));
+      final s = await repo.load();
+      expect(loanInterestByMonth(s), {DateTime(2026, 8): 3000, DateTime(2026, 9): 27000 + 1500});
+      final months = monthlyFlows(s, DateTime(2026, 9), 6);
+      expect((months[4].interest, months[4].entriesIncome, months[4].totals.income, months[4].totals.expense), (3000, 0, 3000, 0));
+      // The profit is a part of its own, apart from the entries' income by category.
+      expect((months.last.interest, months.last.totals.income), (28500, 528500));
+      expect(months.last.income, {null: 500000});
+      expect(months.first.totals.income, 0);
+      // Months add up to what the loans show as received.
+      expect(loanSummaries(s, today).fold(0, (sum, l) => sum + l.interestReceived), 3000 + 28500);
     });
   });
 

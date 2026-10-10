@@ -268,6 +268,23 @@ void main() {
     );
   }
 
+  for (final (name, size) in [('finance_reports_detailed', const Size(1600, 1000)), ('finance_reports_detailed_phone', const Size(412, 915))]) {
+    testWidgets(
+      name,
+      (tester) => shoot(
+        tester,
+        name,
+        '/finance/reports',
+        size: size,
+        finance: financeData,
+        interact: (tester) async {
+          await tester.tap(find.text('Detalhado'));
+          await tester.pumpAndSettle();
+        },
+      ),
+    );
+  }
+
   /// The TACO table loads from the assets (slower with other tests running): pumps until [finder] shows.
   Future<void> waitFor(WidgetTester tester, Finder finder) async {
     for (var i = 0; i < 100 && finder.evaluate().isEmpty; i++) {

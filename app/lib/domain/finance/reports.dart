@@ -1,5 +1,7 @@
 import '../../data/db/database.dart';
 import 'finance.dart';
+import 'finance_enums.dart';
+import 'loans.dart';
 
 /// A category's slice of a month's expenses (null category = "Sem categoria").
 typedef CategorySlice = ({FinCategory? category, int amount});
@@ -13,11 +15,37 @@ List<CategorySlice> expensesByCategory(FinanceSnapshot s, DateTime month) {
   return slices;
 }
 
-/// Income and expenses of the [count] months ending on [last] (oldest first).
-List<({DateTime month, FinTotals totals})> monthlyTotals(FinanceSnapshot s, DateTime last, int count) => [
-  for (var i = count - 1; i >= 0; i--)
-    if (DateTime(last.year, last.month - i) case final month) (month: month, totals: totalsOf(entriesOfMonth(s, month))),
-];
+/// A month's money by where it came from and where it went: income and expenses per category id
+/// (null = "Sem categoria"), and the profit of loans received that month, kept as a part of its
+/// own. The money lent and paid back doesn't count.
+class MonthFlow {
+  const MonthFlow({required this.month, required this.income, required this.expense, required this.interest});
+
+  final DateTime month;
+  final Map<String?, int> income;
+  final Map<String?, int> expense;
+  final int interest;
+
+  /// The income of the entries, without the loans' profit.
+  int get entriesIncome => income.values.fold(0, (sum, x) => sum + x);
+
+  FinTotals get totals => FinTotals(income: entriesIncome + interest, expense: expense.values.fold(0, (sum, x) => sum + x));
+}
+
+/// The [count] months ending on [last] (oldest first).
+List<MonthFlow> monthlyFlows(FinanceSnapshot s, DateTime last, int count) {
+  final interest = loanInterestByMonth(s);
+  return [
+    for (var i = count - 1; i >= 0; i--)
+      if (DateTime(last.year, last.month - i) case final month)
+        MonthFlow(
+          month: month,
+          income: amountsByCategory(s, month, FinKind.income),
+          expense: amountsByCategory(s, month, FinKind.expense),
+          interest: interest[month] ?? 0,
+        ),
+  ];
+}
 
 /// One line of "Comparação entre meses": a category's expenses in two months.
 typedef CategoryComparison = ({FinCategory? category, int first, int second});

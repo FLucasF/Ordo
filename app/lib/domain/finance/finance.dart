@@ -124,12 +124,15 @@ List<FinEntry> entriesOfMonth(FinanceSnapshot s, DateTime month) => [
 ];
 
 /// Expenses of [month] per category id (null = "Sem categoria").
-Map<String?, int> spendingByCategory(FinanceSnapshot s, DateTime month) {
-  final spent = <String?, int>{};
+Map<String?, int> spendingByCategory(FinanceSnapshot s, DateTime month) => amountsByCategory(s, month, FinKind.expense);
+
+/// The entries of [kind] in [month] per category id (null = "Sem categoria").
+Map<String?, int> amountsByCategory(FinanceSnapshot s, DateTime month, FinKind kind) {
+  final amounts = <String?, int>{};
   for (final e in entriesOfMonth(s, month)) {
-    if (e.kind == FinKind.expense) spent[e.categoryId] = (spent[e.categoryId] ?? 0) + e.amount;
+    if (e.kind == kind) amounts[e.categoryId] = (amounts[e.categoryId] ?? 0) + e.amount;
   }
-  return spent;
+  return amounts;
 }
 
 // ------------------------------------------------------------------ limits

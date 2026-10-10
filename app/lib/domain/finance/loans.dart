@@ -28,11 +28,7 @@ class LoanSummary {
   /// The profit already in hand. Each payment is part loan, part profit, in the same proportion as
   /// the total (R$ 130 of a R$ 1.300 loan of R$ 1.000 brings R$ 30 of profit); what comes beyond
   /// the total is all profit.
-  int get interestReceived {
-    if (loan.total <= 0) return 0;
-    final within = received > loan.total ? loan.total : received;
-    return (within * interest / loan.total).round() + (received - within);
-  }
+  int get interestReceived => interestIn(loan, received);
 
   LoanStatus get status => balance <= 0
       ? LoanStatus.paid
@@ -42,6 +38,33 @@ class LoanSummary {
 
   /// Days past the due day (0 when not overdue).
   int get daysLate => status == LoanStatus.overdue ? _today.difference(finDay(loan.dueOn)).inDays : 0;
+}
+
+/// The profit within [received] of [loan] (see [LoanSummary.interestReceived]).
+int interestIn(Loan loan, int received) {
+  if (loan.total <= 0) return 0;
+  final within = received > loan.total ? loan.total : received;
+  return (within * (loan.total - loan.principal) / loan.total).round() + (received - within);
+}
+
+/// The profit of the loans received in each month (keyed by its first day): each payment brings
+/// what it adds to [interestIn], oldest payment first, so a loan's months add up to its profit received.
+Map<DateTime, int> loanInterestByMonth(FinanceSnapshot s) {
+  final loans = {for (final l in s.loans) l.id: l};
+  final payments = [
+    for (final p in s.loanPayments)
+      if (loans.containsKey(p.loanId)) p,
+  ]..sort((a, b) => a.date != b.date ? a.date.compareTo(b.date) : a.createdAt.compareTo(b.createdAt));
+  final received = <String, int>{};
+  final months = <DateTime, int>{};
+  for (final p in payments) {
+    final loan = loans[p.loanId]!;
+    final before = received[loan.id] ?? 0, after = before + p.amount;
+    received[loan.id] = after;
+    final month = monthOf(finDay(p.date));
+    months[month] = (months[month] ?? 0) + interestIn(loan, after) - interestIn(loan, before);
+  }
+  return months;
 }
 
 List<LoanSummary> loanSummaries(FinanceSnapshot s, DateTime today) {
