@@ -28,9 +28,14 @@ abstract final class DesktopShell {
     }
   }
 
-  /// "Manter na bandeja": closing the window hides it; the tray icon opens it or quits.
-  static Future<void> configureTray({required bool enabled, required String tooltip, required String open, required String quit}) =>
-      _call('configureTray', {'enabled': enabled, 'tooltip': tooltip, 'open': open, 'quit': quit});
+  /// "Manter na bandeja": closing the window hides it; the tray icon opens it, the mini calendar, or quits.
+  static Future<void> configureTray({
+    required bool enabled,
+    required String tooltip,
+    required String open,
+    required String mini,
+    required String quit,
+  }) => _call('configureTray', {'enabled': enabled, 'tooltip': tooltip, 'open': open, 'mini': mini, 'quit': quit});
 
   /// Plays the "Despertador": [loop] rings until [stopAlarm] (at most [maxRing]), else once.
   static Future<void> playAlarm({required bool loop, Duration maxRing = const Duration(minutes: 3)}) async {
@@ -54,4 +59,16 @@ abstract final class DesktopShell {
 
   /// "Iniciar com o Windows": the app starts hidden in the tray when the user signs in.
   static Future<void> setAutostart(bool enabled) => _call('setAutostart', enabled);
+
+  /// Opens the desktop mini calendar (windows/runner/mini_window.cpp), or brings it forward.
+  static Future<void> openMiniCalendar() => _call('openMini');
+
+  /// Taps on the mini calendar that open the app: "open|2026-10-09|d" or "create|2026-10-09|d" (the
+  /// runner shows the window first).
+  static void listenWidgetActions(void Function(String action) onAction) {
+    if (!available) return;
+    _channel.setMethodCallHandler((call) async {
+      if (call.method == 'widgetAction' && call.arguments is String) onAction(call.arguments as String);
+    });
+  }
 }

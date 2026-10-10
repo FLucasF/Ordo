@@ -7513,6 +7513,12 @@ abstract class AppLocalizations {
   /// **'Sair'**
   String get trayQuit;
 
+  /// No description provided for @trayMiniCalendar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Mini calendário'**
+  String get trayMiniCalendar;
+
   /// No description provided for @settingsReminderSound.
   ///
   /// In pt, this message translates to:
@@ -7572,6 +7578,24 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Abre escondido na bandeja quando você entra no Windows.'**
   String get settingsLaunchAtStartupHint;
+
+  /// No description provided for @settingsDesktopMini.
+  ///
+  /// In pt, this message translates to:
+  /// **'Mini calendário'**
+  String get settingsDesktopMini;
+
+  /// No description provided for @settingsDesktopMiniHint.
+  ///
+  /// In pt, this message translates to:
+  /// **'Uma janelinha com o calendário na área de trabalho, como o widget do celular. Também abre pelo ícone perto do relógio.'**
+  String get settingsDesktopMiniHint;
+
+  /// No description provided for @settingsDesktopMiniOpen.
+  ///
+  /// In pt, this message translates to:
+  /// **'Abrir'**
+  String get settingsDesktopMiniOpen;
 
   /// No description provided for @inFeminine.
   ///
@@ -9006,6 +9030,30 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Dia todo'**
   String get widgetAllDay;
+
+  /// No description provided for @miniLayerTop.
+  ///
+  /// In pt, this message translates to:
+  /// **'Por cima das janelas'**
+  String get miniLayerTop;
+
+  /// No description provided for @miniLayerNormal.
+  ///
+  /// In pt, this message translates to:
+  /// **'Normal'**
+  String get miniLayerNormal;
+
+  /// No description provided for @miniLayerDesktop.
+  ///
+  /// In pt, this message translates to:
+  /// **'Na área de trabalho'**
+  String get miniLayerDesktop;
+
+  /// No description provided for @miniClose.
+  ///
+  /// In pt, this message translates to:
+  /// **'Fechar'**
+  String get miniClose;
 
   /// No description provided for @reorderSortCustom.
   ///

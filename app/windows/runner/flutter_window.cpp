@@ -13,7 +13,12 @@
 namespace {
 
 // Where the window's size, position and maximized state are kept between runs.
+#ifdef NDEBUG
 constexpr wchar_t kSettingsKey[] = L"Software\\dev.lucasfelipe\\Tarefas";
+#else
+// Debug builds keep their own, beside an installed app's.
+constexpr wchar_t kSettingsKey[] = L"Software\\dev.lucasfelipe\\Tarefas\\Debug";
+#endif
 constexpr wchar_t kPlacementValue[] = L"WindowPlacement";
 
 // Puts the still hidden window where the last run left it, if that spot is still on a monitor.
@@ -45,6 +50,7 @@ constexpr UINT kTrayMessage = WM_APP + 1;
 constexpr UINT kTrayIconId = 1;
 constexpr UINT kMenuOpen = 1;
 constexpr UINT kMenuQuit = 2;
+constexpr UINT kMenuMini = 3;
 
 // "Iniciar com o Windows": the app in the user's Run key, started hidden in the tray.
 constexpr wchar_t kRunKey[] = L"Software\\Microsoft\\Windows\\CurrentVersion\\Run";
@@ -73,6 +79,7 @@ std::wstring AlarmSoundPath() {
 }
 
 void SetAutostart(bool enabled) {
+#ifdef NDEBUG
   if (!enabled) {
     ::RegDeleteKeyValueW(HKEY_CURRENT_USER, kRunKey, kRunValue);
     return;
@@ -80,6 +87,10 @@ void SetAutostart(bool enabled) {
   const std::wstring command = L"\"" + ExePath() + L"\" --minimized";
   ::RegSetKeyValueW(HKEY_CURRENT_USER, kRunKey, kRunValue, REG_SZ, command.c_str(),
                     static_cast<DWORD>((command.size() + 1) * sizeof(wchar_t)));
+#else
+  // A debug build leaves the installed app's start with Windows alone.
+  (void)enabled;
+#endif
 }
 
 const flutter::EncodableValue* Field(const flutter::EncodableMap& map, const char* key) {
@@ -148,12 +159,22 @@ bool FlutterWindow::OnCreate() {
   // window is shown. It is a no-op if the first frame hasn't completed yet.
   flutter_controller_->ForceRedraw();
 
+  // The mini calendar comes back if it was open when the app quit.
+  mini_ = std::make_unique<MiniWindow>([this](const std::string& action) { OnMiniAction(action); });
+  if (MiniWindow::WasOpen()) {
+    mini_->Open();
+  }
+
   return true;
 }
 
 void FlutterWindow::OnDestroy() {
   ::PlaySoundW(nullptr, nullptr, 0);
   RemoveTrayIcon();
+  if (mini_) {
+    mini_->Destroy();
+    mini_ = nullptr;
+  }
   window_channel_ = nullptr;
   if (flutter_controller_) {
     flutter_controller_ = nullptr;
@@ -258,6 +279,9 @@ void FlutterWindow::HandleWindowCall(const flutter::MethodCall<flutter::Encodabl
     if (const auto* v = Field(*map, "open"); v != nullptr && std::holds_alternative<std::string>(*v)) {
       tray_open_ = Widen(std::get<std::string>(*v));
     }
+    if (const auto* v = Field(*map, "mini"); v != nullptr && std::holds_alternative<std::string>(*v)) {
+      tray_mini_ = Widen(std::get<std::string>(*v));
+    }
     if (const auto* v = Field(*map, "quit"); v != nullptr && std::holds_alternative<std::string>(*v)) {
       tray_quit_ = Widen(std::get<std::string>(*v));
     }
@@ -288,6 +312,11 @@ void FlutterWindow::HandleWindowCall(const flutter::MethodCall<flutter::Encodabl
   } else if (method == "setAutostart") {
     const auto* enabled = std::get_if<bool>(arguments);
     SetAutostart(enabled != nullptr && *enabled);
+    result->Success();
+  } else if (method == "openMini") {
+    if (mini_) {
+      mini_->Open();
+    }
     result->Success();
   } else {
     result->NotImplemented();
@@ -328,6 +357,7 @@ void FlutterWindow::ShowTrayMenu() {
   ::GetCursorPos(&point);
   HMENU menu = ::CreatePopupMenu();
   ::AppendMenuW(menu, MF_STRING, kMenuOpen, tray_open_.c_str());
+  ::AppendMenuW(menu, MF_STRING | (mini_ && mini_->IsOpen() ? MF_CHECKED : MF_UNCHECKED), kMenuMini, tray_mini_.c_str());
   ::AppendMenuW(menu, MF_SEPARATOR, 0, nullptr);
   ::AppendMenuW(menu, MF_STRING, kMenuQuit, tray_quit_.c_str());
   ::SetMenuDefaultItem(menu, kMenuOpen, FALSE);
@@ -338,6 +368,12 @@ void FlutterWindow::ShowTrayMenu() {
   ::DestroyMenu(menu);
   if (command == kMenuOpen) {
     ShowFromTray();
+  } else if (command == kMenuMini && mini_) {
+    if (mini_->IsOpen()) {
+      mini_->Close();
+    } else {
+      mini_->Open();
+    }
   } else if (command == kMenuQuit) {
     Quit();
   }
@@ -354,6 +390,13 @@ void FlutterWindow::ShowFromTray() {
     ::ShowWindow(hwnd, SW_SHOW);
   }
   ::SetForegroundWindow(hwnd);
+}
+
+void FlutterWindow::OnMiniAction(const std::string& action) {
+  ShowFromTray();
+  if (window_channel_) {
+    window_channel_->InvokeMethod("widgetAction", std::make_unique<flutter::EncodableValue>(action));
+  }
 }
 
 void FlutterWindow::Quit() {

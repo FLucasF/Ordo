@@ -199,13 +199,17 @@ class _TasksAppState extends ConsumerState<TasksApp> {
       _plan = planReminders(snapshot, _poppedUntil);
       _armPopupTimer();
     }, fireImmediately: true);
-    // Android: the home-screen calendar widget follows the data, and its taps open the app there.
-    if (Platform.isAndroid) {
+    // The phone's home-screen calendar widget and the desktop mini calendar follow the data, and
+    // their taps open the app there.
+    if (Platform.isAndroid || DesktopShell.available) {
       ref.listenManual(snapshotProvider, (_, _) => _widgetSoon(), fireImmediately: true);
       ref.listenManual(preferencesProvider, (_, _) => _widgetSoon());
       ref.listenManual(financeProvider, (_, _) => _widgetSoon());
       ref.listenManual(subscriptionFilesProvider, (_, _) => _widgetSoon());
       WidgetsBinding.instance.addPostFrameCallback((_) => unawaited(listenCalendarWidget(_onWidgetAction)));
+      DesktopShell.listenWidgetActions((raw) {
+        if (parseWidgetAction(raw) case final a?) _onWidgetAction(a);
+      });
     }
     final setup = ref.read(reminderSetupProvider);
     if (setup == null) return;
@@ -227,7 +231,9 @@ class _TasksAppState extends ConsumerState<TasksApp> {
       if (prefs == null || _desktop == (prefs.closeToTray, prefs.launchAtStartup)) return;
       _desktop = (prefs.closeToTray, prefs.launchAtStartup);
       final t = reminderTexts;
-      unawaited(DesktopShell.configureTray(enabled: prefs.closeToTray, tooltip: t.appTitle, open: t.trayOpen, quit: t.trayQuit));
+      unawaited(
+        DesktopShell.configureTray(enabled: prefs.closeToTray, tooltip: t.appTitle, open: t.trayOpen, mini: t.trayMiniCalendar, quit: t.trayQuit),
+      );
       unawaited(DesktopShell.setAutostart(prefs.launchAtStartup));
     }, fireImmediately: true);
     _responses = setup.responses.listen((r) => unawaited(_onReminderResponse(r)));
@@ -293,7 +299,7 @@ class _TasksAppState extends ConsumerState<TasksApp> {
     if (task != null && task.deletedAt == null) _router.go(Routes.of(ListScope(task.listId), taskId: task.id));
   }
 
-  /// Rewrites what the home-screen widget shows, a moment after the data settles.
+  /// Rewrites what the home-screen widget and the mini calendar show, a moment after the data settles.
   void _widgetSoon() {
     _widgetDebounce?.cancel();
     _widgetDebounce = Timer(const Duration(seconds: 1), () {

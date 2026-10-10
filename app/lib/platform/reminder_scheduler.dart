@@ -2,9 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
 
 import '../domain/reminder_plan.dart';
+import '../core/app_folder.dart';
 
 /// Where notifications are scheduled (the OS in the app, a fake in tests).
 abstract interface class NotificationGateway {
@@ -31,7 +31,7 @@ class MemoryScheduledStore implements ScheduledStore {
 
 /// JSON file next to the database; it is device state, so it is not part of backups.
 class FileScheduledStore implements ScheduledStore {
-  Future<File> _file() async => File(p.join((await getApplicationSupportDirectory()).path, 'scheduled_reminders.json'));
+  Future<File> _file() async => File(p.join((await appDataDirectory()).path, 'scheduled_reminders.json'));
 
   @override
   Future<Map<int, String>> load() async {

@@ -23,6 +23,7 @@ import '../l10n/app_localizations.dart';
 import '../platform/notifications.dart';
 import '../platform/reminder_scheduler.dart';
 import 'format/date_labels.dart';
+import '../core/app_folder.dart';
 
 /// How long "Adiar" on a notification postpones the reminder.
 const snoozeDuration = Duration(minutes: 15);
@@ -176,6 +177,8 @@ List<PlannedReminder> dailyDigestReminders(Snapshot snapshot, Preferences prefs,
 /// without reminders.
 Future<ReminderSetup?> initializeReminders() async {
   if (kIsWeb || !(Platform.isAndroid || Platform.isWindows)) return null;
+  // A debug run beside the installed app must not take over its notifications.
+  if (isolatedDataDir != null) return null;
   try {
     final t = reminderTexts;
     final service = NotificationService(notificationTexts(t));

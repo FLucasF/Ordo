@@ -3947,6 +3947,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get trayQuit => 'Sair';
 
   @override
+  String get trayMiniCalendar => 'Mini calendário';
+
+  @override
   String get settingsReminderSound => 'Som do lembrete';
 
   @override
@@ -3976,6 +3979,16 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get settingsLaunchAtStartupHint => 'Abre escondido na bandeja quando você entra no Windows.';
+
+  @override
+  String get settingsDesktopMini => 'Mini calendário';
+
+  @override
+  String get settingsDesktopMiniHint =>
+      'Uma janelinha com o calendário na área de trabalho, como o widget do celular. Também abre pelo ícone perto do relógio.';
+
+  @override
+  String get settingsDesktopMiniOpen => 'Abrir';
 
   @override
   String get inFeminine => 'na';
@@ -4788,6 +4801,18 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get widgetAllDay => 'Dia todo';
+
+  @override
+  String get miniLayerTop => 'Por cima das janelas';
+
+  @override
+  String get miniLayerNormal => 'Normal';
+
+  @override
+  String get miniLayerDesktop => 'Na área de trabalho';
+
+  @override
+  String get miniClose => 'Fechar';
 
   @override
   String get reorderSortCustom => 'Agora a ordem desta lista é a sua (Ordenar por: Personalizado).';

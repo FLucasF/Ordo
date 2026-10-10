@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "mini_window.h"
 #include "win32_window.h"
 
 // Registered message a second instance broadcasts so the running one comes to the front.
@@ -44,6 +45,9 @@ class FlutterWindow : public Win32Window {
   void ShowFromTray();
   void Quit();
 
+  // A tap on the mini calendar that opens the app on a day: the window comes forward and Dart goes there.
+  void OnMiniAction(const std::string& action);
+
   // The project to run.
   flutter::DartProject project_;
 
@@ -51,8 +55,11 @@ class FlutterWindow : public Win32Window {
   std::unique_ptr<flutter::FlutterViewController> flutter_controller_;
 
   // "tarefas/window": the window title (the running focus timer), the tray, the alarm sound, showing
-  // the window and starting with Windows.
+  // the window, starting with Windows and the mini calendar.
   std::unique_ptr<flutter::MethodChannel<flutter::EncodableValue>> window_channel_;
+
+  // The desktop mini calendar, opened from the tray or the settings.
+  std::unique_ptr<MiniWindow> mini_;
 
   bool start_hidden_;
   bool maximized_ = false;
@@ -66,6 +73,7 @@ class FlutterWindow : public Win32Window {
   // Texts come from Dart (the ARB file); these stand in until it configures the tray.
   std::wstring tray_tooltip_ = L"Tarefas";
   std::wstring tray_open_ = L"Abrir";
+  std::wstring tray_mini_ = L"Mini calendário";
   std::wstring tray_quit_ = L"Sair";
 
   UINT show_message_ = 0;

@@ -1,6 +1,5 @@
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
-import 'package:path_provider/path_provider.dart';
 
 import '../../core/ids.dart';
 import '../../domain/enums.dart';
@@ -10,6 +9,7 @@ import 'database.steps.dart';
 import 'diet_tables.dart';
 import 'finance_tables.dart';
 import 'tables.dart';
+import '../../core/app_folder.dart';
 
 part 'database.g.dart';
 
@@ -150,6 +150,6 @@ class AppDatabase extends _$AppDatabase {
   /// the Documents folder, which is drift_flutter's default.
   static QueryExecutor _open() => driftDatabase(
     name: 'tasks',
-    native: const DriftNativeOptions(databaseDirectory: getApplicationSupportDirectory, shareAcrossIsolates: true),
+    native: const DriftNativeOptions(databaseDirectory: appDataDirectory, shareAcrossIsolates: true),
   );
 }

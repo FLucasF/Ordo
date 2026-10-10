@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
 
 import '../app/format/date_labels.dart';
 import '../app/theme/app_theme.dart';
@@ -13,8 +12,9 @@ import '../domain/snapshot.dart';
 import '../domain/subscriptions.dart';
 import '../features/calendar/calendar_widgets.dart';
 import '../l10n/app_localizations.dart';
+import '../core/app_folder.dart';
 
-// The phone's home-screen calendar widget (Android): the app writes what it shows (the days around
+// The phone's home-screen calendar widget (Android) and the desktop mini calendar (Windows): the app writes what it shows (the days around
 // today with their entries, colors and texts) to a JSON file in its files folder, and the widget
 // (android/.../CalendarWidget.kt) draws it as a day, a week or a month. The widget asks the app to
 // open a day or create a task through the launch intent.
@@ -80,6 +80,11 @@ Map<String, Object?> calendarWidgetData({
       'month': t.widgetMonth,
       'empty': t.widgetEmpty,
       'allDay': t.widgetAllDay,
+      // The desktop mini calendar's own texts.
+      'layerTop': t.miniLayerTop,
+      'layerNormal': t.miniLayerNormal,
+      'layerDesktop': t.miniLayerDesktop,
+      'close': t.miniClose,
       'months': [for (var m = 1; m <= 12; m++) labels.monthLong(DateTime(2026, m))],
       // Monday first, as DateTime.weekday.
       'weekdays': [for (var d = 0; d < 7; d++) labels.weekdayShort(DateTime(2026, 9, 28 + d))],
@@ -93,20 +98,24 @@ Map<String, Object?> calendarWidgetData({
 
 int _order(Map<String, Object?> e) => e['s']! as int;
 
-/// Writes the data and asks the widgets on the home screen to redraw (Android only).
+/// Writes the data and asks the widgets on the home screen to redraw (Android); on Windows the mini
+/// calendar (lib/features/mini_calendar) follows the file by itself.
 Future<void> exportCalendarWidget(Map<String, Object?> data) async {
-  if (!Platform.isAndroid) return;
-  final dir = await getApplicationSupportDirectory();
+  if (!Platform.isAndroid && !Platform.isWindows) return;
+  final dir = await appDataDirectory();
   final file = File(p.join(dir.path, calendarWidgetFile));
   final partial = File('${file.path}.part');
   await partial.writeAsString(jsonEncode(data), flush: true);
   await partial.rename(file.path);
-  await _channel.invokeMethod<void>('refresh');
+  if (Platform.isAndroid) await _channel.invokeMethod<void>('refresh');
 }
 
 /// What a widget tap asks the app: open a day ("open", with the day and the view) or create a task
 /// on a day ("create").
 typedef WidgetAction = ({String action, DateTime day, String mode});
+
+/// "open|2026-10-09|d" as a [WidgetAction] (null when it is not one).
+WidgetAction? parseWidgetAction(Object? raw) => _parse(raw);
 
 WidgetAction? _parse(Object? raw) {
   if (raw is! String) return null;

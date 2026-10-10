@@ -119,6 +119,14 @@ class NotificationSettingsPanel extends ConsumerWidget {
             value: prefs.launchAtStartup,
             onChanged: (on) => unawaited(repo.setLaunchAtStartup(enabled: on)),
           ),
+          ListTile(
+            title: Text(t.settingsDesktopMini),
+            subtitle: Text(
+              t.settingsDesktopMiniHint,
+              style: TextStyle(color: tt.textTertiary, fontSize: TtText.small),
+            ),
+            trailing: OutlinedButton(onPressed: () => unawaited(DesktopShell.openMiniCalendar()), child: Text(t.settingsDesktopMiniOpen)),
+          ),
         ],
       ],
     );
