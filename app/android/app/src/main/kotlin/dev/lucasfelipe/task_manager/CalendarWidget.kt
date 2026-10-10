@@ -237,9 +237,9 @@ class CalendarWidget : AppWidgetProvider() {
             } else {
                 lines(day, entries)
             }
-            // The following days fill what is left (up to two weeks ahead).
+            // The following days fill what is left (up to two months ahead; the app writes four).
             var next = day.plusDays(1)
-            while (room >= headingHeight + lineHeight && next.isBefore(day.plusDays(15))) {
+            while (room >= headingHeight + lineHeight && next.isBefore(day.plusDays(61))) {
                 val more = data.entries(next)
                 if (more.length() > 0) {
                     val heading = RemoteViews(context.packageName, R.layout.widget_day_heading)
