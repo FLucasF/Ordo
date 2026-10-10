@@ -30,7 +30,7 @@ Os dados ficam **só no seu aparelho**: não tem conta, login nem servidor. Para
 
 ### Baixar e instalar (jeito fácil)
 
-1. Abra a página de [**Releases**](https://github.com/FLucasF/toDO-manager/releases/latest) e baixe o **`TarefasSetup-1.4.0.exe`**.
+1. Abra a página de [**Releases**](https://github.com/FLucasF/toDO-manager/releases/latest) e baixe o **`TarefasSetup-1.5.0.exe`**.
 2. Dê dois cliques no arquivo baixado.
 3. O Windows pode mostrar o aviso azul do **SmartScreen** ("O Windows protegeu o computador"), porque o instalador não tem assinatura digital paga. Clique em **Mais informações → Executar assim mesmo**.
 4. Siga o instalador: **Avançar → Instalar → Concluir**. Ele não pede senha de administrador e cria o atalho **Tarefas** no menu Iniciar. Se você marcar a opção, cria também na área de trabalho.
@@ -72,7 +72,7 @@ Funciona no Android 7.0 ou mais novo.
 
 ### Baixar e instalar (jeito fácil)
 
-1. **No celular**, abra a página de [**Releases**](https://github.com/FLucasF/toDO-manager/releases/latest) e toque em **`Tarefas-1.4.0.apk`** para baixar.
+1. **No celular**, abra a página de [**Releases**](https://github.com/FLucasF/toDO-manager/releases/latest) e toque em **`Tarefas-1.5.0.apk`** para baixar.
 2. Quando terminar, toque na notificação do download, ou abra o app **Arquivos → Downloads** e toque no arquivo.
 3. O Android avisa que, por segurança, o app de onde você está instalando (Chrome ou Arquivos) não pode instalar apps. Toque em **Configurações**, ligue **Permitir desta fonte** e volte.
 4. Toque em **Instalar** e depois em **Abrir**.
@@ -83,7 +83,7 @@ Se aparecer um aviso do **Play Protect** ("app desconhecido"), toque em **Mais d
 - **Atualizar:** baixe o APK da versão nova e instale por cima. Suas tarefas continuam.
 - **Desinstalar:** no Android, desinstalar **apaga os dados** do app. Antes, faça um backup (veja [Backup](#backup-e-troca-de-aparelho)).
 
-- **Widget de calendário:** segure um espaço vazio da tela inicial → **Widgets** → **Tarefas → Calendário**. No próprio widget escolha **Dia**, **Semana** ou **Mês** (cada widget guarda a sua escolha); **‹ ›** avançam e voltam, o título volta para hoje, o **+** cria uma tarefa, e tocar num dia abre o app nele.
+- **Widget de calendário:** segure um espaço vazio da tela inicial → **Widgets** → **Tarefas → Calendário**. No próprio widget escolha **Dia**, **Semana** ou **Mês** (cada widget guarda a sua escolha); **‹ ›** avançam e voltam, o título volta para hoje, o **+** cria uma tarefa, e tocar num dia abre o app nele. No modo **Dia**, o espaço que sobra mostra os próximos dias, como uma agenda; o que não cabe vira "+N", sem cortar nada.
 
 > **Aparelhos autorizados (Android):** este app está registrado no Google numa conta de *distribuição limitada*. A partir de 30/09/2026, no Brasil, **só os celulares autorizados pelo dono do app** (até 20) conseguem instalar e atualizar. Para autorizar um celular, o dono gera um QR code ou um link no Android Developer Console. A pessoa abre no celular, aceita e manda de volta o código que aparece. Se quiser usar o app, peça esse link.
 
@@ -168,6 +168,11 @@ Escreva tudo no título, e o app entende:
   - **Contas fixas:** aluguel, assinaturas, salário, mensais ou anuais, com lembrete. Ao **Pagar** (ou **Receber**), vira lançamento;
   - **Empréstimos:** quem pegou, valor, data, vencimento e juros (em % ou pelo total a receber); o app mostra o lucro, os pagamentos (inclusive parciais), o saldo e se está em dia, atrasado ou quitado, e avisa no vencimento e no atraso;
   - **Relatórios:** gastos por categoria, receitas × despesas dos últimos meses, comparação entre dois meses e o resumo dos empréstimos.
+- **Dieta:** diário do que você comeu, com a **Tabela TACO** (NEPA/Unicamp, 4ª edição: 597 alimentos, valores por 100 g).
+  - **+ Adicionar alimento:** escolha a refeição, busque (sem precisar de acento: "feijao" acha "Feijão") e diga a quantidade em gramas ou numa medida caseira ("colher de sopa cheia", "unidade"…). A conta aparece na hora;
+  - **Não achei:** cadastre um alimento seu (calorias, proteínas, carboidratos, gorduras e fibras por 100 g, e uma medida caseira) e ele já entra na refeição;
+  - **Totais do dia:** a rosca de proteínas, carboidratos e gorduras com as calorias no centro, e o total de cada refeição. Tudo se edita e se apaga (⋯ na linha ou a lixeira no formulário);
+  - na aba **Alimentos** ficam os seus alimentos e a busca na TACO.
 - **Resumo:** um relatório do período que pode ser editado. Dá para copiar, salvar em PDF ou imagem, mandar por e-mail ou inserir numa nota.
 - **Busca:** tecla `/`. A paleta de comandos é `Ctrl+K`, e `?` mostra todos os atalhos. As teclas podem ser mudadas em Configurações → Atalhos.
 
