@@ -299,29 +299,28 @@ void main() {
     final day = DateTime(2026, 9, 24);
     await d.addEntry(
       day: day,
-      meal: Meal.breakfast,
+      meal: 'breakfast',
       food: food('Pão, trigo, francês'),
       quantity: 1,
       measure: food('Pão, trigo, francês').defaultMeasure,
     );
-    await d.addEntry(day: day, meal: Meal.breakfast, food: food('Café, infusão 10%'), quantity: 200);
+    await d.addEntry(day: day, meal: 'breakfast', food: food('Café, infusão 10%'), quantity: 200);
     await d.addEntry(
       day: day,
-      meal: Meal.lunch,
+      meal: 'lunch',
       food: food('Arroz, tipo 1, cozido'),
       quantity: 4,
       measure: food('Arroz, tipo 1, cozido').defaultMeasure,
     );
-    await d.addEntry(day: day, meal: Meal.lunch, food: food('Feijão, carioca, cozido'), quantity: 120);
+    await d.addEntry(day: day, meal: 'lunch', food: food('Feijão, carioca, cozido'), quantity: 120);
     final whey = await d.createFood(
       name: 'Whey da loja',
       per100g: const Nutrients(kcal: 400, protein: 80, carbs: 8, fat: 6),
-      measureName: 'scoop',
-      measureGrams: 30,
+      measures: [(id: null, name: 'scoop', grams: 30)],
     );
     await d.addEntry(
       day: day,
-      meal: Meal.afternoonSnack,
+      meal: 'afternoonSnack',
       food: Food(id: whey, name: 'Whey da loja', per100g: const Nutrients(kcal: 400, protein: 80, carbs: 8, fat: 6), custom: true),
       quantity: 1,
       measure: const FoodMeasure(name: 'scoop', grams: 30, isDefault: true),

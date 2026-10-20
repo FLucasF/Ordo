@@ -4,25 +4,54 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/format/date_labels.dart';
 import '../../app/providers.dart';
 import '../../app/theme/app_theme.dart';
 import '../../core/clock.dart';
 import '../../data/db/database.dart';
 import '../../data/diet_repository.dart';
 import '../../domain/diet/diet.dart';
+import '../../domain/diet/plan.dart';
 import '../../l10n/app_localizations.dart';
 import '../common/feedback.dart';
-import '../finance/finance_widgets.dart' show FormHeader, showFinanceDialog;
+import '../finance/finance_widgets.dart' show FinChip, FormHeader, showFinanceDialog;
 
-/// "Café da manhã", "Almoço"…
-String mealLabel(AppLocalizations t, Meal meal) => switch (meal) {
-  Meal.breakfast => t.dietMealBreakfast,
-  Meal.morningSnack => t.dietMealMorningSnack,
-  Meal.lunch => t.dietMealLunch,
-  Meal.afternoonSnack => t.dietMealAfternoonSnack,
-  Meal.dinner => t.dietMealDinner,
-  Meal.supper => t.dietMealSupper,
+/// The built-in label of the six meals of before ("Café da manhã", "Almoço"…); null for other ids.
+String? builtInMealLabel(AppLocalizations t, String id) => switch (id) {
+  'breakfast' => t.dietMealBreakfast,
+  'morningSnack' => t.dietMealMorningSnack,
+  'lunch' => t.dietMealLunch,
+  'afternoonSnack' => t.dietMealAfternoonSnack,
+  'dinner' => t.dietMealDinner,
+  'supper' => t.dietMealSupper,
+  _ => null,
 };
+
+/// A meal's name: its own, else the built-in label of its id.
+String mealName(AppLocalizations t, DietMeal meal) => meal.name.isNotEmpty ? meal.name : (builtInMealLabel(t, meal.id) ?? t.dietMeal);
+
+/// The name of the meal [id] an entry or plan item is in, even when the meal is gone.
+String mealNameOf(AppLocalizations t, DietSnapshot diet, String id) => switch (diet.meal(id)) {
+  final m? => mealName(t, m),
+  null => builtInMealLabel(t, id) ?? t.dietMeal,
+};
+
+/// "07:00" (or "7:00 AM") of minutes after midnight.
+String mealTimeText(int minutes) => DateLabels.time(DateTime(2000, 1, 1, minutes ~/ 60, minutes % 60));
+
+/// "Seg, Qua, Sex" in the week's order, or "Todos os dias".
+String weekdaysText(AppLocalizations t, String csv) {
+  final days = parseWeekdays(csv);
+  if (days.isEmpty) return t.dietPlanEveryDay;
+  final labels = DateLabels(t);
+  return [
+    for (final wd in weekdayOrder())
+      if (days.contains(wd)) labels.weekdayShort(weekdayDate(wd)),
+  ].join(', ');
+}
+
+/// A date on weekday [wd] (2026-09-20 was a Sunday), for its short name.
+DateTime weekdayDate(int wd) => DateTime(2026, 9, 20 + wd % 7);
 
 /// "1.234" (kcal, whole); "—" when unknown.
 String formatKcal(double? kcal) {
@@ -49,30 +78,46 @@ double? parseDecimal(String text) {
 /// "P 2,6 g · C 25,8 g · G 1 g".
 String macrosText(Nutrients n) => 'P ${formatGrams(n.protein)} g · C ${formatGrams(n.carbs)} g · G ${formatGrams(n.fat)} g';
 
-/// The food with its household measures: an entry's copy has none, the table's food has them.
+/// The food with its household measures as they are now (TACO's, the user's): an entry's copy has
+/// none, and a measure may have been added since the food was picked. The values stay [food]'s.
 Food _withMeasures(Food food, List<Food> all) {
-  if (food.measures.isNotEmpty) return food;
   final full = all.where((f) => f.id == food.id).firstOrNull;
   return full == null
       ? food
       : Food(id: food.id, name: food.name, group: full.group, per100g: food.per100g, measures: full.measures, custom: full.custom);
 }
 
+/// The meal suggested now: the one whose time is the closest before; else the first in use.
+String suggestedMeal(DietSnapshot diet, DateTime now) =>
+    suggestMealAt([for (final m in diet.activeMeals) (id: m.id, time: m.time)], now) ?? diet.activeMeals.firstOrNull?.id ?? 'lunch';
+
 /// "Adicionar alimento" (on [day], in [meal], [food] already chosen) or editing an [editing] entry:
 /// the meal, the food searched in TACO and the user's own, and the amount in grams or a household
 /// measure; the editing form has the bin.
-Future<void> showDietEntryForm(BuildContext context, {DietEntry? editing, DateTime? day, Meal? meal, Food? food}) => showFinanceDialog<void>(
+Future<void> showDietEntryForm(BuildContext context, {DietEntry? editing, DateTime? day, String? meal, Food? food}) => showFinanceDialog<void>(
   context,
   builder: (_) => _EntryForm(editing: editing, day: day, meal: meal, food: food),
 );
 
+/// "Adicionar ao plano" (in [meal], on [weekday] or every day) or editing a plan item: the same form
+/// as the diary's, with the days of the week instead of the day.
+Future<void> showDietPlanItemForm(BuildContext context, {DietPlanItem? editing, String? meal, int? weekday}) => showFinanceDialog<void>(
+  context,
+  builder: (_) => _EntryForm(editingPlan: editing, meal: meal, plan: true, weekday: weekday),
+);
+
 class _EntryForm extends ConsumerStatefulWidget {
-  const _EntryForm({this.editing, this.day, this.meal, this.food});
+  const _EntryForm({this.editing, this.editingPlan, this.day, this.meal, this.food, this.plan = false, this.weekday});
 
   final DietEntry? editing;
+  final DietPlanItem? editingPlan;
   final DateTime? day;
-  final Meal? meal;
+  final String? meal;
   final Food? food;
+
+  /// A plan item instead of an entry.
+  final bool plan;
+  final int? weekday;
 
   @override
   ConsumerState<_EntryForm> createState() => _EntryFormState();
@@ -80,23 +125,36 @@ class _EntryForm extends ConsumerStatefulWidget {
 
 class _EntryFormState extends ConsumerState<_EntryForm> {
   late final DietEntry? _e = widget.editing;
-  late Meal _meal = _e == null ? (widget.meal ?? Meal.at(ref.read(clockProvider).now())) : Meal.fromCode(_e.meal);
+  late final DietPlanItem? _p = widget.editingPlan;
+  late String _meal =
+      _e?.meal ?? _p?.meal ?? widget.meal ?? suggestedMeal(ref.read(dietProvider).value ?? DietSnapshot.empty, ref.read(clockProvider).now());
   late final DateTime _day = _e == null ? (widget.day ?? startOfDay(ref.read(clockProvider).now())) : dietDay(_e.day);
-  late Food? _food =
-      widget.food ??
-      (_e == null
-          ? null
-          : Food(
-              id: _e.foodId,
-              name: _e.name,
-              per100g: Nutrients(kcal: _e.kcal, protein: _e.protein, carbs: _e.carbs, fat: _e.fat, fiber: _e.fiber),
-            ));
-  late final _quantity = TextEditingController(text: _e == null ? '' : formatGrams(_e.quantity));
+  late final Set<int> _weekdays = _p == null ? {?widget.weekday} : parseWeekdays(_p.weekdays);
+  late Food? _food = widget.food ?? _copiedFood();
+  late final _quantity = TextEditingController(text: _e != null ? formatGrams(_e.quantity) : (_p != null ? formatGrams(_p.quantity) : ''));
   final _query = TextEditingController();
 
   /// The measure picked by its name (null = grams); set when the food is picked.
-  late String? _measureName = _e?.measureName;
+  late String? _measureName = _e?.measureName ?? _p?.measureName;
   bool _showError = false;
+
+  Food? _copiedFood() {
+    if (_e case final e?) {
+      return Food(
+        id: e.foodId,
+        name: e.name,
+        per100g: Nutrients(kcal: e.kcal, protein: e.protein, carbs: e.carbs, fat: e.fat, fiber: e.fiber),
+      );
+    }
+    if (_p case final p?) {
+      return Food(
+        id: p.foodId,
+        name: p.name,
+        per100g: Nutrients(kcal: p.kcal, protein: p.protein, carbs: p.carbs, fat: p.fat, fiber: p.fiber),
+      );
+    }
+    return null;
+  }
 
   @override
   void initState() {
@@ -133,23 +191,55 @@ class _EntryFormState extends ConsumerState<_EntryForm> {
     }
     final repo = ref.read(dietRepositoryProvider);
     final measure = _measureOf(food);
-    final editing = _e;
-    if (editing == null) {
-      await repo.addEntry(day: _day, meal: _meal, food: food, quantity: quantity, measure: measure);
-    } else {
+    if (widget.plan) {
+      final weekdays = weekdaysCsv(_weekdays);
+      if (_p case final p?) {
+        await repo.updatePlanItem(
+          p.id,
+          meal: _meal,
+          quantity: quantity,
+          measure: measure,
+          weekdays: weekdays,
+          food: food.id == p.foodId ? null : food,
+        );
+      } else {
+        await repo.addPlanItem(meal: _meal, food: food, quantity: quantity, measure: measure, weekdays: weekdays);
+      }
+    } else if (_e case final editing?) {
       // A food changed is copied again; the same food keeps the values it was eaten with.
       await repo.updateEntry(editing.id, day: _day, meal: _meal, quantity: quantity, measure: measure, food: food.id == editing.foodId ? null : food);
+    } else {
+      await repo.addEntry(day: _day, meal: _meal, food: food, quantity: quantity, measure: measure);
     }
     if (mounted) Navigator.pop(context);
   }
 
-  Future<void> _delete(DietEntry e) async {
+  Future<void> _delete() async {
     final t = AppLocalizations.of(context);
     final repo = ref.read(dietRepositoryProvider);
     final page = Navigator.of(context).context;
     Navigator.pop(context);
-    await repo.deleteEntry(e.id);
-    if (page.mounted) showToast(page, t.dietEntryDeleted, undo: () => repo.deleteEntry(e.id, restore: true), redo: () => repo.deleteEntry(e.id));
+    if (_p case final p?) {
+      await repo.deletePlanItem(p.id);
+      if (page.mounted) {
+        showToast(page, t.dietPlanItemDeleted, undo: () => repo.deletePlanItem(p.id, restore: true), redo: () => repo.deletePlanItem(p.id));
+      }
+    } else if (_e case final e?) {
+      await repo.deleteEntry(e.id);
+      if (page.mounted) showToast(page, t.dietEntryDeleted, undo: () => repo.deleteEntry(e.id, restore: true), redo: () => repo.deleteEntry(e.id));
+    }
+  }
+
+  /// "+ Medida" beside the measures: added to the food (TACO's too) and picked.
+  Future<void> _newMeasure(Food food) async {
+    final made = await showMeasurePrompt(context);
+    if (made == null || !mounted) return;
+    await ref.read(dietRepositoryProvider).addMeasure(foodId: food.id, name: made.name, grams: made.grams);
+    if (!mounted) return;
+    setState(() {
+      _measureName = made.name;
+      if (parseDecimal(_quantity.text) == null || _measureOf(food) == null) _quantity.text = '1';
+    });
   }
 
   @override
@@ -158,38 +248,68 @@ class _EntryFormState extends ConsumerState<_EntryForm> {
     final tt = context.tt;
     final diet = ref.watch(dietProvider).value ?? DietSnapshot.empty;
     final taco = ref.watch(tacoProvider).value ?? const <Food>[];
-    final all = [...diet.customFoods, ...taco];
+    final all = diet.allFoods(taco);
     final food = _food == null ? null : _withMeasures(_food!, all);
     final measure = food == null ? null : _measureOf(food);
     final quantity = parseDecimal(_quantity.text);
     final grams = quantity == null ? null : (measure == null ? quantity : quantity * measure.grams);
     final portion = food == null || grams == null ? null : food.per100g.forGrams(grams);
     final results = food == null ? searchFoods(all, _query.text, limit: 30) : const <Food>[];
+    // The meals in use, and the one of what is edited even when archived.
+    final meals = [
+      for (final m in diet.meals)
+        if (m.archivedAt == null || m.id == _meal) (id: m.id, name: mealName(t, m)),
+    ];
+    if (!meals.any((m) => m.id == _meal)) meals.add((id: _meal, name: mealNameOf(t, diet, _meal)));
+    final labels = DateLabels(t);
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         FormHeader(
-          title: _e == null ? t.dietAddFood : t.dietEditEntry,
+          title: widget.plan ? (_p == null ? t.dietAddToPlan : t.dietEditPlanItem) : (_e == null ? t.dietAddFood : t.dietEditEntry),
           onSave: () => unawaited(_save(food)),
-          onDelete: switch (_e) {
-            final e? => () => unawaited(_delete(e)),
-            null => null,
-          },
+          onDelete: _e == null && _p == null ? null : () => unawaited(_delete()),
         ),
         Flexible(
           child: ListView(
             shrinkWrap: true,
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
             children: [
-              DropdownButtonFormField<Meal>(
+              DropdownButtonFormField<String>(
                 initialValue: _meal,
                 isExpanded: true,
                 decoration: InputDecoration(labelText: t.dietMeal, isDense: true),
-                items: [for (final m in Meal.values) DropdownMenuItem(value: m, child: Text(mealLabel(t, m)))],
+                items: [
+                  for (final m in meals)
+                    DropdownMenuItem(
+                      value: m.id,
+                      child: Text(m.name, overflow: TextOverflow.ellipsis),
+                    ),
+                ],
                 onChanged: (m) => setState(() => _meal = m ?? _meal),
               ),
+              if (widget.plan) ...[
+                const SizedBox(height: 12),
+                Text(
+                  t.dietPlanDays,
+                  style: TextStyle(fontSize: TtText.small, color: tt.textTertiary),
+                ),
+                const SizedBox(height: 6),
+                Wrap(
+                  spacing: 6,
+                  runSpacing: 6,
+                  children: [
+                    for (final wd in weekdayOrder())
+                      FinChip(
+                        label: labels.weekdayShort(weekdayDate(wd)),
+                        selected: _weekdays.contains(wd),
+                        onTap: () => setState(() => _weekdays.contains(wd) ? _weekdays.remove(wd) : _weekdays.add(wd)),
+                      ),
+                  ],
+                ),
+              ],
               const SizedBox(height: 14),
               if (food == null) ...[
                 TextField(
@@ -261,7 +381,8 @@ class _EntryFormState extends ConsumerState<_EntryForm> {
                     Expanded(
                       flex: 2,
                       child: DropdownButtonFormField<int>(
-                        key: ValueKey(food.id),
+                        // Rebuilt when a measure is added, so the new one can be the value.
+                        key: ValueKey('${food.id}/${food.measures.length}'),
                         initialValue: measure == null ? -1 : food.measures.indexOf(measure),
                         isExpanded: true,
                         decoration: const InputDecoration(isDense: true),
@@ -275,6 +396,11 @@ class _EntryFormState extends ConsumerState<_EntryForm> {
                         ],
                         onChanged: (i) => setState(() => _measureName = i == null || i < 0 ? null : food.measures[i].name),
                       ),
+                    ),
+                    IconButton(
+                      tooltip: t.dietNewMeasure,
+                      icon: Icon(Icons.add, size: 20, color: tt.textSecondary),
+                      onPressed: () => unawaited(_newMeasure(food)),
                     ),
                   ],
                 ),
@@ -301,9 +427,201 @@ class _EntryFormState extends ConsumerState<_EntryForm> {
   }
 }
 
-/// "Novo alimento" / "Editar alimento": a name and the values per 100 g (blank = unknown), and a
-/// household measure. With [use] ("Não achei" while adding), returns the food made to put it in
-/// the entry at once.
+/// "Nova medida": a name and its grams; null when cancelled or incomplete.
+Future<({String name, double grams})?> showMeasurePrompt(BuildContext context) =>
+    showDialog<({String name, double grams})>(context: context, builder: (_) => const _MeasurePrompt());
+
+class _MeasurePrompt extends StatefulWidget {
+  const _MeasurePrompt();
+
+  @override
+  State<_MeasurePrompt> createState() => _MeasurePromptState();
+}
+
+class _MeasurePromptState extends State<_MeasurePrompt> {
+  final _name = TextEditingController();
+  final _grams = TextEditingController();
+
+  @override
+  void dispose() {
+    _name.dispose();
+    _grams.dispose();
+    super.dispose();
+  }
+
+  void _done() {
+    final grams = parseDecimal(_grams.text);
+    if (_name.text.trim().isEmpty || grams == null || grams <= 0) return;
+    Navigator.pop(context, (name: _name.text.trim(), grams: grams));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
+    return AlertDialog(
+      title: Text(t.dietNewMeasure),
+      content: SizedBox(
+        width: 320,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: _name,
+              autofocus: true,
+              decoration: InputDecoration(labelText: t.dietMeasureLabel, isDense: true),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _grams,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]'))],
+              decoration: InputDecoration(labelText: t.dietMeasureGramsShort, suffixText: 'g', isDense: true),
+              onSubmitted: (_) => _done(),
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(context), child: Text(t.actionCancel)),
+        FilledButton(onPressed: _done, child: Text(t.actionAdd)),
+      ],
+    );
+  }
+}
+
+/// "Medidas caseiras" of a TACO food: the table's (as they are) and the user's, each with its bin,
+/// and "+ Medida".
+Future<void> showFoodMeasures(BuildContext context, Food food) => showFinanceDialog<void>(context, builder: (_) => _FoodMeasures(food: food));
+
+class _FoodMeasures extends ConsumerStatefulWidget {
+  const _FoodMeasures({required this.food});
+
+  final Food food;
+
+  @override
+  ConsumerState<_FoodMeasures> createState() => _FoodMeasuresState();
+}
+
+class _FoodMeasuresState extends ConsumerState<_FoodMeasures> {
+  /// Deleted while the dialog is open: they stay in sight, faded, with "Desfazer" (the toast's is
+  /// under the dialog).
+  final _deleted = <FoodMeasure>[];
+
+  Future<void> _delete(FoodMeasure m) async {
+    final t = AppLocalizations.of(context);
+    final repo = ref.read(dietRepositoryProvider);
+    await repo.deleteMeasure(m.id!);
+    if (!mounted) return;
+    setState(() => _deleted.add(m));
+    showToast(context, t.dietMeasureDeleted, undo: () => repo.deleteMeasure(m.id!, restore: true), redo: () => repo.deleteMeasure(m.id!));
+  }
+
+  Future<void> _restore(FoodMeasure m) async {
+    await ref.read(dietRepositoryProvider).deleteMeasure(m.id!, restore: true);
+    if (mounted) setState(() => _deleted.remove(m));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
+    final tt = context.tt;
+    final food = widget.food;
+    final diet = ref.watch(dietProvider).value ?? DietSnapshot.empty;
+    final mine = diet.userMeasuresOf(food.id);
+    final repo = ref.read(dietRepositoryProvider);
+    Widget line(FoodMeasure m, {Widget? action, bool faded = false}) => Row(
+      children: [
+        Expanded(
+          child: Text(
+            m.name,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(color: faded ? tt.textTertiary : tt.text, decoration: faded ? TextDecoration.lineThrough : null),
+          ),
+        ),
+        Text('${formatGrams(m.grams)} g', style: TextStyle(color: faded ? tt.textTertiary : tt.textSecondary)),
+        action ?? const SizedBox(width: 48, height: 40),
+      ],
+    );
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 16, 12, 4),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(t.dietMeasures, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
+              ),
+              TextButton(onPressed: () => Navigator.pop(context), child: Text(t.actionClose)),
+            ],
+          ),
+        ),
+        Flexible(
+          child: ListView(
+            shrinkWrap: true,
+            padding: const EdgeInsets.fromLTRB(20, 4, 20, 20),
+            children: [
+              Text(
+                food.name,
+                style: TextStyle(fontWeight: FontWeight.w600, color: tt.text),
+              ),
+              if (food.measures.isNotEmpty) ...[
+                const SizedBox(height: 12),
+                Text(
+                  t.dietTacoMeasures,
+                  style: TextStyle(fontSize: TtText.small, color: tt.textTertiary),
+                ),
+                for (final m in food.measures) line(m),
+              ],
+              const SizedBox(height: 12),
+              Text(
+                t.dietMyMeasures,
+                style: TextStyle(fontSize: TtText.small, color: tt.textTertiary),
+              ),
+              if (mine.isEmpty && _deleted.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  child: Text(t.dietNoMeasures, style: TextStyle(color: tt.textTertiary)),
+                ),
+              for (final m in mine)
+                line(
+                  m,
+                  action: IconButton(
+                    tooltip: t.actionDelete,
+                    icon: Icon(Icons.delete_outline, size: 20, color: tt.overdue),
+                    onPressed: () => unawaited(_delete(m)),
+                  ),
+                ),
+              for (final m in _deleted)
+                if (!mine.any((x) => x.id == m.id))
+                  line(
+                    m,
+                    faded: true,
+                    action: TextButton(onPressed: () => unawaited(_restore(m)), child: Text(t.toastUndo)),
+                  ),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: TextButton.icon(
+                  icon: const Icon(Icons.add, size: 18),
+                  label: Text(t.dietAddMeasure),
+                  onPressed: () async {
+                    final made = await showMeasurePrompt(context);
+                    if (made != null) await repo.addMeasure(foodId: food.id, name: made.name, grams: made.grams);
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// "Novo alimento" / "Editar alimento": a name, the values per 100 g (blank = unknown) and its
+/// household measures ("+ Medida", a bin on each). With [use] ("Não achei" while adding), returns
+/// the food made to put it in the entry at once.
 Future<Food?> showDietFoodForm(BuildContext context, {DietFood? editing, String name = '', bool use = false}) => showFinanceDialog<Food>(
   context,
   builder: (_) => _FoodForm(editing: editing, name: name, use: use),
@@ -320,6 +638,23 @@ class _FoodForm extends ConsumerStatefulWidget {
   ConsumerState<_FoodForm> createState() => _FoodFormState();
 }
 
+/// A measure row of the food form: [id] null for one not saved in the table yet (a new one, or the
+/// single measure of before schema v20, which moves to the table on saving).
+class _MeasureRow {
+  _MeasureRow({this.id, String name = '', double? grams})
+    : name = TextEditingController(text: name),
+      grams = TextEditingController(text: grams == null ? '' : formatGrams(grams));
+
+  final String? id;
+  final TextEditingController name;
+  final TextEditingController grams;
+
+  void dispose() {
+    name.dispose();
+    grams.dispose();
+  }
+}
+
 class _FoodFormState extends ConsumerState<_FoodForm> {
   late final DietFood? _f = widget.editing;
   late final _name = TextEditingController(text: _f?.name ?? widget.name);
@@ -328,14 +663,26 @@ class _FoodFormState extends ConsumerState<_FoodForm> {
   late final _carbs = TextEditingController(text: _f?.carbs == null ? '' : formatGrams(_f!.carbs));
   late final _fat = TextEditingController(text: _f?.fat == null ? '' : formatGrams(_f!.fat));
   late final _fiber = TextEditingController(text: _f?.fiber == null ? '' : formatGrams(_f!.fiber));
-  late final _measure = TextEditingController(text: _f?.measureName ?? '');
-  late final _measureGrams = TextEditingController(text: _f?.measureGrams == null ? '' : formatGrams(_f!.measureGrams));
+  late final List<_MeasureRow> _measures = _initialMeasures();
   bool _showError = false;
+
+  List<_MeasureRow> _initialMeasures() {
+    final f = _f;
+    if (f == null) return [];
+    final diet = ref.read(dietProvider).value ?? DietSnapshot.empty;
+    return [
+      if (f.measureName case final name? when (f.measureGrams ?? 0) > 0) _MeasureRow(name: name, grams: f.measureGrams),
+      for (final m in diet.userMeasuresOf(f.id)) _MeasureRow(id: m.id, name: m.name, grams: m.grams),
+    ];
+  }
 
   @override
   void dispose() {
-    for (final c in [_name, _kcal, _protein, _carbs, _fat, _fiber, _measure, _measureGrams]) {
+    for (final c in [_name, _kcal, _protein, _carbs, _fat, _fiber]) {
       c.dispose();
+    }
+    for (final m in _measures) {
+      m.dispose();
     }
     super.dispose();
   }
@@ -359,17 +706,20 @@ class _FoodFormState extends ConsumerState<_FoodForm> {
     }
     final repo = ref.read(dietRepositoryProvider);
     final per100g = _per100g;
-    final grams = parseDecimal(_measureGrams.text);
+    final drafts = <MeasureDraft>[
+      for (final m in _measures)
+        if (parseDecimal(m.grams.text) case final grams? when grams > 0 && m.name.text.trim().isNotEmpty)
+          (id: m.id, name: m.name.text.trim(), grams: grams),
+    ];
     final editing = _f;
     final String id;
     if (editing == null) {
-      id = await repo.createFood(name: name, per100g: per100g, measureName: _measure.text, measureGrams: grams);
+      id = await repo.createFood(name: name, per100g: per100g, measures: drafts);
     } else {
       id = editing.id;
-      await repo.updateFood(id, name: name, per100g: per100g, measureName: _measure.text, measureGrams: grams);
+      await repo.updateFood(id, name: name, per100g: per100g, measures: drafts);
     }
     if (!mounted) return;
-    final measureName = _measure.text.trim();
     Navigator.pop(
       context,
       Food(
@@ -377,7 +727,7 @@ class _FoodFormState extends ConsumerState<_FoodForm> {
         name: name,
         per100g: per100g,
         custom: true,
-        measures: [if (measureName.isNotEmpty && (grams ?? 0) > 0) FoodMeasure(name: measureName, grams: grams!, isDefault: true)],
+        measures: [for (final d in drafts) FoodMeasure(name: d.name, grams: d.grams)],
       ),
     );
   }
@@ -470,18 +820,43 @@ class _FoodFormState extends ConsumerState<_FoodForm> {
               const SizedBox(height: 8),
               Row(children: [number(_fiber, t.dietFiber, 'g'), const SizedBox(width: 12), const Spacer()]),
               const SizedBox(height: 14),
-              Row(
-                children: [
-                  Expanded(
-                    flex: 2,
-                    child: TextField(
-                      controller: _measure,
-                      decoration: InputDecoration(labelText: t.dietMeasureName, isDense: true),
-                    ),
+              Text(
+                t.dietMeasures,
+                style: TextStyle(fontSize: TtText.small, color: tt.textTertiary),
+              ),
+              for (final m in _measures)
+                Padding(
+                  padding: const EdgeInsets.only(top: 6),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        flex: 2,
+                        child: TextField(
+                          controller: m.name,
+                          decoration: InputDecoration(labelText: t.dietMeasureLabel, isDense: true),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      number(m.grams, t.dietMeasureGramsShort, 'g'),
+                      IconButton(
+                        tooltip: t.actionDelete,
+                        icon: Icon(Icons.delete_outline, size: 20, color: tt.overdue),
+                        onPressed: () {
+                          setState(() => _measures.remove(m));
+                          // Its fields leave the tree on the next frame.
+                          WidgetsBinding.instance.addPostFrameCallback((_) => m.dispose());
+                        },
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 12),
-                  number(_measureGrams, t.dietMeasureGrams, 'g'),
-                ],
+                ),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: TextButton.icon(
+                  icon: const Icon(Icons.add, size: 18),
+                  label: Text(t.dietAddMeasure),
+                  onPressed: () => setState(() => _measures.add(_MeasureRow())),
+                ),
               ),
               if (widget.use) ...[const SizedBox(height: 16), FilledButton(onPressed: () => unawaited(_save()), child: Text(t.dietSaveAndUse))],
             ],

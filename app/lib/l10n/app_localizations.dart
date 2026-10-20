@@ -9397,6 +9397,258 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Gord. {pct}'**
   String dietLegendFat(String pct);
+
+  /// No description provided for @dietNewMeal.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nova refeição'**
+  String get dietNewMeal;
+
+  /// No description provided for @dietEditMeal.
+  ///
+  /// In pt, this message translates to:
+  /// **'Editar refeição'**
+  String get dietEditMeal;
+
+  /// No description provided for @dietMealTime.
+  ///
+  /// In pt, this message translates to:
+  /// **'Horário'**
+  String get dietMealTime;
+
+  /// No description provided for @dietMealNoTime.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sem horário'**
+  String get dietMealNoTime;
+
+  /// No description provided for @dietMealTimeHint.
+  ///
+  /// In pt, this message translates to:
+  /// **'O horário escolhe a refeição sugerida ao adicionar um alimento.'**
+  String get dietMealTimeHint;
+
+  /// No description provided for @dietMealNameRequired.
+  ///
+  /// In pt, this message translates to:
+  /// **'Dê um nome à refeição.'**
+  String get dietMealNameRequired;
+
+  /// No description provided for @dietMoveUp.
+  ///
+  /// In pt, this message translates to:
+  /// **'Mover para cima'**
+  String get dietMoveUp;
+
+  /// No description provided for @dietMoveDown.
+  ///
+  /// In pt, this message translates to:
+  /// **'Mover para baixo'**
+  String get dietMoveDown;
+
+  /// No description provided for @dietMealArchived.
+  ///
+  /// In pt, this message translates to:
+  /// **'Refeição arquivada'**
+  String get dietMealArchived;
+
+  /// No description provided for @dietMealDeleted.
+  ///
+  /// In pt, this message translates to:
+  /// **'Refeição excluída'**
+  String get dietMealDeleted;
+
+  /// No description provided for @dietMealArchivedTag.
+  ///
+  /// In pt, this message translates to:
+  /// **'arquivada'**
+  String get dietMealArchivedTag;
+
+  /// No description provided for @dietArchivedMeals.
+  ///
+  /// In pt, this message translates to:
+  /// **'Refeições arquivadas ({count})'**
+  String dietArchivedMeals(int count);
+
+  /// No description provided for @dietMeasures.
+  ///
+  /// In pt, this message translates to:
+  /// **'Medidas caseiras'**
+  String get dietMeasures;
+
+  /// No description provided for @dietAddMeasure.
+  ///
+  /// In pt, this message translates to:
+  /// **'Medida'**
+  String get dietAddMeasure;
+
+  /// No description provided for @dietNewMeasure.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nova medida'**
+  String get dietNewMeasure;
+
+  /// No description provided for @dietMeasureDeleted.
+  ///
+  /// In pt, this message translates to:
+  /// **'Medida excluída'**
+  String get dietMeasureDeleted;
+
+  /// No description provided for @dietMeasureLabel.
+  ///
+  /// In pt, this message translates to:
+  /// **'Medida (ex.: colher de sopa)'**
+  String get dietMeasureLabel;
+
+  /// No description provided for @dietMeasureGramsShort.
+  ///
+  /// In pt, this message translates to:
+  /// **'Gramas'**
+  String get dietMeasureGramsShort;
+
+  /// No description provided for @dietTacoMeasures.
+  ///
+  /// In pt, this message translates to:
+  /// **'Da tabela TACO'**
+  String get dietTacoMeasures;
+
+  /// No description provided for @dietMyMeasures.
+  ///
+  /// In pt, this message translates to:
+  /// **'Suas medidas'**
+  String get dietMyMeasures;
+
+  /// No description provided for @dietNoMeasures.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhuma medida ainda.'**
+  String get dietNoMeasures;
+
+  /// No description provided for @dietTargets.
+  ///
+  /// In pt, this message translates to:
+  /// **'Metas'**
+  String get dietTargets;
+
+  /// No description provided for @dietTargetsTitle.
+  ///
+  /// In pt, this message translates to:
+  /// **'Metas diárias'**
+  String get dietTargetsTitle;
+
+  /// No description provided for @dietTargetsHint.
+  ///
+  /// In pt, this message translates to:
+  /// **'Deixe em branco o que não quiser acompanhar.'**
+  String get dietTargetsHint;
+
+  /// No description provided for @dietTargetsFromMacros.
+  ///
+  /// In pt, this message translates to:
+  /// **'Calcular as calorias pelos macros (P×4 + C×4 + G×9)'**
+  String get dietTargetsFromMacros;
+
+  /// No description provided for @dietTabPlan.
+  ///
+  /// In pt, this message translates to:
+  /// **'Plano'**
+  String get dietTabPlan;
+
+  /// No description provided for @dietAddToPlan.
+  ///
+  /// In pt, this message translates to:
+  /// **'Adicionar ao plano'**
+  String get dietAddToPlan;
+
+  /// No description provided for @dietEditPlanItem.
+  ///
+  /// In pt, this message translates to:
+  /// **'Editar item do plano'**
+  String get dietEditPlanItem;
+
+  /// No description provided for @dietPlanItemDeleted.
+  ///
+  /// In pt, this message translates to:
+  /// **'Item removido do plano'**
+  String get dietPlanItemDeleted;
+
+  /// No description provided for @dietPlanEmpty.
+  ///
+  /// In pt, this message translates to:
+  /// **'Seu plano está vazio. Monte o cardápio prescrito com + Adicionar ao plano.'**
+  String get dietPlanEmpty;
+
+  /// No description provided for @dietPlanEveryDay.
+  ///
+  /// In pt, this message translates to:
+  /// **'Todos os dias'**
+  String get dietPlanEveryDay;
+
+  /// No description provided for @dietPlanDays.
+  ///
+  /// In pt, this message translates to:
+  /// **'Dias da semana (nenhum marcado = todos os dias)'**
+  String get dietPlanDays;
+
+  /// No description provided for @dietPlanAll.
+  ///
+  /// In pt, this message translates to:
+  /// **'Todos'**
+  String get dietPlanAll;
+
+  /// No description provided for @dietPlanTotal.
+  ///
+  /// In pt, this message translates to:
+  /// **'Total do plano'**
+  String get dietPlanTotal;
+
+  /// No description provided for @dietImportPlan.
+  ///
+  /// In pt, this message translates to:
+  /// **'Importar plano do dia'**
+  String get dietImportPlan;
+
+  /// No description provided for @dietPlanImported.
+  ///
+  /// In pt, this message translates to:
+  /// **'{count, plural, =0{O plano do dia já está no diário} =1{1 alimento importado do plano} other{{count} alimentos importados do plano}}'**
+  String dietPlanImported(int count);
+
+  /// No description provided for @dietAdherence.
+  ///
+  /// In pt, this message translates to:
+  /// **'Adesão'**
+  String get dietAdherence;
+
+  /// No description provided for @dietAdherenceWeek.
+  ///
+  /// In pt, this message translates to:
+  /// **'Últimos 7 dias'**
+  String get dietAdherenceWeek;
+
+  /// No description provided for @dietAdherenceDay.
+  ///
+  /// In pt, this message translates to:
+  /// **'Adesão do dia: {pct}'**
+  String dietAdherenceDay(String pct);
+
+  /// No description provided for @dietAdherenceHelp.
+  ///
+  /// In pt, this message translates to:
+  /// **'Cada item do plano comido como planejado vale 100%; com outra quantidade ou trocado, 50%; pulado, 0%. Com meta de calorias, a nota é 70% o plano e 30% as calorias (100% dentro de ±10% da meta).'**
+  String get dietAdherenceHelp;
+
+  /// No description provided for @dietAdherenceLess.
+  ///
+  /// In pt, this message translates to:
+  /// **'Menos'**
+  String get dietAdherenceLess;
+
+  /// No description provided for @dietAdherenceMore.
+  ///
+  /// In pt, this message translates to:
+  /// **'Mais'**
+  String get dietAdherenceMore;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

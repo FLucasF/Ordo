@@ -5001,4 +5001,144 @@ class AppLocalizationsLa extends AppLocalizations {
   String dietLegendFat(String pct) {
     return 'Adip. $pct';
   }
+
+  @override
+  String get dietNewMeal => 'Nova cibatio';
+
+  @override
+  String get dietEditMeal => 'Cibationem muta';
+
+  @override
+  String get dietMealTime => 'Hora';
+
+  @override
+  String get dietMealNoTime => 'Sine hora';
+
+  @override
+  String get dietMealTimeHint => 'Hora cibationem proponit cum cibum addis.';
+
+  @override
+  String get dietMealNameRequired => 'Cibationi nomen da.';
+
+  @override
+  String get dietMoveUp => 'Sursum move';
+
+  @override
+  String get dietMoveDown => 'Deorsum move';
+
+  @override
+  String get dietMealArchived => 'Cibatio in tabulario condita';
+
+  @override
+  String get dietMealDeleted => 'Cibatio deleta';
+
+  @override
+  String get dietMealArchivedTag => 'in tabulario';
+
+  @override
+  String dietArchivedMeals(int count) {
+    return 'Cibationes in tabulario ($count)';
+  }
+
+  @override
+  String get dietMeasures => 'Mensurae domesticae';
+
+  @override
+  String get dietAddMeasure => 'Mensura';
+
+  @override
+  String get dietNewMeasure => 'Nova mensura';
+
+  @override
+  String get dietMeasureDeleted => 'Mensura deleta';
+
+  @override
+  String get dietMeasureLabel => 'Mensura (ex.: cochlear)';
+
+  @override
+  String get dietMeasureGramsShort => 'Grammata';
+
+  @override
+  String get dietTacoMeasures => 'E tabula TACO';
+
+  @override
+  String get dietMyMeasures => 'Mensurae tuae';
+
+  @override
+  String get dietNoMeasures => 'Nulla mensura adhuc.';
+
+  @override
+  String get dietTargets => 'Proposita';
+
+  @override
+  String get dietTargetsTitle => 'Proposita diurna';
+
+  @override
+  String get dietTargetsHint => 'Vacua relinque quae sequi non vis.';
+
+  @override
+  String get dietTargetsFromMacros => 'Calores ex macronutrientibus computa (P×4 + C×4 + A×9)';
+
+  @override
+  String get dietTabPlan => 'Consilium';
+
+  @override
+  String get dietAddToPlan => 'Consilio adde';
+
+  @override
+  String get dietEditPlanItem => 'Rem consilii muta';
+
+  @override
+  String get dietPlanItemDeleted => 'Res e consilio remota';
+
+  @override
+  String get dietPlanEmpty => 'Consilium tuum vacuum est. Victum praescriptum compone per + Consilio adde.';
+
+  @override
+  String get dietPlanEveryDay => 'Cotidie';
+
+  @override
+  String get dietPlanDays => 'Dies hebdomadis (nullo signato = cotidie)';
+
+  @override
+  String get dietPlanAll => 'Omnes';
+
+  @override
+  String get dietPlanTotal => 'Summa consilii';
+
+  @override
+  String get dietImportPlan => 'Consilium diei importa';
+
+  @override
+  String dietPlanImported(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count cibi ex consilio importati',
+      one: 'Unus cibus ex consilio importatus',
+      zero: 'Consilium diei iam in commentario est',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get dietAdherence => 'Observantia';
+
+  @override
+  String get dietAdherenceWeek => 'Septem dies postremi';
+
+  @override
+  String dietAdherenceDay(String pct) {
+    return 'Observantia diei: $pct';
+  }
+
+  @override
+  String get dietAdherenceHelp =>
+      'Quaeque res consilii ut praescripta est sumpta 100% valet; alia quantitate aut mutata, 50%; omissa, 0%. Proposito calorum posito, nota est 70% consilium et 30% calores (100% intra ±10% propositi).';
+
+  @override
+  String get dietAdherenceLess => 'Minus';
+
+  @override
+  String get dietAdherenceMore => 'Plus';
 }

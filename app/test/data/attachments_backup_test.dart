@@ -119,12 +119,27 @@ void main() {
     await a.addEntry(kind: FinKind.expense, amount: 150000, date: DateTime(2026, 9, 10), recurringId: rent, recurringDue: DateTime(2026, 9, 10));
     final loan = await a.createLoan(borrower: 'João', principal: 100000, total: 130000, lentOn: DateTime(2026, 9, 1), dueOn: DateTime(2026, 10, 1));
     await a.addLoanPayment(loanId: loan, amount: 13000, date: DateTime(2026, 9, 20));
-    // Dieta too: an own food and a day's entry.
+    // Dieta too: an own food with a measure, a measure on a TACO food, an own meal, a plan item and
+    // a day's entry imported from it.
     final diet = DietRepository(source, clock: clock);
-    final bread = await diet.createFood(name: 'Pão de queijo', per100g: const Nutrients(kcal: 363, protein: 5.1));
+    final bread = await diet.createFood(
+      name: 'Pão de queijo',
+      per100g: const Nutrients(kcal: 363, protein: 5.1),
+      measures: [(id: null, name: 'unidade', grams: 20)],
+    );
+    await diet.addMeasure(foodId: 'taco:1', name: 'concha', grams: 90);
+    final preWorkout = await diet.createMeal(name: 'Pré-treino', time: 17 * 60);
+    await diet.archiveMeal('supper');
+    final item = await diet.addPlanItem(
+      meal: preWorkout,
+      food: Food(id: bread, name: 'Pão de queijo', per100g: const Nutrients(kcal: 363, protein: 5.1), custom: true),
+      quantity: 80,
+      weekdays: '1,3,5',
+    );
+    await diet.importPlan(DateTime(2026, 9, 25));
     await diet.addEntry(
       day: DateTime(2026, 9, 24),
-      meal: Meal.breakfast,
+      meal: 'breakfast',
       food: Food(id: bread, name: 'Pão de queijo', per100g: const Nutrients(kcal: 363, protein: 5.1), custom: true),
       quantity: 80,
     );
@@ -148,7 +163,16 @@ void main() {
     expect(s.loanPayments.single.amount, 13000);
     final d = await DietRepository(target, clock: clock).load();
     expect(d.foods.single.name, 'Pão de queijo');
-    expect((d.entries.single.grams, d.entries.single.kcal), (80.0, 363.0));
+    expect(d.entries, hasLength(2));
+    final eaten = d.entriesOn(DateTime(2026, 9, 24)).single;
+    expect((eaten.grams, eaten.kcal, eaten.meal), (80.0, 363.0, 'breakfast'));
+    expect(d.entriesOn(DateTime(2026, 9, 25)).single.planItemId, item, reason: "Friday 25/09 is in the item's days");
+    expect(d.customFoods.single.measures.single.name, 'unidade');
+    expect(d.userMeasuresOf('taco:1').single.grams, 90);
+    expect(d.planItems.single.weekdays, '1,3,5');
+    expect(d.meal(preWorkout)?.name, 'Pré-treino');
+    expect(d.meal('supper')?.archivedAt, isNotNull);
+    expect(d.meals, hasLength(7));
     await target.close();
   });
 }
