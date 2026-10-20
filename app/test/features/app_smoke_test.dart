@@ -149,6 +149,26 @@ void main() {
 
   List<String> byOrder(Snapshot s) => [for (final t in s.tasks.toList()..sort((x, y) => x.sortOrder.compareTo(y.sortOrder))) t.title];
 
+  testWidgets('phone: completing the open task closes it, with Desfazer; the ✕ is at the far end, away from the checkbox', (tester) async {
+    final repo = Repository(db, clock: clock);
+    final id = await tester.runAsync(() => repo.createTask(listId: inboxListId, title: 'Ler capítulo'));
+    await pumpApp(tester, '/p/inbox/tasks/$id', size: const Size(412, 900));
+    expect(find.byType(TaskDetailPane), findsOneWidget);
+    final box = tester.getCenter(find.descendant(of: find.byType(TaskDetailPane), matching: find.byType(TaskCheckbox)).first);
+    final close = tester.getCenter(find.descendant(of: find.byType(TaskDetailPane), matching: find.byIcon(Icons.close)));
+    expect(close.dx - box.dx, greaterThan(250));
+    expect(tester.takeException(), isNull, reason: 'before completing');
+    await tester.tap(find.descendant(of: find.byType(TaskDetailPane), matching: find.byType(TaskCheckbox)).first);
+    for (var i = 0; i < 5; i++) {
+      await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 20)));
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+    expect(find.byType(TaskDetailPane), findsNothing);
+    expect(find.text('Desfazer'), findsOneWidget);
+    expect((await tester.runAsync(() => repo.task(id!)))!.status, TaskStatus.completed);
+    await _dispose(tester);
+  });
+
   testWidgets('desktop: a drag over the middle of a row reorders (its lower half: after it); Shift makes a subtask', (tester) async {
     final repo = Repository(db, clock: clock);
     await tester.runAsync(() async {

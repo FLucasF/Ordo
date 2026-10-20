@@ -37,7 +37,7 @@ class TaskDetailPane extends ConsumerWidget {
   final Scope scope;
   final String? taskId;
 
-  /// Mobile: the ✕ that closes the full-screen detail.
+  /// The ✕ that closes the detail open on its own (full screen on a phone, a floating window).
   final VoidCallback? onClose;
 
   @override
@@ -104,6 +104,14 @@ class _DetailState extends ConsumerState<_Detail> {
     super.dispose();
   }
 
+  /// The header's checkbox. Completing a task open on its own (full screen on a phone, a floating
+  /// window) also closes it; the toast keeps "Desfazer".
+  Future<void> _toggle(Task task) async {
+    final closing = widget.onClose != null && task.status == TaskStatus.open;
+    await toggleComplete(context, ref, task);
+    if (closing && mounted) widget.onClose!();
+  }
+
   void _onTitleChanged(String v) {
     _titleDebounce?.cancel();
     _titleDebounce = Timer(const Duration(milliseconds: 400), () => unawaited(ref.read(repositoryProvider).setTitle(widget.task.id, v)));
@@ -137,24 +145,25 @@ class _DetailState extends ConsumerState<_Detail> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        // Header: checkbox · date · priority flag (48 px, 24 px side padding, measured).
+        // Header: checkbox · date · priority flag (48 px, 24 px side padding, measured); the close button
+        // (full screen on a phone, a floating window) at the far end, away from the checkbox.
         SizedBox(
           height: TtSizes.detailBarHeight,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Row(
               children: [
-                if (widget.onClose != null)
-                  IconButton(
-                    icon: Icon(Icons.close, color: tt.textSecondary, size: 20),
-                    onPressed: widget.onClose,
-                    visualDensity: VisualDensity.compact,
+                // A finger-sized target around the checkbox.
+                InkWell(
+                  customBorder: const CircleBorder(),
+                  onTap: () => fireAndForget(_toggle(task)),
+                  child: SizedBox(
+                    width: 44,
+                    height: 44,
+                    child: Center(
+                      child: TaskCheckbox(status: task.status, priority: task.priority, kind: task.kind, onTap: () => fireAndForget(_toggle(task))),
+                    ),
                   ),
-                TaskCheckbox(
-                  status: task.status,
-                  priority: task.priority,
-                  kind: task.kind,
-                  onTap: () => fireAndForget(toggleComplete(context, ref, task)),
                 ),
                 Container(width: 1, height: 16, margin: const EdgeInsets.symmetric(horizontal: 12), color: tt.divider),
                 // Date, its reminder/repeat icons and, below, a pending snooze ("adiar até 19:03").
@@ -232,6 +241,12 @@ class _DetailState extends ConsumerState<_Detail> {
                       ),
                   ],
                 ),
+                if (widget.onClose != null)
+                  IconButton(
+                    tooltip: t.actionClose,
+                    icon: Icon(Icons.close, color: tt.textSecondary, size: 22),
+                    onPressed: widget.onClose,
+                  ),
               ],
             ),
           ),
@@ -399,13 +414,23 @@ class _DetailState extends ConsumerState<_Detail> {
             padding: const EdgeInsets.fromLTRB(18, 0, 24, 0),
             child: Row(
               children: [
-                TextButton.icon(
-                  style: TextButton.styleFrom(foregroundColor: tt.textSecondary),
-                  onPressed: () => fireAndForget(_openMenuAtFooter(context)),
-                  icon: Icon(Icons.drive_file_move_outline, size: 18, color: tt.textTertiary),
-                  label: Text(list == null ? '' : labels.listName(list), style: const TextStyle(fontSize: TtText.body)),
+                // A long list name shrinks (…) before the buttons on a narrow screen.
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: TextButton.icon(
+                      style: TextButton.styleFrom(foregroundColor: tt.textSecondary),
+                      onPressed: () => fireAndForget(_openMenuAtFooter(context)),
+                      icon: Icon(Icons.drive_file_move_outline, size: 18, color: tt.textTertiary),
+                      label: Text(
+                        list == null ? '' : labels.listName(list),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(fontSize: TtText.body),
+                      ),
+                    ),
+                  ),
                 ),
-                const Spacer(),
                 if (task.kind != TaskKind.checklist)
                   IconButton(
                     tooltip: t.formatBar,
