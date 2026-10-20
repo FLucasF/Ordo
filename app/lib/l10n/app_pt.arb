@@ -486,6 +486,7 @@
   "exportMarkdown": "Markdown",
   "exportPlainText": "Plain Text",
   "exportCopy": "Copiar",
+  "attachmentOpenExternal": "Abrir no app do sistema",
   "exportDownload": "Baixar",
   "navCountdown": "Contagem Regressiva",
   "countdownActive": "Ativo",

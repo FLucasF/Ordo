@@ -2737,6 +2737,12 @@ abstract class AppLocalizations {
   /// **'Copiar'**
   String get exportCopy;
 
+  /// No description provided for @attachmentOpenExternal.
+  ///
+  /// In pt, this message translates to:
+  /// **'Abrir no app do sistema'**
+  String get attachmentOpenExternal;
+
   /// No description provided for @exportDownload.
   ///
   /// In pt, this message translates to:

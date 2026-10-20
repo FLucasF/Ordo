@@ -330,6 +330,8 @@ class _ContentEditorState extends State<ContentEditor> {
                   describeSize: widget.attachments?.describeSize ?? (_) => '',
                   onOpen: (r) => unawaited(_openAttachment(r)),
                   onDownload: (r) => unawaited(_downloadAttachment(r)),
+                  fileOf: widget.attachments?.fileOf,
+                  openLabel: t.attachmentOpenExternal,
                   downloadLabel: t.exportDownload,
                   deleteLabel: t.actionDelete,
                 ),

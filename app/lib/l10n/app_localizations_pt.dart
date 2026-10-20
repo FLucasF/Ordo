@@ -1385,6 +1385,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get exportCopy => 'Copiar';
 
   @override
+  String get attachmentOpenExternal => 'Abrir no app do sistema';
+
+  @override
   String get exportDownload => 'Baixar';
 
   @override

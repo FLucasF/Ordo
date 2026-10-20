@@ -1,10 +1,14 @@
+import 'dart:io';
+
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../common/image_viewer.dart';
 import 'markdown_codec.dart';
 
-/// Attachment card inside the content: file icon, name and size, plus the "…" menu.
+/// Attachment card inside the content: file icon, name and size, plus the "…" menu; a picture shows
+/// itself above them, and a click opens it over the window.
 /// Selection follows appflowy's pattern for text-less blocks (like the divider): the whole block is
 /// selected as one unit.
 class AttachmentBlockBuilder extends BlockComponentBuilder {
@@ -13,7 +17,9 @@ class AttachmentBlockBuilder extends BlockComponentBuilder {
     required this.describeSize,
     this.onOpen,
     this.onDownload,
+    this.fileOf,
     this.downloadLabel = '',
+    this.openLabel = '',
     this.deleteLabel = '',
   });
 
@@ -25,7 +31,13 @@ class AttachmentBlockBuilder extends BlockComponentBuilder {
 
   /// "Baixar" of the card's "…" menu: saves a copy where the user chooses.
   final void Function(String reference)? onDownload;
+
+  /// The stored file of a reference, to show a picture.
+  final File? Function(String reference)? fileOf;
   final String downloadLabel;
+
+  /// "Abrir no app do sistema", in a picture's menu (its click shows it in the app).
+  final String openLabel;
   final String deleteLabel;
 
   @override
@@ -38,7 +50,9 @@ class AttachmentBlockBuilder extends BlockComponentBuilder {
       describeSize: describeSize,
       onOpen: onOpen,
       onDownload: onDownload,
+      fileOf: fileOf,
       downloadLabel: downloadLabel,
+      openLabel: openLabel,
       deleteLabel: deleteLabel,
     );
   }
@@ -56,14 +70,18 @@ class _AttachmentBlock extends BlockComponentStatefulWidget {
     required this.describeSize,
     this.onOpen,
     this.onDownload,
+    this.fileOf,
     this.downloadLabel = '',
+    this.openLabel = '',
     this.deleteLabel = '',
   });
 
   final String Function(String reference) describeSize;
   final void Function(String reference)? onOpen;
   final void Function(String reference)? onDownload;
+  final File? Function(String reference)? fileOf;
   final String downloadLabel;
+  final String openLabel;
   final String deleteLabel;
 
   @override
@@ -87,45 +105,79 @@ class _AttachmentBlockState extends State<_AttachmentBlock> with SelectableMixin
     final name = reference.substring(reference.indexOf('/') + 1);
     final colors = Theme.of(context).colorScheme;
     final editorState = context.read<EditorState>();
+    final picture = isImageName(name) ? widget.fileOf?.call(reference) : null;
+    final image = picture != null && picture.existsSync() ? picture : null;
+
+    final details = Row(
+      children: [
+        if (image == null) ...[Icon(Icons.description, color: colors.primary, size: 26), const SizedBox(width: 10)],
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(name, overflow: TextOverflow.ellipsis),
+              Text(widget.describeSize(reference), style: TextStyle(fontSize: 11, color: colors.onSurface.withValues(alpha: 0.4))),
+            ],
+          ),
+        ),
+        PopupMenuButton<String>(
+          tooltip: '',
+          icon: Icon(Icons.more_horiz, color: colors.onSurface.withValues(alpha: 0.6)),
+          // The card's menu: Baixar · Deletar.
+          onSelected: (action) {
+            if (action == 'download') {
+              widget.onDownload?.call(reference);
+            } else if (action == 'open') {
+              widget.onOpen?.call(reference);
+            } else {
+              final transaction = editorState.transaction..deleteNode(node);
+              editorState.apply(transaction);
+            }
+          },
+          itemBuilder: (_) => [
+            if (image != null && widget.onOpen != null) PopupMenuItem(value: 'open', height: 36, child: Text(widget.openLabel)),
+            if (widget.onDownload != null) PopupMenuItem(value: 'download', height: 36, child: Text(widget.downloadLabel)),
+            PopupMenuItem(value: 'delete', height: 36, child: Text(widget.deleteLabel)),
+          ],
+        ),
+      ],
+    );
 
     Widget child = Container(
       key: _cardKey,
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(color: colors.onSurface.withValues(alpha: 0.05), borderRadius: BorderRadius.circular(8)),
-      child: Row(
-        children: [
-          Icon(Icons.description, color: colors.primary, size: 26),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
+      child: image == null
+          ? details
+          : Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(name, overflow: TextOverflow.ellipsis),
-                Text(widget.describeSize(reference), style: TextStyle(fontSize: 11, color: colors.onSurface.withValues(alpha: 0.4))),
+                // The picture, at most 320 px tall, decoded at the size it is shown.
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(6),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxHeight: 320, maxWidth: 480),
+                    child: Image.file(
+                      image,
+                      fit: BoxFit.contain,
+                      cacheWidth: (480 * MediaQuery.devicePixelRatioOf(context)).round(),
+                      errorBuilder: (_, _, _) => Icon(Icons.broken_image_outlined, color: colors.onSurface.withValues(alpha: 0.4), size: 40),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 6),
+                details,
               ],
             ),
-          ),
-          PopupMenuButton<String>(
-            tooltip: '',
-            icon: Icon(Icons.more_horiz, color: colors.onSurface.withValues(alpha: 0.6)),
-            // The card's menu: Baixar · Deletar.
-            onSelected: (action) {
-              if (action == 'download') {
-                widget.onDownload?.call(reference);
-              } else {
-                final transaction = editorState.transaction..deleteNode(node);
-                editorState.apply(transaction);
-              }
-            },
-            itemBuilder: (_) => [
-              if (widget.onDownload != null) PopupMenuItem(value: 'download', height: 36, child: Text(widget.downloadLabel)),
-              PopupMenuItem(value: 'delete', height: 36, child: Text(widget.deleteLabel)),
-            ],
-          ),
-        ],
-      ),
     );
-    child = GestureDetector(onTap: widget.onOpen == null ? null : () => widget.onOpen!(reference), child: child);
+    child = GestureDetector(
+      onTap: image != null
+          ? () => showImageViewer(context, image)
+          : widget.onOpen == null
+          ? null
+          : () => widget.onOpen!(reference),
+      child: child,
+    );
 
     child = BlockSelectionContainer(
       node: node,

@@ -14,6 +14,7 @@ import '../../core/clock.dart';
 import '../../data/db/database.dart';
 import '../../l10n/app_localizations.dart';
 import '../common/feedback.dart';
+import '../common/image_viewer.dart';
 
 final _commentsProvider = StreamProvider.family<List<Comment>, String>((ref, taskId) => ref.watch(repositoryProvider).watchComments(taskId));
 
@@ -136,11 +137,14 @@ class _CommentTileState extends ConsumerState<_CommentTile> {
                     if (ref.read(attachmentStoreProvider).fileOf(reference) case final file? when file.existsSync())
                       Padding(
                         padding: const EdgeInsets.only(top: 6),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(6),
-                          child: ConstrainedBox(
-                            constraints: const BoxConstraints(maxHeight: 220, maxWidth: 320),
-                            child: Image.file(file, fit: BoxFit.contain),
+                        child: GestureDetector(
+                          onTap: () => unawaited(showImageViewer(context, file)),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(6),
+                            child: ConstrainedBox(
+                              constraints: const BoxConstraints(maxHeight: 220, maxWidth: 320),
+                              child: Image.file(file, fit: BoxFit.contain),
+                            ),
                           ),
                         ),
                       ),
