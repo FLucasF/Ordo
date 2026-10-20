@@ -10454,6 +10454,228 @@ abstract class AppLocalizations {
   /// **'Diário de refeições com a Tabela TACO: calorias e macros do dia'**
   String get featureDietHint;
 
+  /// No description provided for @navJournal.
+  ///
+  /// In pt, this message translates to:
+  /// **'Diário'**
+  String get navJournal;
+
+  /// No description provided for @featureJournalHint.
+  ///
+  /// In pt, this message translates to:
+  /// **'Humor, energia e notas de cada dia, com um resumo do que você fez'**
+  String get featureJournalHint;
+
+  /// No description provided for @journalTabDay.
+  ///
+  /// In pt, this message translates to:
+  /// **'Dia'**
+  String get journalTabDay;
+
+  /// No description provided for @journalTabTimeline.
+  ///
+  /// In pt, this message translates to:
+  /// **'Linha do tempo'**
+  String get journalTabTimeline;
+
+  /// No description provided for @journalTabCalendar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Calendário'**
+  String get journalTabCalendar;
+
+  /// No description provided for @journalWriteToday.
+  ///
+  /// In pt, this message translates to:
+  /// **'Escrever hoje'**
+  String get journalWriteToday;
+
+  /// No description provided for @journalMood.
+  ///
+  /// In pt, this message translates to:
+  /// **'Humor'**
+  String get journalMood;
+
+  /// No description provided for @journalMood1.
+  ///
+  /// In pt, this message translates to:
+  /// **'Péssimo'**
+  String get journalMood1;
+
+  /// No description provided for @journalMood2.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ruim'**
+  String get journalMood2;
+
+  /// No description provided for @journalMood3.
+  ///
+  /// In pt, this message translates to:
+  /// **'Normal'**
+  String get journalMood3;
+
+  /// No description provided for @journalMood4.
+  ///
+  /// In pt, this message translates to:
+  /// **'Bom'**
+  String get journalMood4;
+
+  /// No description provided for @journalMood5.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ótimo'**
+  String get journalMood5;
+
+  /// No description provided for @journalEnergy.
+  ///
+  /// In pt, this message translates to:
+  /// **'Energia'**
+  String get journalEnergy;
+
+  /// No description provided for @journalEnergyLevel.
+  ///
+  /// In pt, this message translates to:
+  /// **'Energia {level} de 5'**
+  String journalEnergyLevel(int level);
+
+  /// No description provided for @journalHighlight.
+  ///
+  /// In pt, this message translates to:
+  /// **'Destaque / Gratidão'**
+  String get journalHighlight;
+
+  /// No description provided for @journalHighlightHint.
+  ///
+  /// In pt, this message translates to:
+  /// **'O melhor do dia, ou algo pelo qual você é grato'**
+  String get journalHighlightHint;
+
+  /// No description provided for @journalNotes.
+  ///
+  /// In pt, this message translates to:
+  /// **'Notas do dia'**
+  String get journalNotes;
+
+  /// No description provided for @journalNotesPlaceholder.
+  ///
+  /// In pt, this message translates to:
+  /// **'Como foi o seu dia? Digite / para formatar ou anexar imagens'**
+  String get journalNotesPlaceholder;
+
+  /// No description provided for @journalPickDay.
+  ///
+  /// In pt, this message translates to:
+  /// **'Escolher dia'**
+  String get journalPickDay;
+
+  /// No description provided for @journalDeleteEntry.
+  ///
+  /// In pt, this message translates to:
+  /// **'Apagar a entrada deste dia'**
+  String get journalDeleteEntry;
+
+  /// No description provided for @journalEntryDeleted.
+  ///
+  /// In pt, this message translates to:
+  /// **'Entrada do diário deletada'**
+  String get journalEntryDeleted;
+
+  /// No description provided for @journalSummary.
+  ///
+  /// In pt, this message translates to:
+  /// **'Resumo do dia'**
+  String get journalSummary;
+
+  /// No description provided for @journalSummaryHint.
+  ///
+  /// In pt, this message translates to:
+  /// **'Calculado na hora, a partir dos outros módulos'**
+  String get journalSummaryHint;
+
+  /// No description provided for @journalSummaryTasks.
+  ///
+  /// In pt, this message translates to:
+  /// **'{count, plural, =1{1 tarefa concluída} other{{count} tarefas concluídas}}'**
+  String journalSummaryTasks(int count);
+
+  /// No description provided for @journalSummaryHabits.
+  ///
+  /// In pt, this message translates to:
+  /// **'{done} de {total} hábitos feitos'**
+  String journalSummaryHabits(int done, int total);
+
+  /// No description provided for @journalSummaryDiet.
+  ///
+  /// In pt, this message translates to:
+  /// **'{kcal} kcal consumidas'**
+  String journalSummaryDiet(String kcal);
+
+  /// No description provided for @journalSummaryDietTarget.
+  ///
+  /// In pt, this message translates to:
+  /// **'{kcal} de {target} kcal consumidas'**
+  String journalSummaryDietTarget(String kcal, String target);
+
+  /// No description provided for @journalSummaryFocus.
+  ///
+  /// In pt, this message translates to:
+  /// **'{minutes} min de foco'**
+  String journalSummaryFocus(int minutes);
+
+  /// No description provided for @journalSummaryFinance.
+  ///
+  /// In pt, this message translates to:
+  /// **'Entrou {income} · saiu {expense}'**
+  String journalSummaryFinance(String income, String expense);
+
+  /// No description provided for @journalSummaryEmpty.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nada registrado nos outros módulos neste dia.'**
+  String get journalSummaryEmpty;
+
+  /// No description provided for @journalSearchHint.
+  ///
+  /// In pt, this message translates to:
+  /// **'Buscar nas notas e destaques'**
+  String get journalSearchHint;
+
+  /// No description provided for @journalFilterClear.
+  ///
+  /// In pt, this message translates to:
+  /// **'Limpar filtros'**
+  String get journalFilterClear;
+
+  /// No description provided for @journalTimelineEmpty.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhuma entrada ainda. Comece escrevendo sobre hoje.'**
+  String get journalTimelineEmpty;
+
+  /// No description provided for @journalNoResults.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhuma entrada com essa busca ou filtro.'**
+  String get journalNoResults;
+
+  /// No description provided for @journalChart.
+  ///
+  /// In pt, this message translates to:
+  /// **'Humor e energia'**
+  String get journalChart;
+
+  /// No description provided for @journalChartEmpty.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sem humor nem energia registrados neste mês.'**
+  String get journalChartEmpty;
+
+  /// No description provided for @journalNoText.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sem notas'**
+  String get journalNoText;
+
   /// No description provided for @dietTabDiary.
   ///
   /// In pt, this message translates to:

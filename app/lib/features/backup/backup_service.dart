@@ -106,6 +106,7 @@ class BackupService {
       final dietMeals = await source.select(source.dietMeals).get();
       final dietFoodMeasures = await source.select(source.dietFoodMeasures).get();
       final dietPlanItems = await source.select(source.dietPlanItems).get();
+      final journalEntries = await source.select(source.journalEntries).get();
       await _db.transaction(() async {
         // Children first, then parents (foreign keys).
         for (final table in <TableInfo<Table, Object?>>[
@@ -140,6 +141,7 @@ class BackupService {
           _db.dietMeals,
           _db.dietFoodMeasures,
           _db.dietPlanItems,
+          _db.journalEntries,
         ]) {
           await _db.delete(table).go();
         }
@@ -176,6 +178,7 @@ class BackupService {
           b.insertAll(_db.dietMeals, dietMeals);
           b.insertAll(_db.dietFoodMeasures, dietFoodMeasures);
           b.insertAll(_db.dietPlanItems, dietPlanItems);
+          b.insertAll(_db.journalEntries, journalEntries);
         });
       });
     } finally {

@@ -19,6 +19,7 @@ import '../domain/views.dart';
 import 'routes.dart';
 import '../data/diet_repository.dart';
 import '../domain/diet/diet.dart';
+import '../data/journal_repository.dart';
 
 /// Overridden in `main` with the opened database (and in tests with an in-memory one).
 final databaseProvider = Provider<AppDatabase>((ref) => throw UnimplementedError('databaseProvider must be overridden'));
@@ -55,6 +56,16 @@ final dietProvider = StreamProvider<DietSnapshot>((ref) => ref.watch(dietReposit
 final tacoProvider = FutureProvider<List<Food>>(
   (ref) async => parseTaco(utf8.decode((await rootBundle.load('assets/taco.json')).buffer.asUint8List())),
 );
+
+final journalRepositoryProvider = Provider<JournalRepository>(
+  (ref) => JournalRepository(ref.watch(databaseProvider), clock: ref.watch(clockProvider)),
+);
+
+/// The journal's entries (Diário).
+final journalProvider = StreamProvider<JournalSnapshot>((ref) => ref.watch(journalRepositoryProvider).watch());
+
+/// Dieta's daily calorie target as Diário reads it (null = none set).
+final journalCalorieTargetProvider = StreamProvider<double?>((ref) => ref.watch(journalRepositoryProvider).watchCalorieTarget());
 
 final preferencesProvider = StreamProvider<Preferences>((ref) => ref.watch(preferencesRepositoryProvider).watch());
 

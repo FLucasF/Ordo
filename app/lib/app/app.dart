@@ -17,6 +17,7 @@ import '../features/backup/backup_actions.dart' show runAutoBackup;
 import '../features/countdown/countdown_page.dart';
 import '../features/focus/focus_page.dart';
 import '../features/diet/diet_page.dart';
+import '../features/journal/journal_page.dart';
 import '../features/finance/finance_page.dart';
 import '../features/habits/habit_page.dart';
 import '../domain/calendar.dart';
@@ -79,6 +80,14 @@ GoRouter buildRouter({String initialLocation = Routes.initial}) => GoRouter(
     GoRoute(
       path: '${Routes.diet}/:tab',
       pageBuilder: (context, state) => NoTransitionPage(child: DietPage(tab: DietTab.fromRoute(state.pathParameters['tab']))),
+    ),
+    GoRoute(
+      path: Routes.journal,
+      pageBuilder: (context, state) => const NoTransitionPage(child: JournalPage(tab: JournalTab.day)),
+    ),
+    GoRoute(
+      path: '${Routes.journal}/:tab',
+      pageBuilder: (context, state) => NoTransitionPage(child: JournalPage(tab: JournalTab.fromRoute(state.pathParameters['tab']))),
     ),
     GoRoute(
       path: Routes.statistics,

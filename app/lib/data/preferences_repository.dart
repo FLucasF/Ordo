@@ -47,7 +47,8 @@ enum AppFeature {
   focus('focus'),
   countdown('countdown'),
   finance('finance'),
-  diet('diet');
+  diet('diet'),
+  journal('journal');
 
   const AppFeature(this.code);
   final String code;

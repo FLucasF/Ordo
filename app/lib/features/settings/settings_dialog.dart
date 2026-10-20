@@ -402,6 +402,7 @@ class _FeaturesTab extends ConsumerWidget {
         feature(AppFeature.countdown, Icons.hourglass_bottom, t.navCountdown, t.featureCountdownHint),
         feature(AppFeature.finance, Icons.account_balance_wallet_outlined, t.navFinance, t.featureFinanceHint),
         feature(AppFeature.diet, Icons.restaurant_outlined, t.navDiet, t.featureDietHint),
+        feature(AppFeature.journal, Icons.auto_stories_outlined, t.navJournal, t.featureJournalHint),
       ],
     );
   }

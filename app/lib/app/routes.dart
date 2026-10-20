@@ -45,6 +45,11 @@ abstract final class Routes {
 
   static String dietOf(String tab) => '$diet/$tab';
 
+  /// Diário (`/journal/{tab}`): the day's entry, the timeline or the calendar of moods.
+  static const journal = '/journal';
+
+  static String journalOf(String tab) => '$journal/$tab';
+
   /// Eisenhower Matrix (`#m/all/matrix`).
   static const matrix = '/matrix';
 
