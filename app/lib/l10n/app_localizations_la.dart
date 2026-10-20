@@ -3653,6 +3653,306 @@ class AppLocalizationsLa extends AppLocalizations {
       'Exemplar unum in dies pensorum et optionum, in hoc instrumento servatum. Septem recentissima manent. Adiuncta in eo non sunt et ubi sunt manent.';
 
   @override
+  String get xlsxExport => 'In Excel exporta';
+
+  @override
+  String get xlsxExportHint => 'Tabula una, pagina pro quaque parte: pensa, consuetudines, res pecuniaria, victus, commentarius';
+
+  @override
+  String get xlsxExported => 'Tabula servata';
+
+  @override
+  String get xlsxImport => 'Ex Excel importa';
+
+  @override
+  String get xlsxImportHint => 'Pensa et inscriptiones tabulae eiusdem formae addit. Nihil deletur.';
+
+  @override
+  String get xlsxImportInvalid => 'Hoc documentum tabula Excel (.xlsx) non videtur';
+
+  @override
+  String get xlsxImportNothing => 'Nec pensum nec inscriptio in tabula inventa';
+
+  @override
+  String xlsxImportTasks(num count) {
+    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: '$count pensa', one: '1 pensum', zero: 'nullum pensum');
+    return '$_temp0';
+  }
+
+  @override
+  String xlsxImportEntries(num count) {
+    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: '$count inscriptiones', one: '1 inscriptio', zero: 'nulla inscriptio');
+    return '$_temp0';
+  }
+
+  @override
+  String xlsxImportErrors(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count versus mendosi',
+      one: '1 versus mendosus',
+      zero: 'nullus versus mendosus',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String xlsxImportSummary(String tasks, String entries, String errors) {
+    return '$tasks, $entries; $errors';
+  }
+
+  @override
+  String xlsxImportSkipped(String names) {
+    return 'Paginae non importatae (sola Pensa et Inscriptiones intrant): $names';
+  }
+
+  @override
+  String get xlsxImportSafety => 'Omnia adduntur, nihil substituitur. Antequam scribitur, exemplar tutelae sponte fit.';
+
+  @override
+  String xlsxImportMoreErrors(int count) {
+    return '… et $count alii';
+  }
+
+  @override
+  String xlsxImportDone(String tasks, String entries) {
+    return 'Importata: $tasks et $entries';
+  }
+
+  @override
+  String xlsxErrorRow(String sheet, int row, String reason) {
+    return '$sheet, versus $row: $reason';
+  }
+
+  @override
+  String xlsxErrorMissingColumns(String columns) {
+    return 'columnae desunt: $columns';
+  }
+
+  @override
+  String get xlsxErrorNoTitle => 'sine titulo';
+
+  @override
+  String xlsxErrorDate(String column) {
+    return 'dies non validus in \"$column\"';
+  }
+
+  @override
+  String xlsxErrorAmount(String value) {
+    return 'summa non valida \"$value\"';
+  }
+
+  @override
+  String xlsxErrorKind(String value) {
+    return 'genus ignotum \"$value\"';
+  }
+
+  @override
+  String xlsxErrorStatus(String value) {
+    return 'status ignotus \"$value\"';
+  }
+
+  @override
+  String xlsxErrorPriority(String value) {
+    return 'prioritas ignota \"$value\"';
+  }
+
+  @override
+  String xlsxErrorCard(String value) {
+    return 'charta non inventa \"$value\"';
+  }
+
+  @override
+  String get xlsxSheetTasks => 'Pensa';
+
+  @override
+  String get xlsxSheetHabits => 'Consuetudines';
+
+  @override
+  String get xlsxSheetEntries => 'Inscriptiones';
+
+  @override
+  String get xlsxSheetCards => 'Chartae';
+
+  @override
+  String get xlsxSheetInvoicePayments => 'Rationes solutae';
+
+  @override
+  String get xlsxSheetLoans => 'Mutua';
+
+  @override
+  String get xlsxSheetLoanPayments => 'Recepta';
+
+  @override
+  String get xlsxSheetGoals => 'Loculi';
+
+  @override
+  String get xlsxSheetGoalMoves => 'Motus loculorum';
+
+  @override
+  String get xlsxSheetDiet => 'Victus';
+
+  @override
+  String get xlsxSheetJournal => 'Commentarius';
+
+  @override
+  String get xlsxColFolder => 'Fasciculus';
+
+  @override
+  String get xlsxColList => 'Index';
+
+  @override
+  String get xlsxColSection => 'Sectio';
+
+  @override
+  String get xlsxColTitle => 'Titulus';
+
+  @override
+  String get xlsxColNotes => 'Notae';
+
+  @override
+  String get xlsxColStatus => 'Status';
+
+  @override
+  String get xlsxColPriority => 'Prioritas';
+
+  @override
+  String get xlsxColStart => 'Initium';
+
+  @override
+  String get xlsxColDue => 'Terminus';
+
+  @override
+  String get xlsxColTags => 'Pittacia';
+
+  @override
+  String get xlsxColCreated => 'Creatum';
+
+  @override
+  String get xlsxColCompleted => 'Perfectum';
+
+  @override
+  String get xlsxColHabit => 'Consuetudo';
+
+  @override
+  String get xlsxColDate => 'Dies';
+
+  @override
+  String get xlsxColValue => 'Summa';
+
+  @override
+  String get xlsxColGoal => 'Propositum';
+
+  @override
+  String get xlsxColUnit => 'Unitas';
+
+  @override
+  String get xlsxColMood => 'Animus';
+
+  @override
+  String get xlsxColNote => 'Adnotatio';
+
+  @override
+  String get xlsxColKind => 'Genus';
+
+  @override
+  String get xlsxColCategory => 'Categoria';
+
+  @override
+  String get xlsxColDescription => 'Descriptio';
+
+  @override
+  String get xlsxColCard => 'Charta';
+
+  @override
+  String get xlsxColInvoice => 'Ratio';
+
+  @override
+  String get xlsxColInstallment => 'Pensio';
+
+  @override
+  String get xlsxColClosingDay => 'Dies clausurae';
+
+  @override
+  String get xlsxColDueDay => 'Dies solutionis';
+
+  @override
+  String get xlsxColCreditLimit => 'Limes';
+
+  @override
+  String get xlsxColBorrower => 'Qui mutuum accepit';
+
+  @override
+  String get xlsxColLentOn => 'Mutuo datum';
+
+  @override
+  String get xlsxColPrincipal => 'Summa mutua';
+
+  @override
+  String get xlsxColTotal => 'Recipiendum';
+
+  @override
+  String get xlsxColDueOn => 'Solutio';
+
+  @override
+  String get xlsxColInstallments => 'Pensiones';
+
+  @override
+  String get xlsxColReceived => 'Receptum';
+
+  @override
+  String get xlsxColSavingsGoal => 'Loculus';
+
+  @override
+  String get xlsxColSaved => 'Repositum';
+
+  @override
+  String get xlsxColMeal => 'Cibatio';
+
+  @override
+  String get xlsxColFood => 'Cibus';
+
+  @override
+  String get xlsxColQuantity => 'Quantitas';
+
+  @override
+  String get xlsxColMeasure => 'Mensura';
+
+  @override
+  String get xlsxColGrams => 'Grammata';
+
+  @override
+  String get xlsxColKcal => 'kcal';
+
+  @override
+  String get xlsxColProtein => 'Proteina (g)';
+
+  @override
+  String get xlsxColCarbs => 'Carbohydrata (g)';
+
+  @override
+  String get xlsxColFat => 'Adipes (g)';
+
+  @override
+  String get xlsxColFiber => 'Fibrae (g)';
+
+  @override
+  String get xlsxColEnergy => 'Vigor';
+
+  @override
+  String get xlsxColHighlight => 'Insigne';
+
+  @override
+  String get xlsxStatusOpen => 'Apertum';
+
+  @override
+  String get xlsxStatusCompleted => 'Perfectum';
+
+  @override
+  String get xlsxStatusWontDo => 'Non fiet';
+
+  @override
   String get autoBackupNone => 'Nondum ullum exemplar tutelae sponte factum.';
 
   @override

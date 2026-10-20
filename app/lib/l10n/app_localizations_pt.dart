@@ -3653,6 +3653,306 @@ class AppLocalizationsPt extends AppLocalizations {
       'Uma cópia por dia das tarefas e configurações, guardada neste dispositivo. Ficam as 7 mais recentes. Os anexos não entram nela e continuam onde estão.';
 
   @override
+  String get xlsxExport => 'Exportar para Excel';
+
+  @override
+  String get xlsxExportHint => 'Uma planilha com uma aba por módulo: tarefas, hábitos, finanças, dieta e diário';
+
+  @override
+  String get xlsxExported => 'Planilha salva';
+
+  @override
+  String get xlsxImport => 'Importar do Excel';
+
+  @override
+  String get xlsxImportHint => 'Acrescenta as tarefas e os lançamentos de uma planilha no mesmo formato. Nada é apagado.';
+
+  @override
+  String get xlsxImportInvalid => 'Este arquivo não parece uma planilha do Excel (.xlsx)';
+
+  @override
+  String get xlsxImportNothing => 'Nenhuma tarefa ou lançamento encontrado na planilha';
+
+  @override
+  String xlsxImportTasks(num count) {
+    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: '$count tarefas', one: '1 tarefa', zero: 'nenhuma tarefa');
+    return '$_temp0';
+  }
+
+  @override
+  String xlsxImportEntries(num count) {
+    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: '$count lançamentos', one: '1 lançamento', zero: 'nenhum lançamento');
+    return '$_temp0';
+  }
+
+  @override
+  String xlsxImportErrors(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count linhas com erro',
+      one: '1 linha com erro',
+      zero: 'nenhuma linha com erro',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String xlsxImportSummary(String tasks, String entries, String errors) {
+    return '$tasks, $entries; $errors';
+  }
+
+  @override
+  String xlsxImportSkipped(String names) {
+    return 'Abas não importadas (só Tarefas e Lançamentos entram): $names';
+  }
+
+  @override
+  String get xlsxImportSafety => 'Tudo é acrescentado, nada é substituído. Antes de gravar, um backup automático é feito.';
+
+  @override
+  String xlsxImportMoreErrors(int count) {
+    return '… e mais $count';
+  }
+
+  @override
+  String xlsxImportDone(String tasks, String entries) {
+    return 'Importado: $tasks e $entries';
+  }
+
+  @override
+  String xlsxErrorRow(String sheet, int row, String reason) {
+    return '$sheet, linha $row: $reason';
+  }
+
+  @override
+  String xlsxErrorMissingColumns(String columns) {
+    return 'faltam as colunas $columns';
+  }
+
+  @override
+  String get xlsxErrorNoTitle => 'sem título';
+
+  @override
+  String xlsxErrorDate(String column) {
+    return 'data inválida em \"$column\"';
+  }
+
+  @override
+  String xlsxErrorAmount(String value) {
+    return 'valor inválido \"$value\"';
+  }
+
+  @override
+  String xlsxErrorKind(String value) {
+    return 'tipo desconhecido \"$value\"';
+  }
+
+  @override
+  String xlsxErrorStatus(String value) {
+    return 'status desconhecido \"$value\"';
+  }
+
+  @override
+  String xlsxErrorPriority(String value) {
+    return 'prioridade desconhecida \"$value\"';
+  }
+
+  @override
+  String xlsxErrorCard(String value) {
+    return 'cartão não encontrado \"$value\"';
+  }
+
+  @override
+  String get xlsxSheetTasks => 'Tarefas';
+
+  @override
+  String get xlsxSheetHabits => 'Hábitos';
+
+  @override
+  String get xlsxSheetEntries => 'Lançamentos';
+
+  @override
+  String get xlsxSheetCards => 'Cartões';
+
+  @override
+  String get xlsxSheetInvoicePayments => 'Faturas pagas';
+
+  @override
+  String get xlsxSheetLoans => 'Empréstimos';
+
+  @override
+  String get xlsxSheetLoanPayments => 'Recebimentos';
+
+  @override
+  String get xlsxSheetGoals => 'Caixinhas';
+
+  @override
+  String get xlsxSheetGoalMoves => 'Movimentações';
+
+  @override
+  String get xlsxSheetDiet => 'Dieta';
+
+  @override
+  String get xlsxSheetJournal => 'Diário';
+
+  @override
+  String get xlsxColFolder => 'Pasta';
+
+  @override
+  String get xlsxColList => 'Lista';
+
+  @override
+  String get xlsxColSection => 'Seção';
+
+  @override
+  String get xlsxColTitle => 'Título';
+
+  @override
+  String get xlsxColNotes => 'Notas';
+
+  @override
+  String get xlsxColStatus => 'Status';
+
+  @override
+  String get xlsxColPriority => 'Prioridade';
+
+  @override
+  String get xlsxColStart => 'Início';
+
+  @override
+  String get xlsxColDue => 'Prazo';
+
+  @override
+  String get xlsxColTags => 'Etiquetas';
+
+  @override
+  String get xlsxColCreated => 'Criada em';
+
+  @override
+  String get xlsxColCompleted => 'Concluída em';
+
+  @override
+  String get xlsxColHabit => 'Hábito';
+
+  @override
+  String get xlsxColDate => 'Data';
+
+  @override
+  String get xlsxColValue => 'Valor';
+
+  @override
+  String get xlsxColGoal => 'Meta';
+
+  @override
+  String get xlsxColUnit => 'Unidade';
+
+  @override
+  String get xlsxColMood => 'Humor';
+
+  @override
+  String get xlsxColNote => 'Observação';
+
+  @override
+  String get xlsxColKind => 'Tipo';
+
+  @override
+  String get xlsxColCategory => 'Categoria';
+
+  @override
+  String get xlsxColDescription => 'Descrição';
+
+  @override
+  String get xlsxColCard => 'Cartão';
+
+  @override
+  String get xlsxColInvoice => 'Fatura';
+
+  @override
+  String get xlsxColInstallment => 'Parcela';
+
+  @override
+  String get xlsxColClosingDay => 'Dia do fechamento';
+
+  @override
+  String get xlsxColDueDay => 'Dia do vencimento';
+
+  @override
+  String get xlsxColCreditLimit => 'Limite';
+
+  @override
+  String get xlsxColBorrower => 'Quem pegou emprestado';
+
+  @override
+  String get xlsxColLentOn => 'Emprestado em';
+
+  @override
+  String get xlsxColPrincipal => 'Valor emprestado';
+
+  @override
+  String get xlsxColTotal => 'A receber';
+
+  @override
+  String get xlsxColDueOn => 'Vencimento';
+
+  @override
+  String get xlsxColInstallments => 'Parcelas';
+
+  @override
+  String get xlsxColReceived => 'Recebido';
+
+  @override
+  String get xlsxColSavingsGoal => 'Caixinha';
+
+  @override
+  String get xlsxColSaved => 'Guardado';
+
+  @override
+  String get xlsxColMeal => 'Refeição';
+
+  @override
+  String get xlsxColFood => 'Alimento';
+
+  @override
+  String get xlsxColQuantity => 'Quantidade';
+
+  @override
+  String get xlsxColMeasure => 'Medida';
+
+  @override
+  String get xlsxColGrams => 'Gramas';
+
+  @override
+  String get xlsxColKcal => 'kcal';
+
+  @override
+  String get xlsxColProtein => 'Proteínas (g)';
+
+  @override
+  String get xlsxColCarbs => 'Carboidratos (g)';
+
+  @override
+  String get xlsxColFat => 'Gorduras (g)';
+
+  @override
+  String get xlsxColFiber => 'Fibras (g)';
+
+  @override
+  String get xlsxColEnergy => 'Energia';
+
+  @override
+  String get xlsxColHighlight => 'Destaque';
+
+  @override
+  String get xlsxStatusOpen => 'Aberta';
+
+  @override
+  String get xlsxStatusCompleted => 'Concluída';
+
+  @override
+  String get xlsxStatusWontDo => 'Não será feita';
+
+  @override
   String get autoBackupNone => 'Nenhum backup automático ainda.';
 
   @override
