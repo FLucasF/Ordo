@@ -151,6 +151,10 @@ class Repository {
   Future<void> setFolderCollapsed(String id, {required bool collapsed}) =>
       (_db.update(_db.folders)..where((f) => f.id.equals(id))).write(FoldersCompanion(isCollapsed: Value(collapsed)));
 
+  /// The folder's "Fundo" (features/appearance/backgrounds.dart); null = the app's.
+  Future<void> setFolderBackground(String id, String? background) =>
+      (_db.update(_db.folders)..where((f) => f.id.equals(id))).write(FoldersCompanion(background: Value(background), updatedAt: Value(_now)));
+
   /// "Ungroup": the lists leave the folder and the folder goes away.
   Future<void> ungroupFolder(String id) => _db.transaction(() async {
     await (_db.update(_db.lists)..where((l) => l.folderId.equals(id))).write(ListsCompanion(folderId: const Value(null), updatedAt: Value(_now)));
@@ -295,6 +299,10 @@ class Repository {
       _db.lists,
     )..where((l) => l.parentId.equals(id) & l.deletedAt.isNull())).write(ListsCompanion(parentId: Value(list.parentId), updatedAt: Value(_now)));
   }
+
+  /// The list's "Fundo" (features/appearance/backgrounds.dart); null = its folder's or the app's.
+  Future<void> setListBackground(String id, String? background) =>
+      (_db.update(_db.lists)..where((l) => l.id.equals(id))).write(ListsCompanion(background: Value(background), updatedAt: Value(_now)));
 
   Future<void> setListViewOptions(String id, {Grouping? grouping, Sorting? sorting, bool? showCompleted, bool? showDetails, ViewMode? viewMode}) =>
       (_db.update(_db.lists)..where((l) => l.id.equals(id))).write(

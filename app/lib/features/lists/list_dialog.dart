@@ -10,6 +10,7 @@ import '../../data/repository.dart' show maxListLevels;
 import '../../domain/enums.dart';
 import '../../domain/snapshot.dart';
 import '../../l10n/app_localizations.dart';
+import '../appearance/backdrop.dart';
 import '../common/color_choice.dart';
 import '../common/emoji_picker.dart';
 import '../common/feedback.dart';
@@ -26,6 +27,7 @@ class ListForm {
     required this.viewMode,
     required this.showInSmartLists,
     this.parentId,
+    this.background,
   });
 
   final String name;
@@ -38,6 +40,9 @@ class ListForm {
   final ListKind kind;
   final ViewMode viewMode;
   final bool showInSmartLists;
+
+  /// "Fundo" (features/appearance/backgrounds.dart): null = the folder's or the app's.
+  final String? background;
 }
 
 /// What happens to the sublists of a list that is deleted or archived.
@@ -115,6 +120,7 @@ Future<String?> addListWithDialog(BuildContext context, WidgetRef ref, {String? 
           showInSmartLists: form.showInSmartLists,
         ),
   );
+  if (id case final created? when form.background != null) await ref.read(repositoryProvider).setListBackground(created, form.background);
   return id;
 }
 
@@ -145,6 +151,7 @@ Future<void> editListWithDialog(BuildContext context, WidgetRef ref, TaskList l,
       showInSmartLists: form.showInSmartLists,
     ),
   );
+  if (form.background != l.background) await repo.setListBackground(l.id, form.background);
 }
 
 /// "Adicionar lista" / "Editar lista". Returns null when cancelled.
@@ -177,6 +184,7 @@ class _ListDialogState extends ConsumerState<_ListDialog> {
   late ListKind _kind = widget.editing?.kind ?? ListKind.tasks;
   late ViewMode _viewMode = widget.editing?.viewMode ?? ViewMode.list;
   late bool _showInSmartLists = widget.editing?.showInSmartLists ?? true;
+  late String? _background = widget.editing?.background;
 
   @override
   void dispose() {
@@ -197,6 +205,7 @@ class _ListDialogState extends ConsumerState<_ListDialog> {
         kind: _kind,
         viewMode: _viewMode,
         showInSmartLists: _showInSmartLists,
+        background: _background,
       ),
     );
   }
@@ -383,6 +392,8 @@ class _ListDialogState extends ConsumerState<_ListDialog> {
                     t.listShowInSmartList,
                     segmented(_showInSmartLists, {true: t.listShowAllTasks, false: t.listDontShow}, (v) => setState(() => _showInSmartLists = v)),
                   ),
+                  // Shown behind the list when it's open, instead of the app's.
+                  row(t.backgroundTitle, BackgroundChoices(value: _background, inherit: true, onChanged: (c) => setState(() => _background = c))),
                 ],
               ),
             ),

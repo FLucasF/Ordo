@@ -2689,6 +2689,81 @@ class AppLocalizationsPt extends AppLocalizations {
   String get colorGrey => 'Cinza';
 
   @override
+  String get appearanceThemePresets => 'Temas prontos';
+
+  @override
+  String get appearanceThemePresetsHint => 'Cor, fundo e cantos de uma vez; cada um continua editável abaixo';
+
+  @override
+  String get appearanceWallpaper => 'Papel de parede';
+
+  @override
+  String get backgroundTitle => 'Fundo';
+
+  @override
+  String get backgroundDefault => 'Padrão (o da pasta ou do app)';
+
+  @override
+  String get backgroundNone => 'Nenhum';
+
+  @override
+  String get backgroundPicture => 'Imagem';
+
+  @override
+  String get backgroundPickPicture => 'Escolher imagem';
+
+  @override
+  String get backgroundDim => 'Escurecer';
+
+  @override
+  String get backgroundLighten => 'Clarear';
+
+  @override
+  String get gradientDawn => 'Amanhecer';
+
+  @override
+  String get gradientSunset => 'Pôr do sol';
+
+  @override
+  String get gradientOcean => 'Oceano';
+
+  @override
+  String get gradientForest => 'Floresta';
+
+  @override
+  String get gradientLavender => 'Lavanda';
+
+  @override
+  String get gradientNight => 'Noite';
+
+  @override
+  String get gradientPeach => 'Pêssego';
+
+  @override
+  String get gradientMint => 'Menta';
+
+  @override
+  String get presetStandard => 'Padrão';
+
+  @override
+  String get presetStudies => 'Estudos';
+
+  @override
+  String get presetWork => 'Trabalho';
+
+  @override
+  String get presetNight => 'Noite';
+
+  @override
+  String get presetNature => 'Natureza';
+
+  @override
+  String get presetBeach => 'Praia';
+
+  @override
+  String get presetCozy => 'Aconchego';
+
+  @override
   String get settingsDisplay => 'Exibição';
 
   @override

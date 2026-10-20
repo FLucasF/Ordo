@@ -25,7 +25,7 @@ class BackupService {
   final AttachmentStore? attachments;
 
   /// Other folders that go in the backup, by their prefix in the zip (countdown pictures, downloaded
-  /// calendars). Importing replaces their files.
+  /// calendars, background pictures). Importing replaces their files.
   final Map<String, Directory> folders;
 
   static const _attachmentsPrefix = 'attachments/';

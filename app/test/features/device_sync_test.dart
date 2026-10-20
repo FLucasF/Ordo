@@ -18,6 +18,7 @@ import 'package:task_manager/data/repository.dart';
 import 'package:task_manager/data/subscription_store.dart';
 import 'package:task_manager/features/backup/auto_backup.dart';
 import 'package:task_manager/features/backup/backup_service.dart';
+import 'package:task_manager/features/appearance/backgrounds.dart' show backgroundsDirProvider;
 import 'package:task_manager/features/countdown/countdown_card.dart' show countdownImagesProvider;
 import 'package:task_manager/features/subscriptions/subscriptions.dart' show subscriptionStoreProvider;
 import 'package:task_manager/features/sync/device_sync.dart';
@@ -104,6 +105,7 @@ void main() {
           autoBackupProvider.overrideWithValue(auto),
           attachmentStoreProvider.overrideWithValue(AttachmentStore(sub('attachments'))),
           countdownImagesProvider.overrideWithValue(sub('images')),
+          backgroundsDirProvider.overrideWithValue(sub('backgrounds')),
           subscriptionStoreProvider.overrideWithValue(SubscriptionStore(sub('calendars'))),
         ],
         child: MaterialApp(

@@ -5156,6 +5156,156 @@ abstract class AppLocalizations {
   /// **'Cinza'**
   String get colorGrey;
 
+  /// No description provided for @appearanceThemePresets.
+  ///
+  /// In pt, this message translates to:
+  /// **'Temas prontos'**
+  String get appearanceThemePresets;
+
+  /// No description provided for @appearanceThemePresetsHint.
+  ///
+  /// In pt, this message translates to:
+  /// **'Cor, fundo e cantos de uma vez; cada um continua editável abaixo'**
+  String get appearanceThemePresetsHint;
+
+  /// No description provided for @appearanceWallpaper.
+  ///
+  /// In pt, this message translates to:
+  /// **'Papel de parede'**
+  String get appearanceWallpaper;
+
+  /// No description provided for @backgroundTitle.
+  ///
+  /// In pt, this message translates to:
+  /// **'Fundo'**
+  String get backgroundTitle;
+
+  /// No description provided for @backgroundDefault.
+  ///
+  /// In pt, this message translates to:
+  /// **'Padrão (o da pasta ou do app)'**
+  String get backgroundDefault;
+
+  /// No description provided for @backgroundNone.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhum'**
+  String get backgroundNone;
+
+  /// No description provided for @backgroundPicture.
+  ///
+  /// In pt, this message translates to:
+  /// **'Imagem'**
+  String get backgroundPicture;
+
+  /// No description provided for @backgroundPickPicture.
+  ///
+  /// In pt, this message translates to:
+  /// **'Escolher imagem'**
+  String get backgroundPickPicture;
+
+  /// No description provided for @backgroundDim.
+  ///
+  /// In pt, this message translates to:
+  /// **'Escurecer'**
+  String get backgroundDim;
+
+  /// No description provided for @backgroundLighten.
+  ///
+  /// In pt, this message translates to:
+  /// **'Clarear'**
+  String get backgroundLighten;
+
+  /// No description provided for @gradientDawn.
+  ///
+  /// In pt, this message translates to:
+  /// **'Amanhecer'**
+  String get gradientDawn;
+
+  /// No description provided for @gradientSunset.
+  ///
+  /// In pt, this message translates to:
+  /// **'Pôr do sol'**
+  String get gradientSunset;
+
+  /// No description provided for @gradientOcean.
+  ///
+  /// In pt, this message translates to:
+  /// **'Oceano'**
+  String get gradientOcean;
+
+  /// No description provided for @gradientForest.
+  ///
+  /// In pt, this message translates to:
+  /// **'Floresta'**
+  String get gradientForest;
+
+  /// No description provided for @gradientLavender.
+  ///
+  /// In pt, this message translates to:
+  /// **'Lavanda'**
+  String get gradientLavender;
+
+  /// No description provided for @gradientNight.
+  ///
+  /// In pt, this message translates to:
+  /// **'Noite'**
+  String get gradientNight;
+
+  /// No description provided for @gradientPeach.
+  ///
+  /// In pt, this message translates to:
+  /// **'Pêssego'**
+  String get gradientPeach;
+
+  /// No description provided for @gradientMint.
+  ///
+  /// In pt, this message translates to:
+  /// **'Menta'**
+  String get gradientMint;
+
+  /// No description provided for @presetStandard.
+  ///
+  /// In pt, this message translates to:
+  /// **'Padrão'**
+  String get presetStandard;
+
+  /// No description provided for @presetStudies.
+  ///
+  /// In pt, this message translates to:
+  /// **'Estudos'**
+  String get presetStudies;
+
+  /// No description provided for @presetWork.
+  ///
+  /// In pt, this message translates to:
+  /// **'Trabalho'**
+  String get presetWork;
+
+  /// No description provided for @presetNight.
+  ///
+  /// In pt, this message translates to:
+  /// **'Noite'**
+  String get presetNight;
+
+  /// No description provided for @presetNature.
+  ///
+  /// In pt, this message translates to:
+  /// **'Natureza'**
+  String get presetNature;
+
+  /// No description provided for @presetBeach.
+  ///
+  /// In pt, this message translates to:
+  /// **'Praia'**
+  String get presetBeach;
+
+  /// No description provided for @presetCozy.
+  ///
+  /// In pt, this message translates to:
+  /// **'Aconchego'**
+  String get presetCozy;
+
   /// No description provided for @settingsDisplay.
   ///
   /// In pt, this message translates to:

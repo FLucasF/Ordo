@@ -119,6 +119,9 @@ enum DateDisplay {
   static DateDisplay? fromCode(Object? code) => values.where((v) => v.code == code).firstOrNull;
 }
 
+/// The most "Escurecer" can veil a background: a hint of it always shows.
+const maxBackgroundDim = 0.9;
+
 /// Typed settings over the key/value `preferences` table. Values are JSON; a missing or invalid value
 /// falls back to the default, so a bad row can never crash the app.
 class Preferences {
@@ -141,6 +144,8 @@ class Preferences {
     this.filtersVisibility = SmartListVisibility.show,
     this.colorSeries = ColorSeries.standard,
     this.customAccent,
+    this.background,
+    this.backgroundDim = 0.5,
     this.sidebarCount = SidebarCount.all,
     this.strikeCompleted = false,
     this.taskDefaults = const TaskDefaults(),
@@ -221,6 +226,13 @@ class Preferences {
 
   /// A color picked in the palette (`#RRGGBB`) instead of a series; null = the series.
   final String? customAccent;
+
+  /// "Papel de parede": a built-in gradient or a picture behind the task list, the Calendar and the
+  /// modules (see features/appearance/backgrounds.dart); null = none.
+  final String? background;
+
+  /// "Escurecer": how much of the theme's background veils the picture (0–0.9), for the text to read.
+  final double backgroundDim;
   final SidebarCount sidebarCount;
 
   /// "Estilo de Tarefa Concluída": Rasurado.
@@ -328,6 +340,8 @@ class PreferencesRepository {
   static const _filtersVisibilityKey = 'sidebar.filters';
   static const _colorSeriesKey = 'appearance.colorSeries';
   static const _customAccentKey = 'appearance.customAccent';
+  static const _backgroundKey = 'appearance.background';
+  static const _backgroundDimKey = 'appearance.backgroundDim';
   static const _sidebarCountKey = 'appearance.sidebarCount';
   static const _strikeCompletedKey = 'appearance.strikeCompleted';
   static const _taskDefaultsKey = 'tasks.defaults';
@@ -395,6 +409,8 @@ class PreferencesRepository {
       filtersVisibility: SmartListVisibility.fromCode(raw[_filtersVisibilityKey]) ?? SmartListVisibility.show,
       colorSeries: ColorSeries.fromCode(raw[_colorSeriesKey]) ?? ColorSeries.standard,
       customAccent: raw[_customAccentKey] is String ? raw[_customAccentKey] as String : null,
+      background: raw[_backgroundKey] is String ? raw[_backgroundKey] as String : null,
+      backgroundDim: raw[_backgroundDimKey] is num ? (raw[_backgroundDimKey]! as num).toDouble().clamp(0.0, maxBackgroundDim) : 0.5,
       sidebarCount: SidebarCount.fromCode(raw[_sidebarCountKey]) ?? SidebarCount.all,
       strikeCompleted: raw[_strikeCompletedKey] == true,
       taskDefaults: TaskDefaults.fromJson(raw[_taskDefaultsKey]),
@@ -534,6 +550,11 @@ class PreferencesRepository {
 
   /// Any color from the palette as the theme's color.
   Future<void> setCustomAccent(String hex) => _set(_customAccentKey, hex);
+
+  /// The app's "Papel de parede"; null removes it.
+  Future<void> setBackground(String? code) => code == null ? _remove(_backgroundKey) : _set(_backgroundKey, code);
+
+  Future<void> setBackgroundDim(double dim) => _set(_backgroundDimKey, dim.clamp(0.0, maxBackgroundDim));
 
   Future<void> setSidebarCount(SidebarCount c) => _set(_sidebarCountKey, c.code);
 

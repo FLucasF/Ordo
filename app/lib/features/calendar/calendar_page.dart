@@ -22,6 +22,7 @@ import '../../domain/reminders.dart';
 import '../../domain/task_dates.dart';
 import '../../domain/views.dart';
 import '../../l10n/app_localizations.dart';
+import '../appearance/backdrop.dart';
 import '../common/labels.dart';
 import '../common/shell_widgets.dart';
 import '../common/time_zone_picker.dart';
@@ -744,7 +745,7 @@ class _CalendarPageState extends ConsumerState<CalendarPage> {
         autofocus: true,
         onKeyEvent: _onKey,
         child: Container(
-          color: tt.screen,
+          color: context.paneColor,
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -857,6 +858,7 @@ class _ArrangePanel extends ConsumerWidget {
     return Container(
       width: 280,
       decoration: BoxDecoration(
+        color: tt.screen,
         border: Border(left: BorderSide(color: tt.divider)),
       ),
       child: Column(

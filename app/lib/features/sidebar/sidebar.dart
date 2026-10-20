@@ -15,6 +15,7 @@ import '../../domain/enums.dart';
 import '../../domain/snapshot.dart';
 import '../../domain/views.dart';
 import '../../l10n/app_localizations.dart';
+import '../appearance/backdrop.dart' show showBackgroundDialog;
 import '../common/color_choice.dart';
 import '../common/feedback.dart';
 import '../activities/activities_dialog.dart';
@@ -569,6 +570,7 @@ class Sidebar extends ConsumerWidget {
     final choice = await _showMenuAt<String>(context, position, [
       ('add', t.actionAddList),
       ('edit', t.actionEdit),
+      ('background', t.backgroundTitle),
       ('pin', f.pinnedAt == null ? t.menuPin : t.menuUnpin),
       ('delete', t.actionDelete),
     ]);
@@ -583,6 +585,10 @@ class Sidebar extends ConsumerWidget {
         await _addList(context, ref, folderId: f.id);
       case 'edit':
         await editFolderWithDialog(context, ref, f, onDeleted: leave);
+      case 'background':
+        // The folder's lists show it, unless they have their own.
+        final picked = await showBackgroundDialog(context, initial: f.background);
+        if (picked != null) await repo.setFolderBackground(f.id, picked.code);
       case 'pin':
         await repo.pinFolder(f.id, pinned: f.pinnedAt == null);
       case 'delete':
