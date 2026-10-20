@@ -520,6 +520,12 @@ class _AppearanceTab extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        _Choice<AppLanguage>(
+          label: t.settingsLanguage,
+          value: prefs.language,
+          options: const {AppLanguage.portuguese: 'Português', AppLanguage.latin: 'Latina'},
+          onChanged: (v) => unawaited(repo.setLanguage(v)),
+        ),
         // "Estilo da Interface".
         _Choice<bool>(
           label: t.settingsInterfaceStyle,

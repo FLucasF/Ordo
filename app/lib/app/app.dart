@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io' show Platform;
 
+import 'package:flutter/cupertino.dart' show CupertinoLocalizations;
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -45,6 +46,7 @@ import 'theme/app_theme.dart';
 import 'window_title.dart';
 import '../features/common/color_choice.dart';
 import 'focus_restorer.dart';
+import 'latin_fallback.dart';
 
 GoRouter buildRouter({String initialLocation = Routes.initial}) => GoRouter(
   initialLocation: initialLocation,
@@ -153,8 +155,8 @@ class _TasksAppState extends ConsumerState<TasksApp> {
   /// Windows: silences a reminder's system notification just before the app rings the despertador.
   Timer? _muteTimer;
 
-  /// The tray and autostart last sent to Windows.
-  (bool, bool)? _desktop;
+  /// The tray, autostart and language last sent to Windows.
+  (bool, bool, AppLanguage)? _desktop;
   Timer? _autoBackup;
 
   @override
@@ -232,8 +234,9 @@ class _TasksAppState extends ConsumerState<TasksApp> {
     // Windows: the tray ("Manter na bandeja ao fechar") and "Iniciar com o Windows".
     ref.listenManual(preferencesProvider, (_, next) {
       final prefs = next.value;
-      if (prefs == null || _desktop == (prefs.closeToTray, prefs.launchAtStartup)) return;
-      _desktop = (prefs.closeToTray, prefs.launchAtStartup);
+      if (prefs == null || _desktop == (prefs.closeToTray, prefs.launchAtStartup, prefs.language)) return;
+      _desktop = (prefs.closeToTray, prefs.launchAtStartup, prefs.language);
+      appLocale = prefs.language.locale;
       final t = reminderTexts;
       unawaited(
         DesktopShell.configureTray(enabled: prefs.closeToTray, tooltip: t.appTitle, open: t.trayOpen, mini: t.trayMiniCalendar, quit: t.trayQuit),
@@ -429,16 +432,20 @@ class _TasksAppState extends ConsumerState<TasksApp> {
     DateConventions.dateOrder = prefs.dateOrder;
     // The running focus timer in the window title (Configurações de foco).
     ref.listen<String>(windowTitleProvider, (_, title) => unawaited(_windowTitle.set(title)));
+    appLocale = prefs.language.locale;
     return MaterialApp.router(
       onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
       debugShowCheckedModeBanner: false,
-      locale: const Locale('pt', 'BR'),
-      supportedLocales: const [Locale('pt', 'BR'), Locale('pt')],
+      locale: prefs.language.locale,
+      supportedLocales: const [Locale('pt', 'BR'), Locale('pt'), Locale('la')],
       localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
+        // Flutter has no Latin: its own texts (copy, paste, the system's pickers) stay in Portuguese.
+        LatinFallbackDelegate<MaterialLocalizations>(GlobalMaterialLocalizations.delegate),
+        LatinFallbackDelegate<CupertinoLocalizations>(GlobalCupertinoLocalizations.delegate),
       ],
       theme: buildTheme(dark: false, series: prefs.colorSeries, accent: parseHexColor(prefs.customAccent)),
       darkTheme: buildTheme(dark: true, series: prefs.colorSeries, accent: parseHexColor(prefs.customAccent)),

@@ -1,3 +1,4 @@
+import 'dart:ui' show Locale;
 import 'dart:convert';
 
 import '../core/clock.dart';
@@ -83,6 +84,18 @@ enum ColorSeries {
   static ColorSeries? fromCode(Object? code) => values.where((v) => v.code == code).firstOrNull;
 }
 
+/// The app's language: Portuguese (Brazil) or Latin.
+enum AppLanguage {
+  portuguese('pt', Locale('pt', 'BR')),
+  latin('la', Locale('la'));
+
+  const AppLanguage(this.code, this.locale);
+  final String code;
+  final Locale locale;
+
+  static AppLanguage? fromCode(Object? code) => values.where((v) => v.code == code).firstOrNull;
+}
+
 enum ThemeChoice {
   light('light'),
   dark('dark'),
@@ -153,6 +166,7 @@ class Preferences {
     this.customShortcuts = const {},
     this.scopeViewOptions = const {},
     this.showListColor = true,
+    this.language = AppLanguage.portuguese,
   });
 
   final Map<SmartList, SmartListVisibility> smartListVisibility;
@@ -267,6 +281,9 @@ class Preferences {
   /// "Cor da Lista": the list's color as a stripe on task rows outside the list.
   final bool showListColor;
 
+  /// "Idioma".
+  final AppLanguage language;
+
   static const defaults = Preferences(
     smartListVisibility: defaultSmartListVisibility,
     theme: ThemeChoice.dark,
@@ -324,6 +341,7 @@ class PreferencesRepository {
   static const _launchAtStartupKey = 'desktop.launchAtStartup';
   static const _shortcutsKey = 'shortcuts.custom';
   static const _listColorKey = 'appearance.listColor';
+  static const _languageKey = 'appearance.language';
 
   Stream<Preferences> watch() => _db.select(_db.preferences).watch().map(_parse);
 
@@ -333,6 +351,7 @@ class PreferencesRepository {
       smartListVisibility: {for (final l in SmartList.values) l: SmartListVisibility.fromCode(raw[_smartKey(l)]) ?? defaultSmartListVisibility[l]!},
       inboxVisibility: SmartListVisibility.fromCode(raw[_inboxKey]) ?? SmartListVisibility.show,
       theme: ThemeChoice.fromCode(raw[_themeKey]) ?? Preferences.defaults.theme,
+      language: AppLanguage.fromCode(raw[_languageKey]) ?? AppLanguage.portuguese,
       dateDisplay: DateDisplay.fromCode(raw[_dateDisplayKey]) ?? DateDisplay.date,
       dailyAlert: switch (raw[_dailyAlertKey]) {
         final int minutes when minutes >= 0 && minutes < 24 * 60 => minutes,
@@ -437,6 +456,8 @@ class PreferencesRepository {
   Future<void> setSmartListVisibility(SmartList list, SmartListVisibility v) => _set(_smartKey(list), v.code);
 
   Future<void> setTheme(ThemeChoice theme) => _set(_themeKey, theme.code);
+
+  Future<void> setLanguage(AppLanguage language) => _set(_languageKey, language.code);
 
   Future<void> setDateDisplay(DateDisplay display) => _set(_dateDisplayKey, display.code);
 

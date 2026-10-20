@@ -42,8 +42,11 @@ class ReminderSetup {
 
 final reminderSetupProvider = Provider<ReminderSetup?>((ref) => null);
 
-/// Texts of notifications built outside the widget tree (the app is PT-BR only).
-AppLocalizations get reminderTexts => lookupAppLocalizations(const Locale('pt', 'BR'));
+/// The language of the texts built outside the widget tree (notifications, the tray, the widgets),
+/// set by the app from its preferences.
+Locale appLocale = const Locale('pt', 'BR');
+
+AppLocalizations get reminderTexts => lookupAppLocalizations(appLocale);
 
 NotificationTexts notificationTexts(AppLocalizations t) => NotificationTexts(
   appName: t.appTitle,

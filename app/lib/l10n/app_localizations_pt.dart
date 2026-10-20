@@ -2425,6 +2425,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get featureCountdownHint => 'Lembre-se de cada dia especial';
 
   @override
+  String get settingsLanguage => 'Idioma';
+
+  @override
   String get settingsTheme => 'Tema';
 
   @override

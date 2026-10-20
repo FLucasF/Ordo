@@ -824,6 +824,7 @@
   "featureFocus": "Pomodoro",
   "featureFocusHint": "Temporizador Pomo ou cronômetro",
   "featureCountdownHint": "Lembre-se de cada dia especial",
+  "settingsLanguage": "Idioma",
   "settingsTheme": "Tema",
   "themeLight": "Claro",
   "themeDark": "Escuro",

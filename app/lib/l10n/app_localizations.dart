@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart' as intl;
 
+import 'app_localizations_la.dart';
 import 'app_localizations_pt.dart';
 
 // ignore_for_file: type=lint
@@ -89,7 +90,7 @@ abstract class AppLocalizations {
   ];
 
   /// A list of this localizations delegate's supported locales.
-  static const List<Locale> supportedLocales = <Locale>[Locale('pt')];
+  static const List<Locale> supportedLocales = <Locale>[Locale('la'), Locale('pt')];
 
   /// No description provided for @appTitle.
   ///
@@ -4674,6 +4675,12 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Lembre-se de cada dia especial'**
   String get featureCountdownHint;
+
+  /// No description provided for @settingsLanguage.
+  ///
+  /// In pt, this message translates to:
+  /// **'Idioma'**
+  String get settingsLanguage;
 
   /// No description provided for @settingsTheme.
   ///
@@ -9401,7 +9408,7 @@ class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> 
   }
 
   @override
-  bool isSupported(Locale locale) => <String>['pt'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>['la', 'pt'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
@@ -9410,6 +9417,8 @@ class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> 
 AppLocalizations lookupAppLocalizations(Locale locale) {
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
+    case 'la':
+      return AppLocalizationsLa();
     case 'pt':
       return AppLocalizationsPt();
   }

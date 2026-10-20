@@ -8,6 +8,7 @@ void main() {
     var undone = false;
     await tester.pumpWidget(
       MaterialApp(
+        locale: const Locale('pt', 'BR'),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
