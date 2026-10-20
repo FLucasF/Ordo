@@ -6992,6 +6992,528 @@ abstract class AppLocalizations {
   /// **'Uma cópia por dia das tarefas e configurações, guardada neste dispositivo. Ficam as 7 mais recentes. Os anexos não entram nela e continuam onde estão.'**
   String get settingsAutoBackupHint;
 
+  /// No description provided for @xlsxExport.
+  ///
+  /// In pt, this message translates to:
+  /// **'Exportar para Excel'**
+  String get xlsxExport;
+
+  /// No description provided for @xlsxExportHint.
+  ///
+  /// In pt, this message translates to:
+  /// **'Uma planilha com uma aba por módulo: tarefas, hábitos, finanças, dieta e diário'**
+  String get xlsxExportHint;
+
+  /// No description provided for @xlsxExported.
+  ///
+  /// In pt, this message translates to:
+  /// **'Planilha salva'**
+  String get xlsxExported;
+
+  /// No description provided for @xlsxImport.
+  ///
+  /// In pt, this message translates to:
+  /// **'Importar do Excel'**
+  String get xlsxImport;
+
+  /// No description provided for @xlsxImportHint.
+  ///
+  /// In pt, this message translates to:
+  /// **'Acrescenta as tarefas e os lançamentos de uma planilha no mesmo formato. Nada é apagado.'**
+  String get xlsxImportHint;
+
+  /// No description provided for @xlsxImportInvalid.
+  ///
+  /// In pt, this message translates to:
+  /// **'Este arquivo não parece uma planilha do Excel (.xlsx)'**
+  String get xlsxImportInvalid;
+
+  /// No description provided for @xlsxImportNothing.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhuma tarefa ou lançamento encontrado na planilha'**
+  String get xlsxImportNothing;
+
+  /// No description provided for @xlsxImportTasks.
+  ///
+  /// In pt, this message translates to:
+  /// **'{count, plural, =0{nenhuma tarefa} =1{1 tarefa} other{{count} tarefas}}'**
+  String xlsxImportTasks(num count);
+
+  /// No description provided for @xlsxImportEntries.
+  ///
+  /// In pt, this message translates to:
+  /// **'{count, plural, =0{nenhum lançamento} =1{1 lançamento} other{{count} lançamentos}}'**
+  String xlsxImportEntries(num count);
+
+  /// No description provided for @xlsxImportErrors.
+  ///
+  /// In pt, this message translates to:
+  /// **'{count, plural, =0{nenhuma linha com erro} =1{1 linha com erro} other{{count} linhas com erro}}'**
+  String xlsxImportErrors(num count);
+
+  /// No description provided for @xlsxImportSummary.
+  ///
+  /// In pt, this message translates to:
+  /// **'{tasks}, {entries}; {errors}'**
+  String xlsxImportSummary(String tasks, String entries, String errors);
+
+  /// No description provided for @xlsxImportSkipped.
+  ///
+  /// In pt, this message translates to:
+  /// **'Abas não importadas (só Tarefas e Lançamentos entram): {names}'**
+  String xlsxImportSkipped(String names);
+
+  /// No description provided for @xlsxImportSafety.
+  ///
+  /// In pt, this message translates to:
+  /// **'Tudo é acrescentado, nada é substituído. Antes de gravar, um backup automático é feito.'**
+  String get xlsxImportSafety;
+
+  /// No description provided for @xlsxImportMoreErrors.
+  ///
+  /// In pt, this message translates to:
+  /// **'… e mais {count}'**
+  String xlsxImportMoreErrors(int count);
+
+  /// No description provided for @xlsxImportDone.
+  ///
+  /// In pt, this message translates to:
+  /// **'Importado: {tasks} e {entries}'**
+  String xlsxImportDone(String tasks, String entries);
+
+  /// No description provided for @xlsxErrorRow.
+  ///
+  /// In pt, this message translates to:
+  /// **'{sheet}, linha {row}: {reason}'**
+  String xlsxErrorRow(String sheet, int row, String reason);
+
+  /// No description provided for @xlsxErrorMissingColumns.
+  ///
+  /// In pt, this message translates to:
+  /// **'faltam as colunas {columns}'**
+  String xlsxErrorMissingColumns(String columns);
+
+  /// No description provided for @xlsxErrorNoTitle.
+  ///
+  /// In pt, this message translates to:
+  /// **'sem título'**
+  String get xlsxErrorNoTitle;
+
+  /// No description provided for @xlsxErrorDate.
+  ///
+  /// In pt, this message translates to:
+  /// **'data inválida em \"{column}\"'**
+  String xlsxErrorDate(String column);
+
+  /// No description provided for @xlsxErrorAmount.
+  ///
+  /// In pt, this message translates to:
+  /// **'valor inválido \"{value}\"'**
+  String xlsxErrorAmount(String value);
+
+  /// No description provided for @xlsxErrorKind.
+  ///
+  /// In pt, this message translates to:
+  /// **'tipo desconhecido \"{value}\"'**
+  String xlsxErrorKind(String value);
+
+  /// No description provided for @xlsxErrorStatus.
+  ///
+  /// In pt, this message translates to:
+  /// **'status desconhecido \"{value}\"'**
+  String xlsxErrorStatus(String value);
+
+  /// No description provided for @xlsxErrorPriority.
+  ///
+  /// In pt, this message translates to:
+  /// **'prioridade desconhecida \"{value}\"'**
+  String xlsxErrorPriority(String value);
+
+  /// No description provided for @xlsxErrorCard.
+  ///
+  /// In pt, this message translates to:
+  /// **'cartão não encontrado \"{value}\"'**
+  String xlsxErrorCard(String value);
+
+  /// No description provided for @xlsxSheetTasks.
+  ///
+  /// In pt, this message translates to:
+  /// **'Tarefas'**
+  String get xlsxSheetTasks;
+
+  /// No description provided for @xlsxSheetHabits.
+  ///
+  /// In pt, this message translates to:
+  /// **'Hábitos'**
+  String get xlsxSheetHabits;
+
+  /// No description provided for @xlsxSheetEntries.
+  ///
+  /// In pt, this message translates to:
+  /// **'Lançamentos'**
+  String get xlsxSheetEntries;
+
+  /// No description provided for @xlsxSheetCards.
+  ///
+  /// In pt, this message translates to:
+  /// **'Cartões'**
+  String get xlsxSheetCards;
+
+  /// No description provided for @xlsxSheetInvoicePayments.
+  ///
+  /// In pt, this message translates to:
+  /// **'Faturas pagas'**
+  String get xlsxSheetInvoicePayments;
+
+  /// No description provided for @xlsxSheetLoans.
+  ///
+  /// In pt, this message translates to:
+  /// **'Empréstimos'**
+  String get xlsxSheetLoans;
+
+  /// No description provided for @xlsxSheetLoanPayments.
+  ///
+  /// In pt, this message translates to:
+  /// **'Recebimentos'**
+  String get xlsxSheetLoanPayments;
+
+  /// No description provided for @xlsxSheetGoals.
+  ///
+  /// In pt, this message translates to:
+  /// **'Caixinhas'**
+  String get xlsxSheetGoals;
+
+  /// No description provided for @xlsxSheetGoalMoves.
+  ///
+  /// In pt, this message translates to:
+  /// **'Movimentações'**
+  String get xlsxSheetGoalMoves;
+
+  /// No description provided for @xlsxSheetDiet.
+  ///
+  /// In pt, this message translates to:
+  /// **'Dieta'**
+  String get xlsxSheetDiet;
+
+  /// No description provided for @xlsxSheetJournal.
+  ///
+  /// In pt, this message translates to:
+  /// **'Diário'**
+  String get xlsxSheetJournal;
+
+  /// No description provided for @xlsxColFolder.
+  ///
+  /// In pt, this message translates to:
+  /// **'Pasta'**
+  String get xlsxColFolder;
+
+  /// No description provided for @xlsxColList.
+  ///
+  /// In pt, this message translates to:
+  /// **'Lista'**
+  String get xlsxColList;
+
+  /// No description provided for @xlsxColSection.
+  ///
+  /// In pt, this message translates to:
+  /// **'Seção'**
+  String get xlsxColSection;
+
+  /// No description provided for @xlsxColTitle.
+  ///
+  /// In pt, this message translates to:
+  /// **'Título'**
+  String get xlsxColTitle;
+
+  /// No description provided for @xlsxColNotes.
+  ///
+  /// In pt, this message translates to:
+  /// **'Notas'**
+  String get xlsxColNotes;
+
+  /// No description provided for @xlsxColStatus.
+  ///
+  /// In pt, this message translates to:
+  /// **'Status'**
+  String get xlsxColStatus;
+
+  /// No description provided for @xlsxColPriority.
+  ///
+  /// In pt, this message translates to:
+  /// **'Prioridade'**
+  String get xlsxColPriority;
+
+  /// No description provided for @xlsxColStart.
+  ///
+  /// In pt, this message translates to:
+  /// **'Início'**
+  String get xlsxColStart;
+
+  /// No description provided for @xlsxColDue.
+  ///
+  /// In pt, this message translates to:
+  /// **'Prazo'**
+  String get xlsxColDue;
+
+  /// No description provided for @xlsxColTags.
+  ///
+  /// In pt, this message translates to:
+  /// **'Etiquetas'**
+  String get xlsxColTags;
+
+  /// No description provided for @xlsxColCreated.
+  ///
+  /// In pt, this message translates to:
+  /// **'Criada em'**
+  String get xlsxColCreated;
+
+  /// No description provided for @xlsxColCompleted.
+  ///
+  /// In pt, this message translates to:
+  /// **'Concluída em'**
+  String get xlsxColCompleted;
+
+  /// No description provided for @xlsxColHabit.
+  ///
+  /// In pt, this message translates to:
+  /// **'Hábito'**
+  String get xlsxColHabit;
+
+  /// No description provided for @xlsxColDate.
+  ///
+  /// In pt, this message translates to:
+  /// **'Data'**
+  String get xlsxColDate;
+
+  /// No description provided for @xlsxColValue.
+  ///
+  /// In pt, this message translates to:
+  /// **'Valor'**
+  String get xlsxColValue;
+
+  /// No description provided for @xlsxColGoal.
+  ///
+  /// In pt, this message translates to:
+  /// **'Meta'**
+  String get xlsxColGoal;
+
+  /// No description provided for @xlsxColUnit.
+  ///
+  /// In pt, this message translates to:
+  /// **'Unidade'**
+  String get xlsxColUnit;
+
+  /// No description provided for @xlsxColMood.
+  ///
+  /// In pt, this message translates to:
+  /// **'Humor'**
+  String get xlsxColMood;
+
+  /// No description provided for @xlsxColNote.
+  ///
+  /// In pt, this message translates to:
+  /// **'Observação'**
+  String get xlsxColNote;
+
+  /// No description provided for @xlsxColKind.
+  ///
+  /// In pt, this message translates to:
+  /// **'Tipo'**
+  String get xlsxColKind;
+
+  /// No description provided for @xlsxColCategory.
+  ///
+  /// In pt, this message translates to:
+  /// **'Categoria'**
+  String get xlsxColCategory;
+
+  /// No description provided for @xlsxColDescription.
+  ///
+  /// In pt, this message translates to:
+  /// **'Descrição'**
+  String get xlsxColDescription;
+
+  /// No description provided for @xlsxColCard.
+  ///
+  /// In pt, this message translates to:
+  /// **'Cartão'**
+  String get xlsxColCard;
+
+  /// No description provided for @xlsxColInvoice.
+  ///
+  /// In pt, this message translates to:
+  /// **'Fatura'**
+  String get xlsxColInvoice;
+
+  /// No description provided for @xlsxColInstallment.
+  ///
+  /// In pt, this message translates to:
+  /// **'Parcela'**
+  String get xlsxColInstallment;
+
+  /// No description provided for @xlsxColClosingDay.
+  ///
+  /// In pt, this message translates to:
+  /// **'Dia do fechamento'**
+  String get xlsxColClosingDay;
+
+  /// No description provided for @xlsxColDueDay.
+  ///
+  /// In pt, this message translates to:
+  /// **'Dia do vencimento'**
+  String get xlsxColDueDay;
+
+  /// No description provided for @xlsxColCreditLimit.
+  ///
+  /// In pt, this message translates to:
+  /// **'Limite'**
+  String get xlsxColCreditLimit;
+
+  /// No description provided for @xlsxColBorrower.
+  ///
+  /// In pt, this message translates to:
+  /// **'Quem pegou emprestado'**
+  String get xlsxColBorrower;
+
+  /// No description provided for @xlsxColLentOn.
+  ///
+  /// In pt, this message translates to:
+  /// **'Emprestado em'**
+  String get xlsxColLentOn;
+
+  /// No description provided for @xlsxColPrincipal.
+  ///
+  /// In pt, this message translates to:
+  /// **'Valor emprestado'**
+  String get xlsxColPrincipal;
+
+  /// No description provided for @xlsxColTotal.
+  ///
+  /// In pt, this message translates to:
+  /// **'A receber'**
+  String get xlsxColTotal;
+
+  /// No description provided for @xlsxColDueOn.
+  ///
+  /// In pt, this message translates to:
+  /// **'Vencimento'**
+  String get xlsxColDueOn;
+
+  /// No description provided for @xlsxColInstallments.
+  ///
+  /// In pt, this message translates to:
+  /// **'Parcelas'**
+  String get xlsxColInstallments;
+
+  /// No description provided for @xlsxColReceived.
+  ///
+  /// In pt, this message translates to:
+  /// **'Recebido'**
+  String get xlsxColReceived;
+
+  /// No description provided for @xlsxColSavingsGoal.
+  ///
+  /// In pt, this message translates to:
+  /// **'Caixinha'**
+  String get xlsxColSavingsGoal;
+
+  /// No description provided for @xlsxColSaved.
+  ///
+  /// In pt, this message translates to:
+  /// **'Guardado'**
+  String get xlsxColSaved;
+
+  /// No description provided for @xlsxColMeal.
+  ///
+  /// In pt, this message translates to:
+  /// **'Refeição'**
+  String get xlsxColMeal;
+
+  /// No description provided for @xlsxColFood.
+  ///
+  /// In pt, this message translates to:
+  /// **'Alimento'**
+  String get xlsxColFood;
+
+  /// No description provided for @xlsxColQuantity.
+  ///
+  /// In pt, this message translates to:
+  /// **'Quantidade'**
+  String get xlsxColQuantity;
+
+  /// No description provided for @xlsxColMeasure.
+  ///
+  /// In pt, this message translates to:
+  /// **'Medida'**
+  String get xlsxColMeasure;
+
+  /// No description provided for @xlsxColGrams.
+  ///
+  /// In pt, this message translates to:
+  /// **'Gramas'**
+  String get xlsxColGrams;
+
+  /// No description provided for @xlsxColKcal.
+  ///
+  /// In pt, this message translates to:
+  /// **'kcal'**
+  String get xlsxColKcal;
+
+  /// No description provided for @xlsxColProtein.
+  ///
+  /// In pt, this message translates to:
+  /// **'Proteínas (g)'**
+  String get xlsxColProtein;
+
+  /// No description provided for @xlsxColCarbs.
+  ///
+  /// In pt, this message translates to:
+  /// **'Carboidratos (g)'**
+  String get xlsxColCarbs;
+
+  /// No description provided for @xlsxColFat.
+  ///
+  /// In pt, this message translates to:
+  /// **'Gorduras (g)'**
+  String get xlsxColFat;
+
+  /// No description provided for @xlsxColFiber.
+  ///
+  /// In pt, this message translates to:
+  /// **'Fibras (g)'**
+  String get xlsxColFiber;
+
+  /// No description provided for @xlsxColEnergy.
+  ///
+  /// In pt, this message translates to:
+  /// **'Energia'**
+  String get xlsxColEnergy;
+
+  /// No description provided for @xlsxColHighlight.
+  ///
+  /// In pt, this message translates to:
+  /// **'Destaque'**
+  String get xlsxColHighlight;
+
+  /// No description provided for @xlsxStatusOpen.
+  ///
+  /// In pt, this message translates to:
+  /// **'Aberta'**
+  String get xlsxStatusOpen;
+
+  /// No description provided for @xlsxStatusCompleted.
+  ///
+  /// In pt, this message translates to:
+  /// **'Concluída'**
+  String get xlsxStatusCompleted;
+
+  /// No description provided for @xlsxStatusWontDo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não será feita'**
+  String get xlsxStatusWontDo;
+
   /// No description provided for @autoBackupNone.
   ///
   /// In pt, this message translates to:

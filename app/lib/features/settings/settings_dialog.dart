@@ -23,6 +23,7 @@ import '../../domain/task_defaults.dart';
 import '../../domain/views.dart';
 import '../../l10n/app_localizations.dart';
 import '../backup/backup_actions.dart';
+import '../backup/excel_actions.dart';
 import '../common/feedback.dart';
 import '../common/labels.dart';
 import '../date_picker/date_picker.dart' show reminderLabel;
@@ -319,6 +320,24 @@ class _AccountTab extends ConsumerWidget {
             style: TextStyle(fontSize: TtText.small, color: tt.textTertiary),
           ),
           onTap: () => unawaited(showAutoBackups(context, ref)),
+        ),
+        ListTile(
+          leading: const Icon(Icons.table_view_outlined),
+          title: Text(t.xlsxExport),
+          subtitle: Text(
+            t.xlsxExportHint,
+            style: TextStyle(fontSize: TtText.small, color: tt.textTertiary),
+          ),
+          onTap: () => unawaited(exportExcel(context, ref)),
+        ),
+        ListTile(
+          leading: const Icon(Icons.post_add_outlined),
+          title: Text(t.xlsxImport),
+          subtitle: Text(
+            t.xlsxImportHint,
+            style: TextStyle(fontSize: TtText.small, color: tt.textTertiary),
+          ),
+          onTap: () => unawaited(importExcel(context, ref)),
         ),
       ],
     );
