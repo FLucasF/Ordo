@@ -1,14 +1,19 @@
+import 'package:drift/drift.dart' show Value;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/providers.dart';
 import '../../app/theme/app_theme.dart';
+import '../../core/ids.dart';
 import '../../data/db/database.dart';
+import '../../data/repository.dart' show maxListLevels;
 import '../../domain/enums.dart';
+import '../../domain/snapshot.dart';
 import '../../l10n/app_localizations.dart';
 import '../common/color_choice.dart';
 import '../common/emoji_picker.dart';
 import '../common/feedback.dart';
+import 'folder_dialog.dart';
 
 /// Result of the list dialog.
 class ListForm {
@@ -20,24 +25,97 @@ class ListForm {
     required this.kind,
     required this.viewMode,
     required this.showInSmartLists,
+    this.parentId,
   });
 
   final String name;
   final String? emoji;
   final String? color;
   final String? folderId;
+
+  /// "Dentro de": the list it is a sublist of; null at the top.
+  final String? parentId;
   final ListKind kind;
   final ViewMode viewMode;
   final bool showInSmartLists;
 }
 
-/// Deletes a list after asking (its tasks go to the trash); true when it did. Leaving it, when it was
-/// open, is the caller's.
+/// What happens to the sublists of a list that is deleted or archived.
+enum SublistFate { moveUp, along }
+
+/// Asks what happens to the sublists of [l] ([along] names going with it); null when cancelled.
+Future<SublistFate?> _askSublistFate(BuildContext context, String message, String along) {
+  final t = AppLocalizations.of(context);
+  return showDialog<SublistFate>(
+    context: context,
+    builder: (context) => SimpleDialog(
+      title: Text(t.sublistsWhatTitle, style: const TextStyle(fontSize: 15)),
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(24, 0, 24, 8),
+          child: SizedBox(width: 360, child: Text(message)),
+        ),
+        SimpleDialogOption(onPressed: () => Navigator.pop(context, SublistFate.moveUp), child: Text(t.sublistsMoveUp)),
+        SimpleDialogOption(onPressed: () => Navigator.pop(context, SublistFate.along), child: Text(along)),
+        SimpleDialogOption(onPressed: () => Navigator.pop(context), child: Text(t.actionCancel)),
+      ],
+    ),
+  );
+}
+
+bool _hasSublists(WidgetRef ref, TaskList l) => (ref.read(snapshotProvider).value?.sublistsOf(l.id) ?? const []).isNotEmpty;
+
+/// Deletes a list after asking (its tasks go to the trash; its sublists move up a level or go too);
+/// true when it did. Leaving it, when it was open, is the caller's.
 Future<bool> deleteListAsking(BuildContext context, WidgetRef ref, TaskList l) async {
   final t = AppLocalizations.of(context);
-  if (!await confirm(context, message: t.deleteListConfirm, confirmLabel: t.actionDelete) || !context.mounted) return false;
   final repo = ref.read(repositoryProvider);
+  if (_hasSublists(ref, l)) {
+    final fate = await _askSublistFate(context, t.deleteListConfirm, t.sublistsDeleteToo);
+    if (fate == null || !context.mounted) return false;
+    return guarded(context, () => repo.deleteList(l.id, withSublists: fate == SublistFate.along));
+  }
+  if (!await confirm(context, message: t.deleteListConfirm, confirmLabel: t.actionDelete) || !context.mounted) return false;
   return guarded(context, () => repo.deleteList(l.id));
+}
+
+/// Archives a list after asking (and what happens to its sublists); true when it did.
+Future<bool> archiveListAsking(BuildContext context, WidgetRef ref, TaskList l) async {
+  final t = AppLocalizations.of(context);
+  final repo = ref.read(repositoryProvider);
+  var fate = SublistFate.moveUp;
+  if (_hasSublists(ref, l)) {
+    final picked = await _askSublistFate(context, t.archiveListConfirm, t.sublistsArchiveToo);
+    if (picked == null) return false;
+    fate = picked;
+  } else if (!await confirm(context, message: t.archiveListConfirm, confirmLabel: t.actionArchive)) {
+    return false;
+  }
+  if (!context.mounted) return false;
+  return guarded(context, () => repo.archiveList(l.id, archived: true, withSublists: fate == SublistFate.along));
+}
+
+/// "Adicionar lista" (inside [folderId], or as a sublist of [parentId]) and the list created; its id.
+Future<String?> addListWithDialog(BuildContext context, WidgetRef ref, {String? folderId, String? parentId}) async {
+  final form = await showListDialog(context, folderId: folderId, parentId: parentId);
+  if (form == null || !context.mounted) return null;
+  String? id;
+  await guarded(
+    context,
+    () async => id = await ref
+        .read(repositoryProvider)
+        .createList(
+          name: form.name,
+          emoji: form.emoji,
+          color: form.color,
+          folderId: form.folderId,
+          parentId: form.parentId,
+          kind: form.kind,
+          viewMode: form.viewMode,
+          showInSmartLists: form.showInSmartLists,
+        ),
+  );
+  return id;
 }
 
 /// "Editar lista": the dialog (its bin is [deleteListAsking], then [onDeleted]) and the changes saved.
@@ -52,33 +130,38 @@ Future<void> editListWithDialog(BuildContext context, WidgetRef ref, TaskList l,
       return deleted;
     },
   );
-  if (form == null) return;
-  await repo.editList(
-    l.id,
-    name: form.name,
-    emoji: form.emoji,
-    color: form.color,
-    folderId: form.folderId,
-    kind: form.kind,
-    viewMode: form.viewMode,
-    showInSmartLists: form.showInSmartLists,
+  if (form == null || !context.mounted) return;
+  await guarded(
+    context,
+    () => repo.editList(
+      l.id,
+      name: form.name,
+      emoji: form.emoji,
+      color: form.color,
+      folderId: form.folderId,
+      parentId: Value(form.parentId),
+      kind: form.kind,
+      viewMode: form.viewMode,
+      showInSmartLists: form.showInSmartLists,
+    ),
   );
 }
 
 /// "Adicionar lista" / "Editar lista". Returns null when cancelled.
 ///
 /// Editing, [onDelete] shows the bin: it asks and deletes, and the dialog closes when it did.
-Future<ListForm?> showListDialog(BuildContext context, {TaskList? editing, String? folderId, Future<bool> Function()? onDelete}) =>
+Future<ListForm?> showListDialog(BuildContext context, {TaskList? editing, String? folderId, String? parentId, Future<bool> Function()? onDelete}) =>
     showDialog<ListForm>(
       context: context,
-      builder: (_) => _ListDialog(editing: editing, initialFolderId: folderId, onDelete: onDelete),
+      builder: (_) => _ListDialog(editing: editing, initialFolderId: folderId, initialParentId: parentId, onDelete: onDelete),
     );
 
 class _ListDialog extends ConsumerStatefulWidget {
-  const _ListDialog({this.editing, this.initialFolderId, this.onDelete});
+  const _ListDialog({this.editing, this.initialFolderId, this.initialParentId, this.onDelete});
 
   final TaskList? editing;
   final String? initialFolderId;
+  final String? initialParentId;
   final Future<bool> Function()? onDelete;
 
   @override
@@ -90,6 +173,7 @@ class _ListDialogState extends ConsumerState<_ListDialog> {
   late String? _emoji = widget.editing?.emoji;
   late String? _color = widget.editing?.color;
   late String? _folderId = widget.editing?.folderId ?? widget.initialFolderId;
+  late String? _parentId = widget.editing?.parentId ?? widget.initialParentId;
   late ListKind _kind = widget.editing?.kind ?? ListKind.tasks;
   late ViewMode _viewMode = widget.editing?.viewMode ?? ViewMode.list;
   late bool _showInSmartLists = widget.editing?.showInSmartLists ?? true;
@@ -109,11 +193,25 @@ class _ListDialogState extends ConsumerState<_ListDialog> {
         emoji: _emoji,
         color: _color,
         folderId: _folderId,
+        parentId: _parentId,
         kind: _kind,
         viewMode: _viewMode,
         showInSmartLists: _showInSmartLists,
       ),
     );
+  }
+
+  /// "Dentro de": the lists this one can go into, with their depth. Not the Inbox, itself or its own
+  /// sublists, and none that would take its deepest sublist past [maxListLevels].
+  List<(TaskList, int)> _parents(Snapshot s) {
+    final editing = widget.editing;
+    final own = editing == null ? const <String>{} : {editing.id, for (final l in s.sublistsDeep(editing.id)) l.id};
+    int height(String id) => 1 + s.sublistsOf(id).fold(0, (deepest, c) => deepest > height(c.id) ? deepest : height(c.id));
+    final levels = editing == null ? 1 : height(editing.id);
+    return [
+      for (final (l, depth) in s.listTree(s.activeLists.where((l) => l.id != inboxListId)))
+        if (!own.contains(l.id) && depth + 1 + levels <= maxListLevels) (l, depth),
+    ];
   }
 
   Future<void> _pickEmoji() async {
@@ -123,18 +221,19 @@ class _ListDialogState extends ConsumerState<_ListDialog> {
   }
 
   Future<void> _newFolder() async {
-    final t = AppLocalizations.of(context);
-    final name = await promptText(context, title: t.folderNew, hint: t.listNameHint, cancelLabel: t.actionClose);
-    if (name == null) return;
-    final id = await ref.read(repositoryProvider).createFolder(name);
-    if (mounted) setState(() => _folderId = id);
+    final id = await createFolderWithDialog(context, ref);
+    if (id != null && mounted) setState(() => _folderId = id);
   }
 
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
     final tt = context.tt;
-    final folders = ref.watch(snapshotProvider).value?.activeFolders ?? const <Folder>[];
+    final s = ref.watch(snapshotProvider).value ?? Snapshot.empty();
+    final folders = s.activeFolders;
+    final parents = _parents(s);
+    final parent = _parentId == null ? null : s.listById[_parentId];
+    final isInbox = widget.editing?.id == inboxListId;
 
     // Label beside the options on wide screens, above them on phones.
     final narrow = MediaQuery.sizeOf(context).width < 600;
@@ -228,23 +327,54 @@ class _ListDialogState extends ConsumerState<_ListDialog> {
                       ViewMode.timeline: t.viewTimeline,
                     }, (v) => setState(() => _viewMode = v)),
                   ),
+                  // A sublist is in its parent's area: the area shows, but only the parent changes it.
                   row(
                     t.listFolder,
-                    DropdownButton<String?>(
-                      value: _folderId,
-                      isDense: true,
-                      underline: const SizedBox.shrink(),
-                      items: [
-                        DropdownMenuItem(value: null, child: Text(t.folderNone)),
-                        for (final f in folders) DropdownMenuItem(value: f.id, child: Text(f.name)),
-                        DropdownMenuItem(
-                          value: '\u0000new',
-                          child: Text('+ ${t.folderNew}', style: TextStyle(color: tt.primary)),
-                        ),
-                      ],
-                      onChanged: (v) => v == '\u0000new' ? _newFolder() : setState(() => _folderId = v),
-                    ),
+                    parent != null
+                        ? Text(
+                            parent.folderId == null ? t.folderNone : (s.folderById[parent.folderId]?.name ?? t.folderNone),
+                            style: TextStyle(color: tt.textTertiary),
+                          )
+                        : DropdownButton<String?>(
+                            value: folders.any((f) => f.id == _folderId) ? _folderId : null,
+                            isDense: true,
+                            underline: const SizedBox.shrink(),
+                            items: [
+                              DropdownMenuItem(value: null, child: Text(t.folderNone)),
+                              for (final f in folders) DropdownMenuItem(value: f.id, child: Text(f.name)),
+                              DropdownMenuItem(
+                                value: '\u0000new',
+                                child: Text('+ ${t.folderNew}', style: TextStyle(color: tt.primary)),
+                              ),
+                            ],
+                            onChanged: (v) => v == '\u0000new' ? _newFolder() : setState(() => _folderId = v),
+                          ),
                   ),
+                  if (!isInbox)
+                    row(
+                      t.listParent,
+                      DropdownButton<String?>(
+                        value: _parentId,
+                        isDense: true,
+                        isExpanded: true,
+                        underline: const SizedBox.shrink(),
+                        items: [
+                          DropdownMenuItem(value: null, child: Text(t.listParentNone)),
+                          for (final (l, depth) in parents)
+                            DropdownMenuItem(
+                              value: l.id,
+                              child: Padding(
+                                padding: EdgeInsets.only(left: 16.0 * depth),
+                                child: Text('${l.emoji ?? ''}${l.emoji == null ? '' : ' '}${l.name}', overflow: TextOverflow.ellipsis),
+                              ),
+                            ),
+                          // A parent that is no longer offered (archived) stays shown.
+                          if (parent != null && !parents.any((p) => p.$1.id == parent.id))
+                            DropdownMenuItem(value: parent.id, child: Text(parent.name)),
+                        ],
+                        onChanged: (v) => setState(() => _parentId = v),
+                      ),
+                    ),
                   row(
                     t.listType,
                     segmented(_kind, {ListKind.tasks: t.listTypeTasks, ListKind.notes: t.listTypeNotes}, (v) => setState(() => _kind = v)),

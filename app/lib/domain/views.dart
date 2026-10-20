@@ -314,6 +314,7 @@ ViewContent buildView(
   Set<String> collapsed = const {},
   bool overdueLast = false,
   ClosedFilter closedFilter = const ClosedFilter(),
+  bool withSublists = false,
 }) {
   final today = startOfDay(now);
   return switch (scope) {
@@ -321,12 +322,24 @@ ViewContent buildView(
     SmartScope(smartList: SmartList.wontDo) => _closedByDay(s, TaskStatus.wontDo, EmptyState.wontDo, closedFilter, today),
     SmartScope(smartList: SmartList.trash) => _trash(s),
     SmartScope(smartList: SmartList.summary) => const ViewContent(groups: [], emptyState: EmptyState.smart),
-    _ => _taskView(s, scope, today, options, collapsed, overdueLast: overdueLast),
+    _ => _taskView(s, scope, today, options, collapsed, overdueLast: overdueLast, withSublists: withSublists),
   };
 }
 
-ViewContent _taskView(Snapshot s, Scope scope, DateTime today, ViewOptions options, Set<String> collapsed, {bool overdueLast = false}) {
+/// [withSublists]: a list's view ("Incluir sublistas") also shows the tasks of its sublists, grouped by
+/// sublist when grouped by the list's own order.
+ViewContent _taskView(
+  Snapshot s,
+  Scope scope,
+  DateTime today,
+  ViewOptions options,
+  Set<String> collapsed, {
+  bool overdueLast = false,
+  bool withSublists = false,
+}) {
   final filter = scope is FilterScope ? s.filterById[scope.filterId] : null;
+  final sublists = scope is ListScope && withSublists ? s.sublistsDeep(scope.listId) : const <TaskList>[];
+  final sublistIds = {for (final l in sublists) l.id};
   final rule = filter == null ? null : FilterRule.decode(filter.rule);
   bool isCandidate(Task t) {
     if (t.deletedAt != null) return false;
@@ -334,7 +347,7 @@ ViewContent _taskView(Snapshot s, Scope scope, DateTime today, ViewOptions optio
     if (list == null || list.deletedAt != null) return false;
     final toStart = t.daysToStart(today);
     return switch (scope) {
-      ListScope(:final listId) => t.listId == listId,
+      ListScope(:final listId) => t.listId == listId || sublistIds.contains(t.listId),
       FolderScope(:final folderId) => list.folderId == folderId && list.archivedAt == null,
       TagScope(:final tagId) => s.tagsOf(t.id).any((tag) => tag.id == tagId || tag.parentId == tagId) && list.archivedAt == null,
       SmartScope(:final smartList) =>
@@ -366,7 +379,7 @@ ViewContent _taskView(Snapshot s, Scope scope, DateTime today, ViewOptions optio
       hasChildren: children.isNotEmpty,
       isCollapsed: collapsed.contains(t.id),
       tags: s.tagsOf(t.id),
-      list: showList ? s.listById[t.listId] : null,
+      list: showList || sublistIds.contains(t.listId) ? s.listById[t.listId] : null,
       checklistProgress: t.kind == TaskKind.checklist && items.isNotEmpty
           ? (100 * items.where((i) => i.isCompleted).length / items.length).round()
           : null,
@@ -392,30 +405,45 @@ ViewContent _taskView(Snapshot s, Scope scope, DateTime today, ViewOptions optio
     groups.add(TaskGroup(key: 'pinned', header: const PinnedHeader(), rows: [for (final t in pinned) ...withChildren(t, 0)]));
   }
 
+  /// A list's tasks by section: "unsectioned" first, then one group per section.
+  List<TaskGroup> bySection(String listId, List<Task> tasks) {
+    final sections = s.sectionsOf(listId);
+    final sectionIds = {for (final sec in sections) sec.id};
+    return [
+      TaskGroup(
+        key: 'section:',
+        header: const UnsectionedHeader(),
+        rows: sortAndExpand(tasks.where((t) => t.sectionId == null || !sectionIds.contains(t.sectionId)).toList()),
+      ),
+      for (final sec in sections)
+        TaskGroup(
+          key: 'section:${sec.id}',
+          header: SectionHeader(sec.name),
+          sectionId: sec.id,
+          rows: sortAndExpand(tasks.where((t) => t.sectionId == sec.id).toList()),
+        ),
+    ];
+  }
+
   final dayByDay = scope is SmartScope && scope.smartList == SmartList.next7Days;
   switch (options.grouping) {
-    case Grouping.custom when scope is ListScope && s.sectionsOf(scope.listId).isNotEmpty:
-      final sections = s.sectionsOf(scope.listId);
-      final sectionIds = {for (final sec in sections) sec.id};
-      groups.add(
-        TaskGroup(
-          key: 'section:',
-          header: const UnsectionedHeader(),
-          rows: sortAndExpand(unpinned.where((t) => t.sectionId == null || !sectionIds.contains(t.sectionId)).toList()),
-        ),
-      );
-      for (final sec in sections) {
-        groups.add(
-          TaskGroup(
-            key: 'section:${sec.id}',
-            header: SectionHeader(sec.name),
-            sectionId: sec.id,
-            rows: sortAndExpand(unpinned.where((t) => t.sectionId == sec.id).toList()),
-          ),
-        );
+    // "Incluir sublistas": the list's own tasks (by section when it has them), then each sublist's.
+    case Grouping.custom when scope is ListScope && sublists.isNotEmpty:
+      final own = unpinned.where((t) => t.listId == scope.listId).toList();
+      if (s.sectionsOf(scope.listId).isNotEmpty) {
+        groups.addAll(bySection(scope.listId, own));
+      } else if (own.isNotEmpty) {
+        groups.add(TaskGroup(key: 'list:${scope.listId}', header: ListHeader(scope.listId), rows: sortAndExpand(own)));
       }
+      for (final l in sublists) {
+        final tasks = unpinned.where((t) => t.listId == l.id).toList();
+        if (tasks.isNotEmpty) groups.add(TaskGroup(key: 'list:${l.id}', header: ListHeader(l.id), rows: sortAndExpand(tasks)));
+      }
+    case Grouping.custom when scope is ListScope && s.sectionsOf(scope.listId).isNotEmpty:
+      groups.addAll(bySection(scope.listId, unpinned));
     case Grouping.custom when scope is FolderScope:
-      for (final l in s.activeLists.where((l) => l.folderId == scope.folderId)) {
+      // Sublists right under their parent list.
+      for (final (l, _) in s.listTree(s.activeLists.where((l) => l.folderId == scope.folderId))) {
         final tasks = unpinned.where((t) => t.listId == l.id).toList();
         if (tasks.isNotEmpty) groups.add(TaskGroup(key: 'list:${l.id}', header: ListHeader(l.id), rows: sortAndExpand(tasks)));
       }
@@ -502,7 +530,7 @@ ViewContent _taskView(Snapshot s, Scope scope, DateTime today, ViewOptions optio
 /// Where the add field creates ("Adicionar tarefa a 'Caixa de Entrada'").
 AddTarget? _addTarget(Snapshot s, Scope scope, DateTime today, {required bool isNotes}) => switch (scope) {
   ListScope(:final listId) => AddTarget(listId: listId, hint: isNotes ? const AddNoteHint() : const AddPlainHint()),
-  FolderScope(:final folderId) => switch (s.activeLists.where((l) => l.folderId == folderId).firstOrNull) {
+  FolderScope(:final folderId) => switch (s.listTree(s.activeLists.where((l) => l.folderId == folderId)).firstOrNull?.$1) {
     null => null,
     final first => AddTarget(listId: first.id, hint: AddToListHint(first.id)),
   },

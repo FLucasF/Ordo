@@ -481,19 +481,232 @@ class AppLocalizationsLa extends AppLocalizations {
   String get viewTimeline => 'Linea temporis';
 
   @override
-  String get listFolder => 'Fasciculus';
+  String get listFolder => 'Regio';
 
   @override
-  String get folderNone => 'Nullus';
+  String get folderNone => 'Nulla';
 
   @override
-  String get folderNew => 'Novus fasciculus';
+  String get folderNew => 'Nova regio';
 
   @override
   String get dropAsSubtask => 'Ut subpensum demitte';
 
   @override
   String get listType => 'Genus indicis';
+
+  @override
+  String get folderEditTitle => 'Regionem muta';
+
+  @override
+  String get folderNameHint => 'Nomen regionis (e.g. Valetudo, Academia)';
+
+  @override
+  String get folderIcon => 'Signum';
+
+  @override
+  String get folderColor => 'Color';
+
+  @override
+  String folderDeleted(String name) {
+    return 'Regio \"$name\" deleta; indices manent';
+  }
+
+  @override
+  String get listParent => 'Intra';
+
+  @override
+  String get listParentNone => 'Nullus (in summo)';
+
+  @override
+  String get listAddSublist => 'Subindicem adde';
+
+  @override
+  String get listIncludeSublists => 'Subindices include';
+
+  @override
+  String get sublistsFold => 'Subindices contrahe';
+
+  @override
+  String get sublistsUnfold => 'Subindices ostende';
+
+  @override
+  String get sublistsWhatTitle => 'Quid de subindicibus?';
+
+  @override
+  String get sublistsMoveUp => 'Subindices uno gradu sursum move';
+
+  @override
+  String get sublistsDeleteToo => 'Subindices quoque dele';
+
+  @override
+  String get sublistsArchiveToo => 'Subindices quoque in tabulario conde';
+
+  @override
+  String toastMadeSublist(String name, String parent) {
+    return '\"$name\" nunc intra \"$parent\" est';
+  }
+
+  @override
+  String get errorListCannotBeItsOwnParent => 'Index neque intra se ipsum neque intra subindicem suum esse potest';
+
+  @override
+  String get errorSublistDepthLimit => 'Subindices ad tres gradus tantum pertinent';
+
+  @override
+  String get errorInboxCannotNest => 'Receptaculum in subindices non intrat';
+
+  @override
+  String get countdownLink => 'Cum indice vel regione coniunge';
+
+  @override
+  String get countdownLinkNone => 'Nullus';
+
+  @override
+  String countdownLinkArea(String name) {
+    return 'Regio: $name';
+  }
+
+  @override
+  String get projectDashboard => 'Tabula incepti';
+
+  @override
+  String get projectDays => 'Terminus';
+
+  @override
+  String projectDaysLeft(int count) {
+    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: 'Restant $count dies', one: 'Restat unus dies', zero: 'Hodie est');
+    return '$_temp0';
+  }
+
+  @override
+  String get projectDayPassed => 'Dies iam praeteriit';
+
+  @override
+  String get projectGone => 'Index vel regio huius incepti iam non est.';
+
+  @override
+  String get projectEmpty => 'Nullum adhuc pensum in incepto.';
+
+  @override
+  String get projectProgress => 'Progressus';
+
+  @override
+  String projectTasksDone(int done, int total) {
+    return '$done ex $total pensis';
+  }
+
+  @override
+  String get projectAccuracy => 'Ratio diligentiae';
+
+  @override
+  String get projectAccuracyNone => 'Nullus adhuc terminus praeteritus vel servatus';
+
+  @override
+  String projectAccuracyDetail(int onTime, int late, int missed) {
+    return '$onTime ad tempus · $late sero · $missed omissa';
+  }
+
+  @override
+  String get projectPace => 'Gradus';
+
+  @override
+  String projectPacePerDay(String count) {
+    return 'Fac $count pensa in dies';
+  }
+
+  @override
+  String projectPaceRecent(String count) {
+    return 'Medium septem dierum proximorum: $count in dies';
+  }
+
+  @override
+  String get projectPaceDone => 'Omnia facta';
+
+  @override
+  String get projectBySection => 'Pensa per sectiones';
+
+  @override
+  String get projectUpcoming => 'Proxima cum termino';
+
+  @override
+  String get projectNoUpcoming => 'Nullum pensum cum termino instat.';
+
+  @override
+  String get projectEvolution => 'Incrementum (pensa confecta in dies)';
+
+  @override
+  String get projectLate => 'Sera';
+
+  @override
+  String get projectLateDone => 'post terminum confectum';
+
+  @override
+  String get projectLateOpen => 'terminus praeteriit';
+
+  @override
+  String get projectClose => 'Inceptum claude';
+
+  @override
+  String get projectCloseConfirm => 'Inceptumne nunc claudis? Relatio ultima servatur et inceptum postea rursus aperiri potest.';
+
+  @override
+  String get projectClosedToast => 'Inceptum clausum';
+
+  @override
+  String get projectReopen => 'Inceptum rursus aperi';
+
+  @override
+  String get projectReport => 'Relatio ultima';
+
+  @override
+  String projectClosedOn(String date) {
+    return 'Clausum die $date';
+  }
+
+  @override
+  String projectReportPeriod(String start, String end) {
+    return 'Ab $start ad $end';
+  }
+
+  @override
+  String get projectDeadlines => 'Termini';
+
+  @override
+  String get projectBestDay => 'Dies optimus';
+
+  @override
+  String projectBestDayCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: '$count confecta', one: '1 confectum');
+    return '$_temp0';
+  }
+
+  @override
+  String get projectNoTrophies => 'Nullum tropaeum hac vice.';
+
+  @override
+  String get trophyAllDone => 'Omnia confecta';
+
+  @override
+  String get trophyAllDoneHint => 'Omnia incepti pensa confecta sunt';
+
+  @override
+  String get trophyAllOnTime => 'Omnia ad tempus';
+
+  @override
+  String get trophyAllOnTimeHint => 'Nullum pensum cum termino tardavit';
+
+  @override
+  String get trophyStrongFinish => 'Finis fortis';
+
+  @override
+  String get trophyStrongFinishHint => 'Septem dies ultimi plus quam medium incepti effecerunt (tria pensa aut plura)';
+
+  @override
+  String get trophyNoLate7 => 'Septem dies sine mora';
+
+  @override
+  String get trophyNoLate7Hint => 'Quidquid hebdomade ultima debebatur, ad tempus confectum est';
 
   @override
   String get listTypeTasks => 'Index pensorum';

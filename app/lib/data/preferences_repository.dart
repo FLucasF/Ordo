@@ -167,7 +167,15 @@ class Preferences {
     this.scopeViewOptions = const {},
     this.showListColor = true,
     this.language = AppLanguage.portuguese,
+    this.listsWithSublists = const {},
+    this.collapsedLists = const {},
   });
+
+  /// Lists whose view shows their sublists' tasks too ("Incluir sublistas").
+  final Set<String> listsWithSublists;
+
+  /// Lists whose sublists are folded away in the sidebar.
+  final Set<String> collapsedLists;
 
   final Map<SmartList, SmartListVisibility> smartListVisibility;
 
@@ -442,8 +450,27 @@ class PreferencesRepository {
               ],
       },
       showListColor: raw[_listColorKey] != false,
+      listsWithSublists: _idSet(raw[_withSublistsKey]),
+      collapsedLists: _idSet(raw[_collapsedListsKey]),
     );
   }
+
+  static const _withSublistsKey = 'view.withSublists';
+  static const _collapsedListsKey = 'sidebar.collapsedLists';
+
+  static Set<String> _idSet(Object? raw) => {
+    if (raw case final List<Object?> ids)
+      for (final id in ids)
+        if (id is String) id,
+  };
+
+  /// "Incluir sublistas" of a list.
+  Future<void> setListWithSublists(Set<String> current, String listId, {required bool enabled}) =>
+      _set(_withSublistsKey, [...current.where((id) => id != listId), if (enabled) listId]);
+
+  /// Folds or unfolds a list's sublists in the sidebar.
+  Future<void> setListCollapsed(Set<String> current, String listId, {required bool collapsed}) =>
+      _set(_collapsedListsKey, [...current.where((id) => id != listId), if (collapsed) listId]);
 
   static Object? _decode(String value) {
     try {

@@ -1025,7 +1025,7 @@ abstract class AppLocalizations {
   /// No description provided for @listFolder.
   ///
   /// In pt, this message translates to:
-  /// **'Pasta'**
+  /// **'Área'**
   String get listFolder;
 
   /// No description provided for @folderNone.
@@ -1037,7 +1037,7 @@ abstract class AppLocalizations {
   /// No description provided for @folderNew.
   ///
   /// In pt, this message translates to:
-  /// **'Nova Pasta'**
+  /// **'Nova área'**
   String get folderNew;
 
   /// No description provided for @dropAsSubtask.
@@ -1051,6 +1051,384 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Tipo de lista'**
   String get listType;
+
+  /// No description provided for @folderEditTitle.
+  ///
+  /// In pt, this message translates to:
+  /// **'Editar área'**
+  String get folderEditTitle;
+
+  /// No description provided for @folderNameHint.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nome da área (ex.: Saúde, Faculdade)'**
+  String get folderNameHint;
+
+  /// No description provided for @folderIcon.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ícone'**
+  String get folderIcon;
+
+  /// No description provided for @folderColor.
+  ///
+  /// In pt, this message translates to:
+  /// **'Cor'**
+  String get folderColor;
+
+  /// No description provided for @folderDeleted.
+  ///
+  /// In pt, this message translates to:
+  /// **'Área \"{name}\" deletada; as listas ficaram'**
+  String folderDeleted(String name);
+
+  /// No description provided for @listParent.
+  ///
+  /// In pt, this message translates to:
+  /// **'Dentro de'**
+  String get listParent;
+
+  /// No description provided for @listParentNone.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhuma (no topo)'**
+  String get listParentNone;
+
+  /// No description provided for @listAddSublist.
+  ///
+  /// In pt, this message translates to:
+  /// **'Adicionar sublista'**
+  String get listAddSublist;
+
+  /// No description provided for @listIncludeSublists.
+  ///
+  /// In pt, this message translates to:
+  /// **'Incluir sublistas'**
+  String get listIncludeSublists;
+
+  /// No description provided for @sublistsFold.
+  ///
+  /// In pt, this message translates to:
+  /// **'Recolher sublistas'**
+  String get sublistsFold;
+
+  /// No description provided for @sublistsUnfold.
+  ///
+  /// In pt, this message translates to:
+  /// **'Mostrar sublistas'**
+  String get sublistsUnfold;
+
+  /// No description provided for @sublistsWhatTitle.
+  ///
+  /// In pt, this message translates to:
+  /// **'E as sublistas?'**
+  String get sublistsWhatTitle;
+
+  /// No description provided for @sublistsMoveUp.
+  ///
+  /// In pt, this message translates to:
+  /// **'Mover as sublistas um nível acima'**
+  String get sublistsMoveUp;
+
+  /// No description provided for @sublistsDeleteToo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Deletar as sublistas também'**
+  String get sublistsDeleteToo;
+
+  /// No description provided for @sublistsArchiveToo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Arquivar as sublistas também'**
+  String get sublistsArchiveToo;
+
+  /// No description provided for @toastMadeSublist.
+  ///
+  /// In pt, this message translates to:
+  /// **'\"{name}\" agora está dentro de \"{parent}\"'**
+  String toastMadeSublist(String name, String parent);
+
+  /// No description provided for @errorListCannotBeItsOwnParent.
+  ///
+  /// In pt, this message translates to:
+  /// **'Uma lista não pode ficar dentro dela mesma nem de uma sublista sua'**
+  String get errorListCannotBeItsOwnParent;
+
+  /// No description provided for @errorSublistDepthLimit.
+  ///
+  /// In pt, this message translates to:
+  /// **'As sublistas vão até 3 níveis'**
+  String get errorSublistDepthLimit;
+
+  /// No description provided for @errorInboxCannotNest.
+  ///
+  /// In pt, this message translates to:
+  /// **'A Caixa de Entrada não entra em sublistas'**
+  String get errorInboxCannotNest;
+
+  /// No description provided for @countdownLink.
+  ///
+  /// In pt, this message translates to:
+  /// **'Vincular a uma lista ou área'**
+  String get countdownLink;
+
+  /// No description provided for @countdownLinkNone.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhuma'**
+  String get countdownLinkNone;
+
+  /// No description provided for @countdownLinkArea.
+  ///
+  /// In pt, this message translates to:
+  /// **'Área: {name}'**
+  String countdownLinkArea(String name);
+
+  /// No description provided for @projectDashboard.
+  ///
+  /// In pt, this message translates to:
+  /// **'Painel do projeto'**
+  String get projectDashboard;
+
+  /// No description provided for @projectDays.
+  ///
+  /// In pt, this message translates to:
+  /// **'Prazo'**
+  String get projectDays;
+
+  /// No description provided for @projectDaysLeft.
+  ///
+  /// In pt, this message translates to:
+  /// **'{count, plural, =0{É hoje} =1{Falta 1 dia} other{Faltam {count} dias}}'**
+  String projectDaysLeft(int count);
+
+  /// No description provided for @projectDayPassed.
+  ///
+  /// In pt, this message translates to:
+  /// **'O dia já passou'**
+  String get projectDayPassed;
+
+  /// No description provided for @projectGone.
+  ///
+  /// In pt, this message translates to:
+  /// **'A lista ou área deste projeto não existe mais.'**
+  String get projectGone;
+
+  /// No description provided for @projectEmpty.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhuma tarefa no projeto ainda.'**
+  String get projectEmpty;
+
+  /// No description provided for @projectProgress.
+  ///
+  /// In pt, this message translates to:
+  /// **'Progresso'**
+  String get projectProgress;
+
+  /// No description provided for @projectTasksDone.
+  ///
+  /// In pt, this message translates to:
+  /// **'{done} de {total} tarefas'**
+  String projectTasksDone(int done, int total);
+
+  /// No description provided for @projectAccuracy.
+  ///
+  /// In pt, this message translates to:
+  /// **'Taxa de exatidão'**
+  String get projectAccuracy;
+
+  /// No description provided for @projectAccuracyNone.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhum prazo vencido ou cumprido ainda'**
+  String get projectAccuracyNone;
+
+  /// No description provided for @projectAccuracyDetail.
+  ///
+  /// In pt, this message translates to:
+  /// **'{onTime} no prazo · {late} depois · {missed} vencidas'**
+  String projectAccuracyDetail(int onTime, int late, int missed);
+
+  /// No description provided for @projectPace.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ritmo'**
+  String get projectPace;
+
+  /// No description provided for @projectPacePerDay.
+  ///
+  /// In pt, this message translates to:
+  /// **'Faça {count} tarefas por dia'**
+  String projectPacePerDay(String count);
+
+  /// No description provided for @projectPaceRecent.
+  ///
+  /// In pt, this message translates to:
+  /// **'Média dos últimos 7 dias: {count} por dia'**
+  String projectPaceRecent(String count);
+
+  /// No description provided for @projectPaceDone.
+  ///
+  /// In pt, this message translates to:
+  /// **'Tudo feito'**
+  String get projectPaceDone;
+
+  /// No description provided for @projectBySection.
+  ///
+  /// In pt, this message translates to:
+  /// **'Tarefas por seção'**
+  String get projectBySection;
+
+  /// No description provided for @projectUpcoming.
+  ///
+  /// In pt, this message translates to:
+  /// **'Próximas com prazo'**
+  String get projectUpcoming;
+
+  /// No description provided for @projectNoUpcoming.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhuma tarefa com prazo pela frente.'**
+  String get projectNoUpcoming;
+
+  /// No description provided for @projectEvolution.
+  ///
+  /// In pt, this message translates to:
+  /// **'Evolução (concluídas por dia)'**
+  String get projectEvolution;
+
+  /// No description provided for @projectLate.
+  ///
+  /// In pt, this message translates to:
+  /// **'Atrasadas'**
+  String get projectLate;
+
+  /// No description provided for @projectLateDone.
+  ///
+  /// In pt, this message translates to:
+  /// **'concluída depois do prazo'**
+  String get projectLateDone;
+
+  /// No description provided for @projectLateOpen.
+  ///
+  /// In pt, this message translates to:
+  /// **'prazo vencido'**
+  String get projectLateOpen;
+
+  /// No description provided for @projectClose.
+  ///
+  /// In pt, this message translates to:
+  /// **'Encerrar projeto'**
+  String get projectClose;
+
+  /// No description provided for @projectCloseConfirm.
+  ///
+  /// In pt, this message translates to:
+  /// **'Encerrar o projeto agora? O relatório final fica guardado e o projeto pode ser reaberto depois.'**
+  String get projectCloseConfirm;
+
+  /// No description provided for @projectClosedToast.
+  ///
+  /// In pt, this message translates to:
+  /// **'Projeto encerrado'**
+  String get projectClosedToast;
+
+  /// No description provided for @projectReopen.
+  ///
+  /// In pt, this message translates to:
+  /// **'Reabrir projeto'**
+  String get projectReopen;
+
+  /// No description provided for @projectReport.
+  ///
+  /// In pt, this message translates to:
+  /// **'Relatório final'**
+  String get projectReport;
+
+  /// No description provided for @projectClosedOn.
+  ///
+  /// In pt, this message translates to:
+  /// **'Encerrado em {date}'**
+  String projectClosedOn(String date);
+
+  /// No description provided for @projectReportPeriod.
+  ///
+  /// In pt, this message translates to:
+  /// **'De {start} a {end}'**
+  String projectReportPeriod(String start, String end);
+
+  /// No description provided for @projectDeadlines.
+  ///
+  /// In pt, this message translates to:
+  /// **'Prazos'**
+  String get projectDeadlines;
+
+  /// No description provided for @projectBestDay.
+  ///
+  /// In pt, this message translates to:
+  /// **'Melhor dia'**
+  String get projectBestDay;
+
+  /// No description provided for @projectBestDayCount.
+  ///
+  /// In pt, this message translates to:
+  /// **'{count, plural, =1{1 concluída} other{{count} concluídas}}'**
+  String projectBestDayCount(int count);
+
+  /// No description provided for @projectNoTrophies.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhum troféu desta vez.'**
+  String get projectNoTrophies;
+
+  /// No description provided for @trophyAllDone.
+  ///
+  /// In pt, this message translates to:
+  /// **'Tudo concluído'**
+  String get trophyAllDone;
+
+  /// No description provided for @trophyAllDoneHint.
+  ///
+  /// In pt, this message translates to:
+  /// **'Todas as tarefas do projeto foram concluídas'**
+  String get trophyAllDoneHint;
+
+  /// No description provided for @trophyAllOnTime.
+  ///
+  /// In pt, this message translates to:
+  /// **'Tudo no prazo'**
+  String get trophyAllOnTime;
+
+  /// No description provided for @trophyAllOnTimeHint.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhuma tarefa com prazo atrasou'**
+  String get trophyAllOnTimeHint;
+
+  /// No description provided for @trophyStrongFinish.
+  ///
+  /// In pt, this message translates to:
+  /// **'Reta final forte'**
+  String get trophyStrongFinish;
+
+  /// No description provided for @trophyStrongFinishHint.
+  ///
+  /// In pt, this message translates to:
+  /// **'Os últimos 7 dias renderam acima da média do projeto (3 tarefas ou mais)'**
+  String get trophyStrongFinishHint;
+
+  /// No description provided for @trophyNoLate7.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sem atrasos 7 dias'**
+  String get trophyNoLate7;
+
+  /// No description provided for @trophyNoLate7Hint.
+  ///
+  /// In pt, this message translates to:
+  /// **'Tudo o que vencia na última semana saiu no prazo'**
+  String get trophyNoLate7Hint;
 
   /// No description provided for @listTypeTasks.
   ///
