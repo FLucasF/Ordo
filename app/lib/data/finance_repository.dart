@@ -28,7 +28,17 @@ class FinanceRepository {
   Stream<FinanceSnapshot> watch() => _db
       .customSelect(
         'SELECT 1 AS finance',
-        readsFrom: {_db.finCategories, _db.finCards, _db.finRecurrings, _db.finEntries, _db.finCardPayments, _db.loans, _db.loanPayments},
+        readsFrom: {
+          _db.finCategories,
+          _db.finCards,
+          _db.finRecurrings,
+          _db.finEntries,
+          _db.finCardPayments,
+          _db.loans,
+          _db.loanPayments,
+          _db.finGoals,
+          _db.finGoalMoves,
+        },
       )
       .watch()
       .asyncMap((_) => load());
@@ -61,6 +71,12 @@ class FinanceRepository {
               ..orderBy([(l) => OrderingTerm(expression: l.dueOn)]))
             .get();
     final loanPayments = await (_db.select(_db.loanPayments)..where((p) => p.deletedAt.isNull())).get();
+    final goals =
+        await (_db.select(_db.finGoals)
+              ..where((g) => g.deletedAt.isNull())
+              ..orderBy([(g) => OrderingTerm(expression: g.sortOrder)]))
+            .get();
+    final goalMoves = await (_db.select(_db.finGoalMoves)..where((m) => m.deletedAt.isNull())).get();
     return FinanceSnapshot(
       categories: categories,
       cards: cards,
@@ -69,6 +85,8 @@ class FinanceRepository {
       cardPayments: cardPayments,
       loans: loans,
       loanPayments: loanPayments,
+      goals: goals,
+      goalMoves: goalMoves,
     );
   });
 
@@ -366,6 +384,8 @@ class FinanceRepository {
     required DateTime dueOn,
     String note = '',
     bool remind = true,
+    int installments = 1,
+    int? installmentAmount,
   }) async {
     final id = newId();
     await _db
@@ -382,6 +402,8 @@ class FinanceRepository {
             dueOn: storedDay(dueOn),
             note: Value(note.trim()),
             remind: Value(remind),
+            installments: Value(installments < 1 ? 1 : installments),
+            installmentAmount: Value(installments > 1 ? installmentAmount : null),
           ),
         );
     return id;
@@ -396,6 +418,8 @@ class FinanceRepository {
     required DateTime dueOn,
     required String note,
     required bool remind,
+    int installments = 1,
+    int? installmentAmount,
   }) => (_db.update(_db.loans)..where((l) => l.id.equals(id))).write(
     LoansCompanion(
       borrower: Value(borrower.trim()),
@@ -405,6 +429,8 @@ class FinanceRepository {
       dueOn: Value(storedDay(dueOn)),
       note: Value(note.trim()),
       remind: Value(remind),
+      installments: Value(installments < 1 ? 1 : installments),
+      installmentAmount: Value(installments > 1 ? installmentAmount : null),
       updatedAt: Value(_now),
     ),
   );
@@ -456,4 +482,102 @@ class FinanceRepository {
   Future<void> deleteLoanPayment(String id, {bool restore = false}) => (_db.update(
     _db.loanPayments,
   )..where((p) => p.id.equals(id))).write(LoanPaymentsCompanion(deletedAt: Value(restore ? null : _now), updatedAt: Value(_now)));
+
+  // ------------------------------------------------------------------ goals ("Caixinhas")
+
+  Future<String> createGoal({required String name, required int target, String? icon, String? color, DateTime? dueOn, String note = ''}) async {
+    final id = newId();
+    final last = await (_db.selectOnly(
+      _db.finGoals,
+    )..addColumns([_db.finGoals.sortOrder.max()])).map((r) => r.read(_db.finGoals.sortOrder.max())).getSingle();
+    await _db
+        .into(_db.finGoals)
+        .insert(
+          FinGoalsCompanion.insert(
+            id: id,
+            createdAt: _now,
+            updatedAt: _now,
+            name: name.trim(),
+            icon: Value(icon == null || icon.isEmpty ? null : icon),
+            color: Value(color),
+            target: target,
+            dueOn: Value(dueOn == null ? null : storedDay(dueOn)),
+            note: Value(note.trim()),
+            sortOrder: SortOrder.after(last),
+          ),
+        );
+    return id;
+  }
+
+  Future<void> updateGoal(
+    String id, {
+    required String name,
+    required int target,
+    required String? icon,
+    required String? color,
+    required DateTime? dueOn,
+    required String note,
+  }) => (_db.update(_db.finGoals)..where((g) => g.id.equals(id))).write(
+    FinGoalsCompanion(
+      name: Value(name.trim()),
+      target: Value(target),
+      icon: Value(icon == null || icon.isEmpty ? null : icon),
+      color: Value(color),
+      dueOn: Value(dueOn == null ? null : storedDay(dueOn)),
+      note: Value(note.trim()),
+      updatedAt: Value(_now),
+    ),
+  );
+
+  /// "Arquivar": the goal leaves the list; its money still counts as saved.
+  Future<void> archiveGoal(String id, {required bool archived}) => (_db.update(
+    _db.finGoals,
+  )..where((g) => g.id.equals(id))).write(FinGoalsCompanion(archivedAt: Value(archived ? _now : null), updatedAt: Value(_now)));
+
+  /// Deletes a goal and its moves (to the "Desfazer" of the toast: [restoreGoal]).
+  Future<void> deleteGoal(String id) => _db.transaction(() async {
+    await (_db.update(
+      _db.finGoalMoves,
+    )..where((m) => m.goalId.equals(id) & m.deletedAt.isNull())).write(FinGoalMovesCompanion(deletedAt: Value(_now), updatedAt: Value(_now)));
+    await (_db.update(_db.finGoals)..where((g) => g.id.equals(id))).write(FinGoalsCompanion(deletedAt: Value(_now), updatedAt: Value(_now)));
+  });
+
+  Future<void> restoreGoal(String id) => _db.transaction(() async {
+    final goal = await (_db.select(_db.finGoals)..where((g) => g.id.equals(id))).getSingle();
+    final deletedAt = goal.deletedAt;
+    if (deletedAt == null) return;
+    // The moves deleted with it (not the ones deleted before).
+    await (_db.update(_db.finGoalMoves)..where((m) => m.goalId.equals(id) & m.deletedAt.equals(deletedAt))).write(
+      FinGoalMovesCompanion(deletedAt: const Value(null), updatedAt: Value(_now)),
+    );
+    await (_db.update(_db.finGoals)..where((g) => g.id.equals(id))).write(FinGoalsCompanion(deletedAt: const Value(null), updatedAt: Value(_now)));
+  });
+
+  /// "Guardar" ([amount] positive) or "Retirar" (negative). A transfer: neither income nor expense.
+  Future<String> addGoalMove({required String goalId, required int amount, required DateTime date, String note = ''}) async {
+    final id = newId();
+    await _db
+        .into(_db.finGoalMoves)
+        .insert(
+          FinGoalMovesCompanion.insert(
+            id: id,
+            createdAt: _now,
+            updatedAt: _now,
+            goalId: goalId,
+            amount: amount,
+            date: storedDay(date),
+            note: Value(note.trim()),
+          ),
+        );
+    return id;
+  }
+
+  Future<void> updateGoalMove(String id, {required int amount, required DateTime date, String note = ''}) =>
+      (_db.update(_db.finGoalMoves)..where((m) => m.id.equals(id))).write(
+        FinGoalMovesCompanion(amount: Value(amount), date: Value(storedDay(date)), note: Value(note.trim()), updatedAt: Value(_now)),
+      );
+
+  Future<void> deleteGoalMove(String id, {bool restore = false}) => (_db.update(
+    _db.finGoalMoves,
+  )..where((m) => m.id.equals(id))).write(FinGoalMovesCompanion(deletedAt: Value(restore ? null : _now), updatedAt: Value(_now)));
 }

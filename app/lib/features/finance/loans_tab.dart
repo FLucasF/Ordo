@@ -68,7 +68,8 @@ class LoansBody extends ConsumerWidget {
           for (final (i, l) in group.loans.indexed) ...[
             if (i > 0) Divider(height: 1, color: tt.divider),
             AgendaBlock(
-              day: finDay(byDue ? l.loan.dueOn : l.loan.lentOn),
+              // By due month, the day that matters now: the next installment's.
+              day: byDue ? l.nextDue : finDay(l.loan.lentOn),
               today: today,
               children: [_LoanLine(summary: l)],
             ),
@@ -180,11 +181,15 @@ class _LoanLine extends ConsumerWidget {
     final tt = context.tt;
     final loan = summary.loan;
     final (status, color) = loanStatusLabel(context, summary);
+    final next = summary.next;
     return AgendaLine(
       color: color,
       secondary: status,
       title: loan.borrower,
-      subtitle: t.finProfit(formatMoney(summary.interest), formatPercent(summary.rate)),
+      subtitle: [
+        t.finProfit(formatMoney(summary.interest), formatPercent(summary.rate)),
+        if (next != null && next.count > 1) t.finLoanNextInstallment(next.number, next.count, DateLabels.numeric(next.due, withYear: false)),
+      ].join(' · '),
       struck: summary.status == LoanStatus.paid,
       faded: summary.status == LoanStatus.paid,
       onTap: () => unawaited(showLoanDetail(context, loan.id)),
@@ -282,7 +287,10 @@ class _LoanDetail extends ConsumerWidget {
               line(t.finInterestReceived, formatMoney(summary.interestReceived), valueColor: tt.palette.green),
               line(t.finLoanBalance, formatMoney(summary.balance), valueColor: summary.balance > 0 ? tt.overdue : null),
               line(t.finLentOn, DateLabels.numeric(finDay(loan.lentOn))),
-              line(t.finDueDate, DateLabels.numeric(finDay(loan.dueOn))),
+              if (summary.installments.length > 1)
+                line(t.finInstallments, t.finInstallmentsValue(summary.installments.length, formatMoney(summary.installments.first.amount)))
+              else
+                line(t.finDueDate, DateLabels.numeric(finDay(loan.dueOn))),
               if (loan.note.isNotEmpty)
                 Padding(
                   padding: const EdgeInsets.only(top: 8),
@@ -295,6 +303,16 @@ class _LoanDetail extends ConsumerWidget {
                   label: Text(t.finAddLoanPayment),
                   onPressed: () => unawaited(showFinanceDialog<void>(context, builder: (_) => _LoanPaymentForm(summary: summary))),
                 ),
+              if (summary.installments.length > 1) ...[
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 16, 0, 4),
+                  child: Text(
+                    t.finInstallments,
+                    style: TextStyle(fontSize: TtText.small, fontWeight: FontWeight.w600, color: tt.textSecondary),
+                  ),
+                ),
+                for (final i in summary.installments) _InstallmentLine(summary: summary, installment: i),
+              ],
               if (summary.payments.isNotEmpty)
                 Padding(
                   padding: const EdgeInsets.fromLTRB(0, 16, 0, 4),
@@ -339,6 +357,85 @@ class _LoanDetail extends ConsumerWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+/// An installment in the loan's detail: "1/3 · 10/10/2026 · R$ 433,34", its state ("paga em…",
+/// "Em aberto", "Atrasada · falta…") and, on the next one to receive, "Receber parcela".
+class _InstallmentLine extends ConsumerWidget {
+  const _InstallmentLine({required this.summary, required this.installment});
+
+  final LoanSummary summary;
+  final LoanInstallment installment;
+
+  /// One tap: a payment of what is open of the installment, today, with Desfazer.
+  Future<void> _receive(BuildContext context, WidgetRef ref) async {
+    final t = AppLocalizations.of(context);
+    final repo = ref.read(financeRepositoryProvider);
+    final i = installment;
+    final id = await repo.addLoanPayment(
+      loanId: summary.loan.id,
+      amount: i.open,
+      date: startOfDay(ref.read(clockProvider).now()),
+      note: t.finInstallmentLabel(i.number, i.count),
+    );
+    if (context.mounted) {
+      showToast(
+        context,
+        t.finInstallmentReceived(i.number),
+        undo: () => repo.deleteLoanPayment(id),
+        redo: () => repo.deleteLoanPayment(id, restore: true),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final t = AppLocalizations.of(context);
+    final tt = context.tt;
+    final i = installment;
+    final left = i.paid > 0 ? ' · ${t.finLoanLeft(formatMoney(i.open))}' : '';
+    final (icon, color, state) = switch (i.status) {
+      InstallmentStatus.paid => (
+        Icons.check_circle_outline,
+        tt.palette.green,
+        i.paidOn == null ? t.finInstallmentPaid : t.finInstallmentPaidOn(DateLabels.numeric(i.paidOn!, withYear: false)),
+      ),
+      InstallmentStatus.open => (Icons.schedule, tt.primary, '${t.finInstallmentOpen}$left'),
+      InstallmentStatus.overdue => (Icons.error_outline, tt.overdue, '${t.finInstallmentOverdue}$left'),
+    };
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          Icon(icon, size: 20, color: color),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${i.number}/${i.count} · ${DateLabels.numeric(i.due)} · ${formatMoney(i.amount)}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: i.status == InstallmentStatus.paid ? tt.textTertiary : tt.text,
+                    decoration: i.status == InstallmentStatus.paid ? TextDecoration.lineThrough : null,
+                  ),
+                ),
+                Text(
+                  state,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: TtText.small, color: i.status == InstallmentStatus.paid ? tt.textTertiary : color),
+                ),
+              ],
+            ),
+          ),
+          if (summary.next?.number == i.number) TextButton(onPressed: () => unawaited(_receive(context, ref)), child: Text(t.finReceiveInstallment)),
+        ],
+      ),
     );
   }
 }
@@ -441,7 +538,7 @@ class _LoanPaymentFormState extends ConsumerState<_LoanPaymentForm> {
 
 /// "Novo empréstimo" / "Editar empréstimo": the borrower, the amount lent and when, the due day,
 /// and the interest either as a rate or as the total to receive (each fills the other in); the
-/// profit shows below.
+/// profit shows below. "Parcelado" splits the total in monthly installments from the due day.
 Future<void> showLoanForm(BuildContext context, {LoanSummary? editing}) =>
     showFinanceDialog<void>(context, builder: (_) => _LoanForm(editing: editing));
 
@@ -466,12 +563,33 @@ class _LoanFormState extends ConsumerState<_LoanForm> {
   late bool _remind = _loan?.remind ?? true;
   bool _showError = false;
 
+  // "Parcelado": how many installments and each one's value. The value is either worked out from the
+  // total (split evenly, the first ones taking the odd cents) or typed; typed, it rules: the total
+  // becomes installments × value and the rate follows the total, so the amount lent, the total and
+  // the profit always agree. Typing the total or the rate again goes back to splitting it.
+  late bool _split = (_loan?.installments ?? 1) > 1;
+  late int _count = (_loan?.installments ?? 1) > 1 ? _loan!.installments : 2;
+  late bool _eachTyped = _loan?.installmentAmount != null;
+  late final _each = TextEditingController(
+    text: switch (_loan) {
+      null => '',
+      final loan => formatMoney(loan.installmentAmount ?? splitCents(loan.total, _count).first, symbol: false),
+    },
+  );
+
   @override
   void dispose() {
-    for (final c in [_borrower, _principal, _rate, _total, _note]) {
+    for (final c in [_borrower, _principal, _rate, _total, _note, _each]) {
       c.dispose();
     }
     super.dispose();
+  }
+
+  /// The installment's value worked out from the total (unless it was typed).
+  void _syncEach() {
+    if (_eachTyped) return;
+    final total = parseMoney(_total.text);
+    _each.text = total == null ? '' : formatMoney(splitCents(total, _count).first, symbol: false);
   }
 
   /// The rate typed: the total follows.
@@ -479,24 +597,56 @@ class _LoanFormState extends ConsumerState<_LoanForm> {
     final principal = parseMoney(_principal.text), rate = parsePercent(_rate.text);
     if (principal == null || rate == null) return setState(() {});
     _total.text = formatMoney(principal + (principal * rate / 10000).round(), symbol: false);
+    _eachTyped = false;
+    _syncEach();
     setState(() => _showError = false);
   }
 
-  /// The total typed: the rate follows.
-  void _fromTotal() {
+  /// The total typed (or set by the installments, [typed] false): the rate follows.
+  void _fromTotal({bool typed = true}) {
+    if (typed) {
+      _eachTyped = false;
+      _syncEach();
+    }
     final principal = parseMoney(_principal.text), total = parseMoney(_total.text);
     if (principal == null || principal == 0 || total == null) return setState(() {});
     _rate.text = formatPercent(((total - principal) * 10000 / principal).round()).replaceAll('%', '');
     setState(() => _showError = false);
   }
 
+  /// The installment's value typed: the total is the installments × it.
+  void _fromEach() {
+    _eachTyped = true;
+    final each = parseMoney(_each.text);
+    if (each == null) return setState(() {});
+    _total.text = formatMoney(each * _count, symbol: false);
+    _fromTotal(typed: false);
+  }
+
+  void _setCount(int count) {
+    _count = count;
+    if (_eachTyped) {
+      _fromEach();
+    } else {
+      _syncEach();
+      setState(() {});
+    }
+  }
+
   Future<void> _save() async {
     final principal = parseMoney(_principal.text), total = parseMoney(_total.text);
     final borrower = _borrower.text.trim();
-    if (borrower.isEmpty || principal == null || principal <= 0 || total == null || total < principal) {
+    final each = _split && _eachTyped ? parseMoney(_each.text) : null;
+    if (borrower.isEmpty ||
+        principal == null ||
+        principal <= 0 ||
+        total == null ||
+        total < principal ||
+        (_split && _eachTyped && (each == null || each <= 0))) {
       setState(() => _showError = true);
       return;
     }
+    final installments = _split ? _count : 1;
     final repo = ref.read(financeRepositoryProvider);
     final loan = _loan;
     if (loan == null) {
@@ -508,6 +658,8 @@ class _LoanFormState extends ConsumerState<_LoanForm> {
         dueOn: _dueOn,
         note: _note.text,
         remind: _remind,
+        installments: installments,
+        installmentAmount: each,
       );
     } else {
       await repo.updateLoan(
@@ -519,6 +671,8 @@ class _LoanFormState extends ConsumerState<_LoanForm> {
         dueOn: _dueOn,
         note: _note.text,
         remind: _remind,
+        installments: installments,
+        installmentAmount: each,
       );
     }
     if (mounted) Navigator.pop(context);
@@ -530,6 +684,7 @@ class _LoanFormState extends ConsumerState<_LoanForm> {
     final tt = context.tt;
     final principal = parseMoney(_principal.text), total = parseMoney(_total.text);
     final profit = principal == null || total == null ? null : total - principal;
+    final each = parseMoney(_each.text);
 
     Widget dateTile(String label, DateTime value, ValueChanged<DateTime> onPicked) => ListTile(
       contentPadding: EdgeInsets.zero,
@@ -603,8 +758,49 @@ class _LoanFormState extends ConsumerState<_LoanForm> {
                     style: TextStyle(color: tt.overdue, fontSize: TtText.small),
                   ),
                 ),
+              const SizedBox(height: 12),
+              SegmentedButton<bool>(
+                showSelectedIcon: false,
+                segments: [
+                  ButtonSegment(value: false, label: Text(t.finLoanAtOnce)),
+                  ButtonSegment(value: true, label: Text(t.finLoanInInstallments)),
+                ],
+                selected: {_split},
+                onSelectionChanged: (v) => setState(() {
+                  _split = v.single;
+                  _syncEach();
+                }),
+              ),
+              if (_split) ...[
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Expanded(
+                      child: DropdownButtonFormField<int>(
+                        initialValue: _count,
+                        isExpanded: true,
+                        decoration: InputDecoration(labelText: t.finLoanInstallmentCount, isDense: true),
+                        items: [for (var n = 2; n <= 60; n++) DropdownMenuItem(value: n, child: Text('$n'))],
+                        onChanged: (v) => _setCount(v ?? 2),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: MoneyField(controller: _each, label: t.finLoanInstallmentAmount, onChanged: (_) => _fromEach()),
+                    ),
+                  ],
+                ),
+                if (_eachTyped && each != null && total != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 6),
+                    child: Text(
+                      t.finLoanInstallmentsTotal(_count, formatMoney(each), formatMoney(total)),
+                      style: TextStyle(fontSize: TtText.small, color: tt.textTertiary),
+                    ),
+                  ),
+              ],
               dateTile(t.finLentOn, _lentOn, (d) => _lentOn = d),
-              dateTile(t.finDueDate, _dueOn, (d) => _dueOn = d),
+              dateTile(_split ? t.finLoanFirstDue : t.finDueDate, _dueOn, (d) => _dueOn = d),
               SwitchListTile(
                 contentPadding: EdgeInsets.zero,
                 title: Text(t.finLoanRemind),

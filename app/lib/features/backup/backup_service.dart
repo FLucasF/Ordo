@@ -99,6 +99,8 @@ class BackupService {
       final finCardPayments = await source.select(source.finCardPayments).get();
       final loans = await source.select(source.loans).get();
       final loanPayments = await source.select(source.loanPayments).get();
+      final finGoals = await source.select(source.finGoals).get();
+      final finGoalMoves = await source.select(source.finGoalMoves).get();
       final dietFoods = await source.select(source.dietFoods).get();
       final dietEntries = await source.select(source.dietEntries).get();
       await _db.transaction(() async {
@@ -123,6 +125,8 @@ class BackupService {
           _db.focusRecords,
           _db.loanPayments,
           _db.loans,
+          _db.finGoalMoves,
+          _db.finGoals,
           _db.finCardPayments,
           _db.finEntries,
           _db.finRecurrings,
@@ -158,6 +162,8 @@ class BackupService {
           b.insertAll(_db.finCardPayments, finCardPayments);
           b.insertAll(_db.loans, loans);
           b.insertAll(_db.loanPayments, loanPayments);
+          b.insertAll(_db.finGoals, finGoals);
+          b.insertAll(_db.finGoalMoves, finGoalMoves);
           b.insertAll(_db.dietFoods, dietFoods);
           b.insertAll(_db.dietEntries, dietEntries);
         });

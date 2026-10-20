@@ -27,6 +27,7 @@ import '../common/shell_widgets.dart';
 import '../common/time_zone_picker.dart';
 import '../date_picker/date_picker.dart';
 import '../detail/task_detail_pane.dart';
+import '../finance/entry_form.dart' show showEntryForm;
 import '../focus/focus_page.dart' show focusRecordsProvider;
 import '../shell/app_shell.dart';
 import '../tasks/batch_pane.dart';
@@ -160,13 +161,8 @@ class _CalendarPageState extends ConsumerState<CalendarPage> {
       case CalendarEntryKind.event:
         await showSubscribedEvent(context, ref, e.title, e.start, e.end, isAllDay: e.isAllDay, calendarId: e.id);
       case CalendarEntryKind.finance:
-        context.go(
-          Routes.financeOf(switch (e.id.split(':').first) {
-            'invoice' => 'cards',
-            'loan' => 'loans',
-            _ => 'recurring',
-          }),
-        );
+        final near = anchor?.center ?? _lastPress;
+        await _financeMenu(e, near ?? MediaQuery.sizeOf(context).center(Offset.zero));
       case CalendarEntryKind.focus:
         if (e.task case final task?) {
           await showTaskDetailDialog(context, task);
@@ -333,8 +329,36 @@ class _CalendarPageState extends ConsumerState<CalendarPage> {
   /// TickTick's full task detail, in a dialog (the whole screen on a phone).
   Future<void> _openDetail(Task task) => showTaskDetailDialog(context, task);
 
-  /// Right click on a task: Google's menu, "Excluir" and the colors, with "Salvo" / "Desfazer".
+  /// A click on a Finanças due day: open its tab, or a new entry on that day.
+  Future<void> _financeMenu(CalendarEntry e, Offset at) async {
+    final t = AppLocalizations.of(context);
+    final picked = await showMenu<String>(
+      context: context,
+      position: RelativeRect.fromLTRB(at.dx, at.dy, at.dx + 1, at.dy + 1),
+      items: [
+        PopupMenuItem(value: 'open', height: 36, child: Text(t.finOpenInFinance)),
+        PopupMenuItem(value: 'entry', height: 36, child: Text(t.finNewEntryOnDay)),
+      ],
+    );
+    if (!mounted) return;
+    switch (picked) {
+      case 'open':
+        context.go(
+          Routes.financeOf(switch (e.id.split(':').first) {
+            'invoice' => 'cards',
+            'loan' => 'loans',
+            _ => 'recurring',
+          }),
+        );
+      case 'entry':
+        await showEntryForm(context, date: e.start);
+    }
+  }
+
+  /// Right click on a task: Google's menu, "Excluir" and the colors, with "Salvo" / "Desfazer". On a
+  /// Finanças due day, the same menu as its click.
   Future<void> _entryMenu(CalendarEntry e, Offset at) async {
+    if (e.kind == CalendarEntryKind.finance) return _financeMenu(e, at);
     final task = e.task;
     if (e.kind != CalendarEntryKind.task || task == null) return;
     final t = AppLocalizations.of(context);

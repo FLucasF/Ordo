@@ -4633,6 +4633,184 @@ class AppLocalizationsPt extends AppLocalizations {
   String get finCategoriesFilter => 'Categorias…';
 
   @override
+  String get finNewEntryOnDay => 'Novo lançamento neste dia';
+
+  @override
+  String get finOpenInFinance => 'Abrir em Finanças';
+
+  @override
+  String get finTabGoals => 'Caixinhas';
+
+  @override
+  String get finNewGoal => 'Nova caixinha';
+
+  @override
+  String get finEditGoal => 'Editar caixinha';
+
+  @override
+  String get finGoalName => 'Nome da caixinha';
+
+  @override
+  String get finGoalTarget => 'Meta';
+
+  @override
+  String get finGoalDueOn => 'Data-alvo';
+
+  @override
+  String get finGoalNoDue => 'Sem data';
+
+  @override
+  String get finGoalColor => 'Cor';
+
+  @override
+  String get finGoalInvalid => 'Preencha o nome e uma meta maior que zero.';
+
+  @override
+  String get finGoalSave => 'Guardar';
+
+  @override
+  String get finGoalWithdraw => 'Retirar';
+
+  @override
+  String get finGoalSaved => 'Guardado';
+
+  @override
+  String get finGoalTakenOut => 'Retirado';
+
+  @override
+  String finGoalLeft(String amount) {
+    return 'Faltam $amount';
+  }
+
+  @override
+  String get finGoalLeftLabel => 'Falta';
+
+  @override
+  String get finGoalReached => 'Meta alcançada';
+
+  @override
+  String finGoalProgress(String saved, String target) {
+    return '$saved de $target';
+  }
+
+  @override
+  String finGoalPerMonth(String amount, String date) {
+    return 'Guarde $amount por mês até $date';
+  }
+
+  @override
+  String finGoalPastDue(String date) {
+    return 'A data-alvo passou ($date)';
+  }
+
+  @override
+  String get finGoalMoves => 'Movimentos';
+
+  @override
+  String get finGoalMoveDeleted => 'Movimento excluído';
+
+  @override
+  String get finGoalDeleted => 'Caixinha excluída';
+
+  @override
+  String finDeleteGoal(String name) {
+    return 'Excluir a caixinha \"$name\" e os movimentos dela?';
+  }
+
+  @override
+  String get finGoalArchived => 'Caixinha arquivada';
+
+  @override
+  String get finArchivedGoals => 'Arquivadas';
+
+  @override
+  String get finNoGoals => 'Nenhuma caixinha ainda. Crie uma para juntar dinheiro para uma meta.';
+
+  @override
+  String get finNoGoalsHere => 'Nenhuma caixinha aqui.';
+
+  @override
+  String finGoalMoveIn(String name) {
+    return 'Guardar em $name';
+  }
+
+  @override
+  String finGoalMoveOut(String name) {
+    return 'Retirar de $name';
+  }
+
+  @override
+  String get finEditGoalMove => 'Editar movimento';
+
+  @override
+  String finGoalsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: '$count caixinhas', one: '1 caixinha', zero: 'nenhuma caixinha');
+    return '$_temp0';
+  }
+
+  @override
+  String finGoalTargetsHint(String amount) {
+    return 'de $amount em metas';
+  }
+
+  @override
+  String finGoalsSavedLine(String total, String month) {
+    return 'Guardado nas caixinhas: $total · neste mês $month';
+  }
+
+  @override
+  String get finLoanAtOnce => 'Pago à vista';
+
+  @override
+  String get finLoanInInstallments => 'Parcelado';
+
+  @override
+  String get finLoanInstallmentCount => 'Número de parcelas';
+
+  @override
+  String get finLoanInstallmentAmount => 'Valor da parcela';
+
+  @override
+  String get finLoanFirstDue => 'Vencimento da 1ª parcela';
+
+  @override
+  String finLoanInstallmentsTotal(int count, String amount, String total) {
+    return '${count}x de $amount = $total';
+  }
+
+  @override
+  String get finInstallmentPaid => 'Paga';
+
+  @override
+  String get finInstallmentOpen => 'Em aberto';
+
+  @override
+  String get finInstallmentOverdue => 'Atrasada';
+
+  @override
+  String finInstallmentPaidOn(String date) {
+    return 'paga em $date';
+  }
+
+  @override
+  String finInstallmentLabel(int number, int count) {
+    return 'Parcela $number de $count';
+  }
+
+  @override
+  String get finReceiveInstallment => 'Receber parcela';
+
+  @override
+  String finInstallmentReceived(int number) {
+    return 'Parcela $number recebida';
+  }
+
+  @override
+  String finLoanNextInstallment(int number, int count, String date) {
+    return 'parcela $number/$count vence $date';
+  }
+
+  @override
   String get finSituation => 'Situação';
 
   @override

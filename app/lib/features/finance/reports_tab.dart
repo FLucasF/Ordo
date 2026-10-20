@@ -8,6 +8,7 @@ import '../../app/providers.dart';
 import '../../app/theme/app_theme.dart';
 import '../../data/db/database.dart';
 import '../../domain/finance/finance.dart';
+import '../../domain/finance/goals.dart';
 import '../../domain/finance/loans.dart';
 import '../../domain/finance/money.dart';
 import '../../domain/finance/reports.dart';
@@ -171,6 +172,16 @@ class _ReportsBodyState extends ConsumerState<ReportsBody> {
               ),
           ],
         ),
+        // The goals apart: money set aside is a transfer, in none of the bars.
+        if (s.goals.isNotEmpty)
+          if (goalsSaved(s, month) case (:final total, :final inMonth))
+            Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: Text(
+                t.finGoalsSavedLine(formatMoney(total), '${inMonth < 0 ? '-' : '+'}${formatMoney(inMonth.abs())}'),
+                style: TextStyle(fontSize: TtText.small, color: tt.textSecondary),
+              ),
+            ),
         const SizedBox(height: 8),
         Divider(height: 1, color: tt.divider),
         BodyHeading(

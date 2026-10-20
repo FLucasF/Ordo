@@ -15,6 +15,7 @@ import '../../data/preferences_repository.dart';
 import '../../domain/finance/cards.dart';
 import '../../domain/finance/finance.dart';
 import '../../domain/finance/finance_enums.dart';
+import '../../domain/finance/goals.dart';
 import '../../domain/finance/loans.dart';
 import '../../domain/finance/money.dart';
 import '../../l10n/app_localizations.dart';
@@ -26,6 +27,7 @@ import 'categories_tab.dart';
 import 'entries_tab.dart';
 import 'entry_form.dart';
 import 'finance_widgets.dart';
+import 'goals_tab.dart';
 import 'loans_tab.dart';
 import 'recurring_tab.dart';
 import 'reports_tab.dart';
@@ -36,6 +38,7 @@ enum FinanceTab {
   cards('cards'),
   recurring('recurring'),
   loans('loans'),
+  goals('goals'),
   reports('reports'),
   categories('categories');
 
@@ -50,6 +53,7 @@ String financeTabLabel(AppLocalizations t, FinanceTab tab) => switch (tab) {
   FinanceTab.cards => t.finTabCards,
   FinanceTab.recurring => t.finTabRecurring,
   FinanceTab.loans => t.finTabLoans,
+  FinanceTab.goals => t.finTabGoals,
   FinanceTab.reports => t.finTabReports,
   FinanceTab.categories => t.finTabCategories,
 };
@@ -59,6 +63,7 @@ IconData financeTabIcon(FinanceTab tab) => switch (tab) {
   FinanceTab.cards => Icons.credit_card,
   FinanceTab.recurring => Icons.event_repeat_outlined,
   FinanceTab.loans => Icons.handshake_outlined,
+  FinanceTab.goals => Icons.savings_outlined,
   FinanceTab.reports => Icons.insert_chart_outlined,
   FinanceTab.categories => Icons.category_outlined,
 };
@@ -123,6 +128,9 @@ class _FinancePageState extends ConsumerState<FinancePage> {
   Set<LoanStatus> _statuses = {LoanStatus.onTime, LoanStatus.overdue};
   bool _byDue = true;
 
+  // Caixinhas.
+  bool _archivedGoals = false;
+
   // Relatórios: the month compared (the one before, to begin with).
   DateTime? _compare;
 
@@ -156,6 +164,7 @@ class _FinancePageState extends ConsumerState<FinancePage> {
   Future<void> _create(FinanceSnapshot s) => switch (widget.tab) {
     FinanceTab.recurring => showRecurringForm(context),
     FinanceTab.loans => showLoanForm(context),
+    FinanceTab.goals => showGoalForm(context),
     FinanceTab.categories => showCategoryForm(context, kind: FinKind.expense),
     FinanceTab.cards => switch (_card(s)) {
       final card? => showEntryForm(context, cardId: card.id),
@@ -167,6 +176,7 @@ class _FinancePageState extends ConsumerState<FinancePage> {
   String _createLabel(AppLocalizations t, FinanceSnapshot s) => switch (widget.tab) {
     FinanceTab.recurring => t.finNewRecurring,
     FinanceTab.loans => t.finNewLoan,
+    FinanceTab.goals => t.finNewGoal,
     FinanceTab.categories => t.finNewCategory,
     FinanceTab.cards => _card(s) == null ? t.finNewCard : t.finNewPurchase,
     _ => t.finNewEntry,
@@ -209,13 +219,14 @@ class _FinancePageState extends ConsumerState<FinancePage> {
         null => t.finTabCards,
       },
       FinanceTab.loans => t.finTabLoans,
+      FinanceTab.goals => _archivedGoals ? '${t.finTabGoals} · ${t.finArchivedGoals}' : t.finTabGoals,
       _ => month(_month),
     };
   }
 
   bool get _hasArrows => switch (widget.tab) {
     FinanceTab.entries => _period != EntryPeriod.custom,
-    FinanceTab.loans => false,
+    FinanceTab.loans || FinanceTab.goals => false,
     _ => true,
   };
 
@@ -317,6 +328,7 @@ class _FinancePageState extends ConsumerState<FinancePage> {
             CheckedPopupMenuItem<Object>(value: st, checked: _statuses.contains(st), child: Text(label)),
         ],
       ],
+      FinanceTab.goals => [CheckedPopupMenuItem<Object>(value: 'archivedGoals', checked: _archivedGoals, child: Text(t.finArchivedGoals))],
       _ => [if (narrow) item('thisMonth', t.finThisMonth)],
     };
   }
@@ -351,6 +363,8 @@ class _FinancePageState extends ConsumerState<FinancePage> {
           _cardId = c.substring(5);
           _invoice = null;
         });
+      case 'archivedGoals':
+        setState(() => _archivedGoals = !_archivedGoals);
       case 'byDue':
         setState(() => _byDue = true);
       case 'byLent':
@@ -451,7 +465,7 @@ class _FinancePageState extends ConsumerState<FinancePage> {
     );
     final loans = loanSummaries(s, today);
     final children = <Widget>[
-      if (widget.tab != FinanceTab.loans) months,
+      if (widget.tab != FinanceTab.loans && widget.tab != FinanceTab.goals) months,
       switch (widget.tab) {
         FinanceTab.entries => Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -542,6 +556,33 @@ class _FinancePageState extends ConsumerState<FinancePage> {
             ),
           ],
         ),
+        FinanceTab.goals => PanelSection(
+          title: _archivedGoals ? t.finArchivedGoals : t.finTabGoals,
+          action: IconButton(
+            visualDensity: VisualDensity.compact,
+            iconSize: 18,
+            tooltip: t.finNewGoal,
+            icon: Icon(Icons.add, color: tt.textSecondary),
+            onPressed: () => unawaited(showGoalForm(context)),
+          ),
+          children: [
+            for (final g in goalSummaries(s, today, archived: _archivedGoals))
+              PanelNavRow(
+                label: '${g.goal.icon ?? ''} ${g.goal.name}'.trim(),
+                color: goalColor(context, g.goal),
+                selected: false,
+                trailing: formatPercent((g.progress * 100).floor() * 100),
+                onTap: () => unawaited(showGoalDetail(context, g.goal.id)),
+              ),
+            if (s.goals.any((g) => g.archivedAt != null) || _archivedGoals)
+              PanelNavRow(
+                icon: Icons.inventory_2_outlined,
+                label: _archivedGoals ? t.finTabGoals : t.finArchivedGoals,
+                selected: false,
+                onTap: () => setState(() => _archivedGoals = !_archivedGoals),
+              ),
+          ],
+        ),
         FinanceTab.reports || FinanceTab.categories => _spending(t, s, _month),
       },
     ];
@@ -564,6 +605,7 @@ class _FinancePageState extends ConsumerState<FinancePage> {
     },
     FinanceTab.recurring => RecurringBody(month: _month, today: today),
     FinanceTab.loans => LoansBody(statuses: _statuses, byDue: _byDue, today: today),
+    FinanceTab.goals => GoalsBody(archived: _archivedGoals, today: today),
     FinanceTab.reports => ReportsBody(
       month: _month,
       compare: _compare ?? DateTime(_month.year, _month.month - 1),
@@ -580,7 +622,7 @@ class _FinancePageState extends ConsumerState<FinancePage> {
     final narrow = MediaQuery.sizeOf(context).width < TtSizes.narrowBreakpoint;
     final s = ref.watch(financeProvider).value ?? FinanceSnapshot.empty();
     final today = startOfDay(ref.watch(nowProvider).value ?? ref.watch(clockProvider).now());
-    final hasPeriod = widget.tab != FinanceTab.loans && !(widget.tab == FinanceTab.cards && _card(s) == null);
+    final hasPeriod = widget.tab != FinanceTab.loans && widget.tab != FinanceTab.goals && !(widget.tab == FinanceTab.cards && _card(s) == null);
     final more = _moreItems(t, s, narrow);
 
     final topBar = ShellTopBar(

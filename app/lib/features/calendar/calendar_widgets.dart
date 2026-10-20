@@ -103,7 +103,8 @@ List<CalendarEntry> financeCalendarEntries(AppLocalizations t, List<FinanceDue> 
           '${switch (d.kind) {
             FinanceDueKind.bill || FinanceDueKind.income => d.name,
             FinanceDueKind.invoice => t.finCalendarInvoice(d.name),
-            FinanceDueKind.loan => t.finCalendarLoan(d.name),
+            // Each installment of a loan on its own day: "Cobrar João 2/5".
+            FinanceDueKind.loan => t.finCalendarLoan(d.installment == null ? d.name : '${d.name} ${d.installment}/${d.installments}'),
           }} · ${formatMoney(d.amount)}',
       start: d.day,
       end: d.day,

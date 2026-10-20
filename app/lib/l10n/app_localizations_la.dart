@@ -4638,6 +4638,184 @@ class AppLocalizationsLa extends AppLocalizations {
   String get finCategoriesFilter => 'Categoriae…';
 
   @override
+  String get finNewEntryOnDay => 'Nova inscriptio hoc die';
+
+  @override
+  String get finOpenInFinance => 'In Re pecuniaria aperi';
+
+  @override
+  String get finTabGoals => 'Arculae';
+
+  @override
+  String get finNewGoal => 'Nova arcula';
+
+  @override
+  String get finEditGoal => 'Arculam muta';
+
+  @override
+  String get finGoalName => 'Nomen arculae';
+
+  @override
+  String get finGoalTarget => 'Summa proposita';
+
+  @override
+  String get finGoalDueOn => 'Dies propositus';
+
+  @override
+  String get finGoalNoDue => 'Sine die';
+
+  @override
+  String get finGoalColor => 'Color';
+
+  @override
+  String get finGoalInvalid => 'Nomen et summam propositam maiorem quam nihil scribe.';
+
+  @override
+  String get finGoalSave => 'Repone';
+
+  @override
+  String get finGoalWithdraw => 'Deprome';
+
+  @override
+  String get finGoalSaved => 'Repositum';
+
+  @override
+  String get finGoalTakenOut => 'Depromptum';
+
+  @override
+  String finGoalLeft(String amount) {
+    return 'Desunt $amount';
+  }
+
+  @override
+  String get finGoalLeftLabel => 'Deest';
+
+  @override
+  String get finGoalReached => 'Propositum assecutum';
+
+  @override
+  String finGoalProgress(String saved, String target) {
+    return '$saved ex $target';
+  }
+
+  @override
+  String finGoalPerMonth(String amount, String date) {
+    return 'Repone $amount in mensem usque ad $date';
+  }
+
+  @override
+  String finGoalPastDue(String date) {
+    return 'Dies propositus praeteriit ($date)';
+  }
+
+  @override
+  String get finGoalMoves => 'Motus';
+
+  @override
+  String get finGoalMoveDeleted => 'Motus deletus';
+
+  @override
+  String get finGoalDeleted => 'Arcula deleta';
+
+  @override
+  String finDeleteGoal(String name) {
+    return 'Arculam \"$name\" et motus eius delere?';
+  }
+
+  @override
+  String get finGoalArchived => 'Arcula in tabulario condita';
+
+  @override
+  String get finArchivedGoals => 'In tabulario';
+
+  @override
+  String get finNoGoals => 'Nondum ulla arcula. Unam crea ut pecuniam ad propositum colligas.';
+
+  @override
+  String get finNoGoalsHere => 'Nulla arcula hic.';
+
+  @override
+  String finGoalMoveIn(String name) {
+    return 'In $name repone';
+  }
+
+  @override
+  String finGoalMoveOut(String name) {
+    return 'Ex $name deprome';
+  }
+
+  @override
+  String get finEditGoalMove => 'Motum muta';
+
+  @override
+  String finGoalsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: '$count arculae', one: 'una arcula', zero: 'nulla arcula');
+    return '$_temp0';
+  }
+
+  @override
+  String finGoalTargetsHint(String amount) {
+    return 'ex $amount propositis';
+  }
+
+  @override
+  String finGoalsSavedLine(String total, String month) {
+    return 'In arculis repositum: $total · hoc mense $month';
+  }
+
+  @override
+  String get finLoanAtOnce => 'Semel solvitur';
+
+  @override
+  String get finLoanInInstallments => 'Per pensiones';
+
+  @override
+  String get finLoanInstallmentCount => 'Numerus pensionum';
+
+  @override
+  String get finLoanInstallmentAmount => 'Summa pensionis';
+
+  @override
+  String get finLoanFirstDue => 'Dies primae pensionis';
+
+  @override
+  String finLoanInstallmentsTotal(int count, String amount, String total) {
+    return '${count}x $amount = $total';
+  }
+
+  @override
+  String get finInstallmentPaid => 'Soluta';
+
+  @override
+  String get finInstallmentOpen => 'Aperta';
+
+  @override
+  String get finInstallmentOverdue => 'Praeterita';
+
+  @override
+  String finInstallmentPaidOn(String date) {
+    return 'soluta $date';
+  }
+
+  @override
+  String finInstallmentLabel(int number, int count) {
+    return 'Pensio $number ex $count';
+  }
+
+  @override
+  String get finReceiveInstallment => 'Pensionem accipe';
+
+  @override
+  String finInstallmentReceived(int number) {
+    return 'Pensio $number accepta';
+  }
+
+  @override
+  String finLoanNextInstallment(int number, int count, String date) {
+    return 'pensio $number/$count solvenda $date';
+  }
+
+  @override
   String get finSituation => 'Status';
 
   @override

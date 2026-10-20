@@ -578,9 +578,19 @@ class ShellArrows extends StatelessWidget {
 }
 
 /// A block of the Agenda: the day (its number, today in a filled circle, and "SET, QUI") beside
-/// [children]; [label] replaces "SET, QUI" when the block is not a plain day.
+/// [children]; [label] replaces "SET, QUI" when the block is not a plain day. With [onAdd], the day
+/// is a button with a "+" ([addTooltip]) to create something on it.
 class AgendaBlock extends StatelessWidget {
-  const AgendaBlock({super.key, required this.day, required this.today, required this.children, this.label, this.bigText});
+  const AgendaBlock({
+    super.key,
+    required this.day,
+    required this.today,
+    required this.children,
+    this.label,
+    this.bigText,
+    this.onAdd,
+    this.addTooltip,
+  });
 
   final DateTime day;
   final DateTime today;
@@ -589,6 +599,8 @@ class AgendaBlock extends StatelessWidget {
 
   /// Shown instead of the day's number (a count of days, an amount).
   final String? bigText;
+  final VoidCallback? onAdd;
+  final String? addTooltip;
 
   @override
   Widget build(BuildContext context) {
@@ -597,6 +609,26 @@ class AgendaBlock extends StatelessWidget {
     final labels = DateLabels(t);
     final narrow = MediaQuery.sizeOf(context).width < TtSizes.narrowBreakpoint;
     final isToday = bigText == null && day == today;
+    final heading = Row(
+      children: [
+        Container(
+          constraints: const BoxConstraints(minWidth: 34),
+          height: 34,
+          alignment: Alignment.center,
+          decoration: isToday ? BoxDecoration(color: tt.primary, shape: BoxShape.circle) : null,
+          child: Text(bigText ?? '${day.day}', style: TextStyle(fontSize: 20, color: isToday ? Colors.white : tt.text)),
+        ),
+        const SizedBox(width: 8),
+        Flexible(
+          child: Text(
+            (label ?? '${labels.monthShort(day)}, ${labels.weekdayShort(day)}').toUpperCase(),
+            maxLines: 2,
+            style: TextStyle(fontSize: 10, letterSpacing: 0.4, fontWeight: FontWeight.w600, color: isToday ? tt.primary : tt.textTertiary),
+          ),
+        ),
+        if (onAdd != null) Icon(Icons.add, size: 16, color: tt.textTertiary),
+      ],
+    );
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
@@ -604,25 +636,12 @@ class AgendaBlock extends StatelessWidget {
         children: [
           SizedBox(
             width: narrow ? 92 : 112,
-            child: Row(
-              children: [
-                Container(
-                  constraints: const BoxConstraints(minWidth: 34),
-                  height: 34,
-                  alignment: Alignment.center,
-                  decoration: isToday ? BoxDecoration(color: tt.primary, shape: BoxShape.circle) : null,
-                  child: Text(bigText ?? '${day.day}', style: TextStyle(fontSize: 20, color: isToday ? Colors.white : tt.text)),
-                ),
-                const SizedBox(width: 8),
-                Flexible(
-                  child: Text(
-                    (label ?? '${labels.monthShort(day)}, ${labels.weekdayShort(day)}').toUpperCase(),
-                    maxLines: 2,
-                    style: TextStyle(fontSize: 10, letterSpacing: 0.4, fontWeight: FontWeight.w600, color: isToday ? tt.primary : tt.textTertiary),
+            child: onAdd == null
+                ? heading
+                : Tooltip(
+                    message: addTooltip ?? '',
+                    child: InkWell(onTap: onAdd, borderRadius: BorderRadius.circular(6), child: heading),
                   ),
-                ),
-              ],
-            ),
           ),
           Expanded(
             child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: children),

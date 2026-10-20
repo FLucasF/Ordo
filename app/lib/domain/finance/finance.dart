@@ -11,6 +11,8 @@ class FinanceSnapshot {
     required this.cardPayments,
     required this.loans,
     required this.loanPayments,
+    this.goals = const [],
+    this.goalMoves = const [],
   }) : categoryById = {for (final c in categories) c.id: c},
        cardById = {for (final c in cards) c.id: c};
 
@@ -31,6 +33,10 @@ class FinanceSnapshot {
   final List<FinCardPayment> cardPayments;
   final List<Loan> loans;
   final List<LoanPayment> loanPayments;
+
+  /// "Caixinhas" and the money put in or taken out of them.
+  final List<FinGoal> goals;
+  final List<FinGoalMove> goalMoves;
 
   final Map<String, FinCategory> categoryById;
   final Map<String, FinCard> cardById;
@@ -195,20 +201,27 @@ List<FinEntry> filterEntries(FinanceSnapshot s, EntryFilter f) {
 }
 
 /// A block of the history: the entries of one day, or the purchases of one card invoice (on its due
-/// day).
+/// day). A day also shows the money moved to or from the "Caixinhas" ([moves]), which are transfers:
+/// they are not in its totals.
 class EntryGroup {
-  const EntryGroup({required this.day, required this.entries, this.card});
+  const EntryGroup({required this.day, required this.entries, this.card, this.moves = const []});
 
   final DateTime day;
   final FinCard? card;
   final List<FinEntry> entries;
+  final List<FinGoalMove> moves;
 
   FinTotals get totals => totalsOf(entries);
 }
 
-/// [entries] in blocks, newest first.
-List<EntryGroup> groupEntries(FinanceSnapshot s, List<FinEntry> entries) {
+/// [entries] (and the goals' [moves], on their days) in blocks, newest first.
+List<EntryGroup> groupEntries(FinanceSnapshot s, List<FinEntry> entries, {List<FinGoalMove> moves = const []}) {
   final days = <DateTime, List<FinEntry>>{};
+  final movesByDay = <DateTime, List<FinGoalMove>>{};
+  for (final m in moves) {
+    movesByDay.putIfAbsent(finDay(m.date), () => []).add(m);
+    days.putIfAbsent(finDay(m.date), () => []);
+  }
   final invoices = <(String, DateTime), List<FinEntry>>{};
   for (final e in entries) {
     final card = e.cardId == null ? null : s.cardById[e.cardId];
@@ -219,7 +232,7 @@ List<EntryGroup> groupEntries(FinanceSnapshot s, List<FinEntry> entries) {
     }
   }
   return [
-    for (final MapEntry(key: day, value: list) in days.entries) EntryGroup(day: day, entries: list),
+    for (final MapEntry(key: day, value: list) in days.entries) EntryGroup(day: day, entries: list, moves: movesByDay[day] ?? const []),
     for (final MapEntry(key: (cardId, day), value: list) in invoices.entries) EntryGroup(day: day, entries: list, card: s.cardById[cardId]),
   ]..sort((a, b) {
     final byDay = b.day.compareTo(a.day);

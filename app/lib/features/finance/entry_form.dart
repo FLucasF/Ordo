@@ -17,12 +17,19 @@ import '../common/feedback.dart';
 import 'finance_widgets.dart';
 
 /// "Novo lançamento" / "Editar lançamento". [copy] starts a new one from an existing entry
-/// ("Duplicar"); [cardId] starts a purchase on that card.
-Future<void> showEntryForm(BuildContext context, {FinEntry? editing, FinEntry? copy, FinKind kind = FinKind.expense, String? cardId}) =>
-    showFinanceDialog<void>(
-      context,
-      builder: (_) => _EntryForm(editing: editing, copy: copy, kind: kind, cardId: cardId),
-    );
+/// ("Duplicar"); [cardId] starts a purchase on that card; [date] a new one on that day (the "+" of a
+/// day in Lançamentos, the Calendar's "Novo lançamento neste dia").
+Future<void> showEntryForm(
+  BuildContext context, {
+  FinEntry? editing,
+  FinEntry? copy,
+  FinKind kind = FinKind.expense,
+  String? cardId,
+  DateTime? date,
+}) => showFinanceDialog<void>(
+  context,
+  builder: (_) => _EntryForm(editing: editing, copy: copy, kind: kind, cardId: cardId, date: date),
+);
 
 /// Deletes an entry: of a purchase in installments, asks for this one or all of them; then "Lançamento
 /// excluído" with Desfazer. [close] runs just before (a form closing itself).
@@ -69,12 +76,13 @@ void showLimitAlert(BuildContext context, FinanceSnapshot s, String categoryId, 
 }
 
 class _EntryForm extends ConsumerStatefulWidget {
-  const _EntryForm({this.editing, this.copy, required this.kind, this.cardId});
+  const _EntryForm({this.editing, this.copy, required this.kind, this.cardId, this.date});
 
   final FinEntry? editing;
   final FinEntry? copy;
   final FinKind kind;
   final String? cardId;
+  final DateTime? date;
 
   @override
   ConsumerState<_EntryForm> createState() => _EntryFormState();
@@ -86,7 +94,11 @@ class _EntryFormState extends ConsumerState<_EntryForm> {
   late final _amount = TextEditingController(text: _from == null ? '' : formatMoney(_from.amount, symbol: false));
   late final _description = TextEditingController(text: _from?.description ?? '');
   late final _note = TextEditingController(text: _from?.note ?? '');
-  late DateTime _date = _from == null ? startOfDay(ref.read(clockProvider).now()) : finDay(_from.date);
+  late DateTime _date = switch ((widget.date, _from)) {
+    (final day?, _) => startOfDay(day),
+    (null, final from?) => finDay(from.date),
+    (null, null) => startOfDay(ref.read(clockProvider).now()),
+  };
   late String? _categoryId = _from?.categoryId;
   late String? _cardId = _from?.cardId ?? widget.cardId;
   int _installments = 1;
