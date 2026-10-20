@@ -55,15 +55,6 @@ class _CustomRepeatDialogState extends State<_CustomRepeatDialog> {
 
     // Sunday first, as in the calendar (D S T Q Q S S).
     final weekOrder = weekdayOrder();
-    final initials = {
-      DateTime.sunday: t.weekInitialSunday,
-      DateTime.monday: t.weekInitialMonday,
-      DateTime.tuesday: t.weekInitialTuesday,
-      DateTime.wednesday: t.weekInitialWednesday,
-      DateTime.thursday: t.weekInitialThursday,
-      DateTime.friday: t.weekInitialFriday,
-      DateTime.saturday: t.weekInitialSaturday,
-    };
     final weekdayNames = {for (final wd in weekOrder) wd: labels.weekday(DateTime(2026, 9, 20 + wd % 7))};
     final ordinals = {1: t.ordinalFirst, 2: t.ordinalSecond, 3: t.ordinalThird, 4: t.ordinalFourth, -1: t.ordinalLast};
     final months = {for (var m = 1; m <= 12; m++) m: labels.monthLong(DateTime(2026, m))};
@@ -77,12 +68,12 @@ class _CustomRepeatDialogState extends State<_CustomRepeatDialog> {
       },
     );
 
-    Widget chip(String label, {required bool selected, required VoidCallback onTap, double width = 40}) => InkWell(
+    Widget chip(String label, {required bool selected, required VoidCallback onTap, double width = 40, double height = 30}) => InkWell(
       onTap: () => _update(onTap),
       borderRadius: BorderRadius.circular(6),
       child: Container(
         width: width,
-        height: 30,
+        height: height,
         alignment: Alignment.center,
         decoration: BoxDecoration(color: selected ? tt.primary : tt.fieldFill, borderRadius: BorderRadius.circular(6)),
         child: Text(label, style: TextStyle(fontSize: 12, color: selected ? Colors.white : tt.text)),
@@ -166,18 +157,57 @@ class _CustomRepeatDialogState extends State<_CustomRepeatDialog> {
                   ],
                 ),
                 const SizedBox(height: 12),
-                if (byDueDate && _d.unit == RepeatUnit.week)
-                  Wrap(
-                    spacing: 4,
+                // The days of the week, also with "dia": picking one makes it weekly on the days picked.
+                if (byDueDate && (_d.unit == RepeatUnit.week || _d.unit == RepeatUnit.day)) ...[
+                  Row(
                     children: [
                       for (final wd in weekOrder)
-                        chip(
-                          initials[wd]!,
-                          selected: _d.weekdays.contains(wd),
-                          onTap: () => _d.weekdays.contains(wd) ? _d.weekdays.remove(wd) : _d.weekdays.add(wd),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 2),
+                            child: chip(
+                              labels.weekdayShort(DateTime(2026, 9, 20 + wd % 7)),
+                              width: double.infinity,
+                              height: 40,
+                              selected: _d.unit == RepeatUnit.week && _d.weekdays.contains(wd),
+                              onTap: () {
+                                if (_d.unit != RepeatUnit.week) {
+                                  _d
+                                    ..unit = RepeatUnit.week
+                                    ..weekdays = {wd};
+                                } else if (_d.weekdays.contains(wd)) {
+                                  // At least one day stays picked.
+                                  if (_d.weekdays.length > 1) _d.weekdays.remove(wd);
+                                } else {
+                                  _d.weekdays.add(wd);
+                                }
+                              },
+                            ),
+                          ),
                         ),
                     ],
                   ),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 6,
+                    children: [
+                      for (final (label, days) in [
+                        (t.repeatPickWorkdays, {DateTime.monday, DateTime.tuesday, DateTime.wednesday, DateTime.thursday, DateTime.friday}),
+                        (t.repeatPickWeekend, {DateTime.saturday, DateTime.sunday}),
+                        (t.repeatPickAllDays, {for (var d = 1; d <= 7; d++) d}),
+                      ])
+                        ActionChip(
+                          label: Text(label, style: const TextStyle(fontSize: 12)),
+                          visualDensity: VisualDensity.compact,
+                          onPressed: () => _update(() {
+                            _d
+                              ..unit = RepeatUnit.week
+                              ..weekdays = {...days};
+                          }),
+                        ),
+                    ],
+                  ),
+                ],
                 if (byDueDate && _d.unit == RepeatUnit.month) ...[
                   segments([
                     (MonthlyKind.each, t.repeatMonthEach),

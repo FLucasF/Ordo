@@ -13,7 +13,9 @@ void main() {
     expect(d.weekdays, {DateTime.friday});
     expect(d.monthDays, {25});
     expect((d.ordinal, d.weekday), (4, DateTime.friday));
-    expect(d.toRule(), 'FREQ=DAILY;INTERVAL=1');
+    // A new one by due date starts weekly on the task's weekday; by completion, daily.
+    expect(d.toRule(), 'FREQ=WEEKLY;INTERVAL=1;BYDAY=FR');
+    expect(draft(null, RepeatFrom.completion).toRule(), 'FREQ=DAILY;INTERVAL=1');
   });
 
   test('builds every variant', () {

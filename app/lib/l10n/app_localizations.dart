@@ -1609,6 +1609,24 @@ abstract class AppLocalizations {
   /// **'Todos os dias úteis (Seg-Sex)'**
   String get repeatWeekdays;
 
+  /// No description provided for @repeatPickWorkdays.
+  ///
+  /// In pt, this message translates to:
+  /// **'Dias úteis'**
+  String get repeatPickWorkdays;
+
+  /// No description provided for @repeatPickWeekend.
+  ///
+  /// In pt, this message translates to:
+  /// **'Fim de semana'**
+  String get repeatPickWeekend;
+
+  /// No description provided for @repeatPickAllDays.
+  ///
+  /// In pt, this message translates to:
+  /// **'Todos'**
+  String get repeatPickAllDays;
+
   /// No description provided for @repeatCustom.
   ///
   /// In pt, this message translates to:

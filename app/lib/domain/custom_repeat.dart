@@ -41,7 +41,12 @@ class CustomRepeatDraft {
   factory CustomRepeatDraft.fromRule(String? rule, RepeatFrom from, DateTime day) {
     final draft = CustomRepeatDraft._(day);
     if (rule == null) {
-      if (from == RepeatFrom.completion) draft.mode = RepeatBasis.completion;
+      // By due date it starts weekly, on the task's weekday: the days of the week in sight at once.
+      if (from == RepeatFrom.completion) {
+        draft.mode = RepeatBasis.completion;
+      } else {
+        draft.unit = RepeatUnit.week;
+      }
       return draft;
     }
     final dates = specificDates(rule);

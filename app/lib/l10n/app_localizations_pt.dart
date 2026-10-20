@@ -784,6 +784,15 @@ class AppLocalizationsPt extends AppLocalizations {
   String get repeatWeekdays => 'Todos os dias úteis (Seg-Sex)';
 
   @override
+  String get repeatPickWorkdays => 'Dias úteis';
+
+  @override
+  String get repeatPickWeekend => 'Fim de semana';
+
+  @override
+  String get repeatPickAllDays => 'Todos';
+
+  @override
   String get repeatCustom => 'Personalizado';
 
   @override
