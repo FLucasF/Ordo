@@ -530,7 +530,7 @@ ViewContent _taskView(
 /// Where the add field creates ("Adicionar tarefa a 'Caixa de Entrada'").
 AddTarget? _addTarget(Snapshot s, Scope scope, DateTime today, {required bool isNotes}) => switch (scope) {
   ListScope(:final listId) => AddTarget(listId: listId, hint: isNotes ? const AddNoteHint() : const AddPlainHint()),
-  FolderScope(:final folderId) => switch (s.activeLists.where((l) => l.folderId == folderId).firstOrNull) {
+  FolderScope(:final folderId) => switch (s.listTree(s.activeLists.where((l) => l.folderId == folderId)).firstOrNull?.$1) {
     null => null,
     final first => AddTarget(listId: first.id, hint: AddToListHint(first.id)),
   },
