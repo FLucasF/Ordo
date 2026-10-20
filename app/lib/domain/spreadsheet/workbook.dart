@@ -1,7 +1,6 @@
 import '../../core/ids.dart';
 import '../../data/db/database.dart';
 import '../../data/xlsx/xlsx.dart';
-import '../diet/diet.dart' show Meal;
 import '../enums.dart';
 import '../finance/finance_enums.dart';
 import '../habits.dart';
@@ -75,7 +74,8 @@ abstract interface class WorkbookLabels {
 
   /// Done, partial, skipped or failed; empty for the other days.
   String habitState(HabitDayState state);
-  String meal(Meal meal);
+  /// The label of a built-in meal's id ("breakfast" → "Café da manhã"); null for other ids.
+  String? builtInMeal(String id);
 
   /// The Caixa de Entrada's name.
   String get inbox;
@@ -384,8 +384,7 @@ List<XlsxSheet> buildWorkbook(WorkbookData d, WorkbookLabels l) {
   String mealName(String id) {
     final own = d.dietMeals.where((m) => m.id == id && m.name.isNotEmpty).firstOrNull;
     if (own != null) return own.name;
-    final builtIn = Meal.values.where((m) => m.code == id).firstOrNull;
-    return builtIn == null ? id : l.meal(builtIn);
+    return l.builtInMeal(id) ?? id;
   }
 
   final dietEntries = d.dietEntries.where((e) => alive(e.deletedAt)).toList()

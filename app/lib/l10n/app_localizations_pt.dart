@@ -5687,4 +5687,144 @@ class AppLocalizationsPt extends AppLocalizations {
   String dietLegendFat(String pct) {
     return 'Gord. $pct';
   }
+
+  @override
+  String get dietNewMeal => 'Nova refeição';
+
+  @override
+  String get dietEditMeal => 'Editar refeição';
+
+  @override
+  String get dietMealTime => 'Horário';
+
+  @override
+  String get dietMealNoTime => 'Sem horário';
+
+  @override
+  String get dietMealTimeHint => 'O horário escolhe a refeição sugerida ao adicionar um alimento.';
+
+  @override
+  String get dietMealNameRequired => 'Dê um nome à refeição.';
+
+  @override
+  String get dietMoveUp => 'Mover para cima';
+
+  @override
+  String get dietMoveDown => 'Mover para baixo';
+
+  @override
+  String get dietMealArchived => 'Refeição arquivada';
+
+  @override
+  String get dietMealDeleted => 'Refeição excluída';
+
+  @override
+  String get dietMealArchivedTag => 'arquivada';
+
+  @override
+  String dietArchivedMeals(int count) {
+    return 'Refeições arquivadas ($count)';
+  }
+
+  @override
+  String get dietMeasures => 'Medidas caseiras';
+
+  @override
+  String get dietAddMeasure => 'Medida';
+
+  @override
+  String get dietNewMeasure => 'Nova medida';
+
+  @override
+  String get dietMeasureDeleted => 'Medida excluída';
+
+  @override
+  String get dietMeasureLabel => 'Medida (ex.: colher de sopa)';
+
+  @override
+  String get dietMeasureGramsShort => 'Gramas';
+
+  @override
+  String get dietTacoMeasures => 'Da tabela TACO';
+
+  @override
+  String get dietMyMeasures => 'Suas medidas';
+
+  @override
+  String get dietNoMeasures => 'Nenhuma medida ainda.';
+
+  @override
+  String get dietTargets => 'Metas';
+
+  @override
+  String get dietTargetsTitle => 'Metas diárias';
+
+  @override
+  String get dietTargetsHint => 'Deixe em branco o que não quiser acompanhar.';
+
+  @override
+  String get dietTargetsFromMacros => 'Calcular as calorias pelos macros (P×4 + C×4 + G×9)';
+
+  @override
+  String get dietTabPlan => 'Plano';
+
+  @override
+  String get dietAddToPlan => 'Adicionar ao plano';
+
+  @override
+  String get dietEditPlanItem => 'Editar item do plano';
+
+  @override
+  String get dietPlanItemDeleted => 'Item removido do plano';
+
+  @override
+  String get dietPlanEmpty => 'Seu plano está vazio. Monte o cardápio prescrito com + Adicionar ao plano.';
+
+  @override
+  String get dietPlanEveryDay => 'Todos os dias';
+
+  @override
+  String get dietPlanDays => 'Dias da semana (nenhum marcado = todos os dias)';
+
+  @override
+  String get dietPlanAll => 'Todos';
+
+  @override
+  String get dietPlanTotal => 'Total do plano';
+
+  @override
+  String get dietImportPlan => 'Importar plano do dia';
+
+  @override
+  String dietPlanImported(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count alimentos importados do plano',
+      one: '1 alimento importado do plano',
+      zero: 'O plano do dia já está no diário',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get dietAdherence => 'Adesão';
+
+  @override
+  String get dietAdherenceWeek => 'Últimos 7 dias';
+
+  @override
+  String dietAdherenceDay(String pct) {
+    return 'Adesão do dia: $pct';
+  }
+
+  @override
+  String get dietAdherenceHelp =>
+      'Cada item do plano comido como planejado vale 100%; com outra quantidade ou trocado, 50%; pulado, 0%. Com meta de calorias, a nota é 70% o plano e 30% as calorias (100% dentro de ±10% da meta).';
+
+  @override
+  String get dietAdherenceLess => 'Menos';
+
+  @override
+  String get dietAdherenceMore => 'Mais';
 }

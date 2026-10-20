@@ -36,11 +36,14 @@ class Nutrients {
 
 /// A household measure of a food: "colher de sopa cheia" = 25 g.
 class FoodMeasure {
-  const FoodMeasure({required this.name, required this.grams, this.isDefault = false});
+  const FoodMeasure({required this.name, required this.grams, this.isDefault = false, this.id});
 
   final String name;
   final double grams;
   final bool isDefault;
+
+  /// The row of a measure the user added (DietFoodMeasures); null for TACO's.
+  final String? id;
 }
 
 /// A food the diary can use: from the TACO table ([id] "taco:1") or the user's own ([id] its row id).
@@ -56,33 +59,27 @@ class Food {
 
   /// The measure picked first: the default one, else the first.
   FoodMeasure? get defaultMeasure => measures.where((m) => m.isDefault).firstOrNull ?? measures.firstOrNull;
+
+  /// The same food with [extra] measures after its own (the user's, added to a TACO food).
+  Food withExtraMeasures(List<FoodMeasure> extra) =>
+      extra.isEmpty ? this : Food(id: id, name: name, group: group, per100g: per100g, measures: [...measures, ...extra], custom: custom);
 }
 
-/// The day's meals, in their order.
-enum Meal {
-  breakfast('breakfast'),
-  morningSnack('morningSnack'),
-  lunch('lunch'),
-  afternoonSnack('afternoonSnack'),
-  dinner('dinner'),
-  supper('supper');
+/// The six meals every database starts with (schema v20), by their ids, which are the codes the
+/// entries were saved with before; an empty name shows their built-in label.
+const builtInMealIds = ['breakfast', 'morningSnack', 'lunch', 'afternoonSnack', 'dinner', 'supper'];
 
-  const Meal(this.code);
-  final String code;
-
-  static Meal fromCode(String code) => values.where((m) => m.code == code).firstOrNull ?? lunch;
-
-  /// The meal around [time]: breakfast until 10h, a snack until 11h30, lunch until 15h, a snack until
-  /// 18h, dinner until 21h30, supper after.
-  static Meal at(DateTime time) {
-    final minutes = time.hour * 60 + time.minute;
-    if (minutes < 10 * 60) return breakfast;
-    if (minutes < 11 * 60 + 30) return morningSnack;
-    if (minutes < 15 * 60) return lunch;
-    if (minutes < 18 * 60) return afternoonSnack;
-    if (minutes < 21 * 60 + 30) return dinner;
-    return supper;
-  }
+/// The meal to suggest when adding food at [at]: the one whose time (minutes after midnight) is the
+/// closest at or before it; before the day's first time, the first one. Meals without a time are
+/// never suggested; null when none has one.
+String? suggestMealAt(Iterable<({String id, int? time})> meals, DateTime at) {
+  final minutes = at.hour * 60 + at.minute;
+  final timed = [
+    for (final m in meals)
+      if (m.time != null) (id: m.id, time: m.time!),
+  ]..sort((a, b) => a.time.compareTo(b.time));
+  if (timed.isEmpty) return null;
+  return timed.lastWhere((m) => m.time <= minutes, orElse: () => timed.first).id;
 }
 
 /// The TACO table as bundled in assets/taco.json (tool/make_taco_asset.py).

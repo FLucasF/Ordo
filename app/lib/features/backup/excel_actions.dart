@@ -8,7 +8,7 @@ import '../../app/providers.dart';
 import '../../app/theme/app_theme.dart';
 import '../../data/workbook_repository.dart';
 import '../../data/xlsx/xlsx.dart';
-import '../../domain/diet/diet.dart' show Meal;
+import '../diet/diet_forms.dart' show builtInMealLabel;
 import '../../domain/enums.dart';
 import '../../domain/finance/finance_enums.dart';
 import '../../domain/habits.dart';
@@ -120,14 +120,7 @@ class L10nWorkbookLabels implements WorkbookLabels {
   };
 
   @override
-  String meal(Meal meal) => switch (meal) {
-    Meal.breakfast => t.dietMealBreakfast,
-    Meal.morningSnack => t.dietMealMorningSnack,
-    Meal.lunch => t.dietMealLunch,
-    Meal.afternoonSnack => t.dietMealAfternoonSnack,
-    Meal.dinner => t.dietMealDinner,
-    Meal.supper => t.dietMealSupper,
-  };
+  String? builtInMeal(String id) => builtInMealLabel(t, id);
 
   @override
   String get inbox => t.inbox;

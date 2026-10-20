@@ -4,6 +4,7 @@ import 'dart:convert';
 import '../core/clock.dart';
 import '../domain/calendar.dart';
 import '../domain/color_labels.dart';
+import '../domain/diet/targets.dart';
 import '../domain/focus.dart';
 import '../domain/matrix.dart';
 import '../domain/reminder_plan.dart';
@@ -169,6 +170,7 @@ class Preferences {
     this.language = AppLanguage.portuguese,
     this.listsWithSublists = const {},
     this.collapsedLists = const {},
+    this.dietTargets = const DietTargets(),
   });
 
   /// Lists whose view shows their sublists' tasks too ("Incluir sublistas").
@@ -292,6 +294,9 @@ class Preferences {
   /// "Idioma".
   final AppLanguage language;
 
+  /// Dieta → ⚙ Metas: the daily calories and macros.
+  final DietTargets dietTargets;
+
   static const defaults = Preferences(
     smartListVisibility: defaultSmartListVisibility,
     theme: ThemeChoice.dark,
@@ -350,6 +355,7 @@ class PreferencesRepository {
   static const _shortcutsKey = 'shortcuts.custom';
   static const _listColorKey = 'appearance.listColor';
   static const _languageKey = 'appearance.language';
+  static const _dietTargetsKey = 'diet.targets';
 
   Stream<Preferences> watch() => _db.select(_db.preferences).watch().map(_parse);
 
@@ -452,6 +458,7 @@ class PreferencesRepository {
       showListColor: raw[_listColorKey] != false,
       listsWithSublists: _idSet(raw[_withSublistsKey]),
       collapsedLists: _idSet(raw[_collapsedListsKey]),
+      dietTargets: DietTargets.fromJson(raw[_dietTargetsKey]),
     );
   }
 
@@ -485,6 +492,8 @@ class PreferencesRepository {
   Future<void> setTheme(ThemeChoice theme) => _set(_themeKey, theme.code);
 
   Future<void> setLanguage(AppLanguage language) => _set(_languageKey, language.code);
+
+  Future<void> setDietTargets(DietTargets targets) => _set(_dietTargetsKey, targets.toJson());
 
   Future<void> setDateDisplay(DateDisplay display) => _set(_dateDisplayKey, display.code);
 
