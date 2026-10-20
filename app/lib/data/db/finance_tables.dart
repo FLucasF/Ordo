@@ -99,11 +99,38 @@ class Loans extends Table with SyncedRow {
   /// Notify on the due day and while it is overdue.
   BoolColumn get remind => boolean().withDefault(const Constant(true))();
   DateTimeColumn get archivedAt => dateTime().nullable()();
+
+  /// Paid back in [installments] (schema v20; 1 = at once, as before), monthly from [dueOn], each of
+  /// [installmentAmount] (null = [total] split evenly).
+  IntColumn get installments => integer().withDefault(const Constant(1))();
+  IntColumn get installmentAmount => integer().nullable()();
 }
 
 /// Payments received for a loan, partial ones included.
 class LoanPayments extends Table with SyncedRow {
   TextColumn get loanId => text().references(Loans, #id)();
+  IntColumn get amount => integer()();
+  DateTimeColumn get date => dateTime()();
+  TextColumn get note => text().withDefault(const Constant(''))();
+}
+
+/// "Caixinhas" (schema v20): money set aside for a goal of [target] cents, optionally by [dueOn].
+@DataClassName('FinGoal')
+class FinGoals extends Table with SyncedRow {
+  TextColumn get name => text()();
+  TextColumn get icon => text().nullable()();
+  TextColumn get color => text().nullable()();
+  IntColumn get target => integer()();
+  DateTimeColumn get dueOn => dateTime().nullable()();
+  TextColumn get note => text().withDefault(const Constant(''))();
+  IntColumn get sortOrder => integer()();
+  DateTimeColumn get archivedAt => dateTime().nullable()();
+}
+
+/// Money put in a goal (positive) or taken out (negative), in cents, on a day.
+@DataClassName('FinGoalMove')
+class FinGoalMoves extends Table with SyncedRow {
+  TextColumn get goalId => text().references(FinGoals, #id)();
   IntColumn get amount => integer()();
   DateTimeColumn get date => dateTime()();
   TextColumn get note => text().withDefault(const Constant(''))();

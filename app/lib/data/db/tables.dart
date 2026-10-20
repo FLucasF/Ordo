@@ -26,6 +26,12 @@ class Folders extends Table with SyncedRow {
   DateTimeColumn get pinnedAt => dateTime().nullable()();
   BoolColumn get isCollapsed => boolean().withDefault(const Constant(true))();
   IntColumn get sortOrder => integer()();
+
+  /// "Áreas" (schema v20): an emoji or icon, a color (`#RRGGBB`) and a background (see
+  /// [Lists.background]) of the folder.
+  TextColumn get icon => text().nullable()();
+  TextColumn get color => text().nullable()();
+  TextColumn get background => text().nullable()();
 }
 
 /// Lists (TickTick "projects").
@@ -37,6 +43,13 @@ class Lists extends Table with SyncedRow {
   /// Hex color (`#RRGGBB`) or null ("none").
   TextColumn get color => text().nullable()();
   TextColumn get folderId => text().nullable().references(Folders, #id)();
+
+  /// Sublists (schema v20): the list this one is inside (up to 3 levels); it keeps its parent's folder.
+  TextColumn get parentId => text().nullable().references(Lists, #id)();
+
+  /// The list's own background (schema v20): a built-in one's name ("gradient:dawn") or a picture's
+  /// file name in the backgrounds folder; null = the app's.
+  TextColumn get background => text().nullable()();
   TextColumn get kind => text().map(const TextCodeConverter<ListKind>(ListKind.fromCode)).withDefault(Constant(ListKind.tasks.code))();
   TextColumn get viewMode => text().map(const TextCodeConverter<ViewMode>(ViewMode.fromCode)).withDefault(Constant(ViewMode.list.code))();
 
@@ -222,6 +235,14 @@ class Countdowns extends Table with SyncedRow {
   /// "Modo de Contagem": Cronômetro counts up from the date instead of down to the
   /// next occurrence (schema v14).
   BoolColumn get countUp => boolean().withDefault(const Constant(false))();
+
+  /// The project it counts down to (schema v20): a list or a folder, for its dashboard.
+  TextColumn get listId => text().nullable()();
+  TextColumn get folderId => text().nullable()();
+
+  /// When the project was closed (or its day came), and its final report frozen then as JSON.
+  DateTimeColumn get closedAt => dateTime().nullable()();
+  TextColumn get report => text().nullable()();
 }
 
 /// Focus sessions ("Foco em registro"), schema v8. Times in UTC; [seconds] is the

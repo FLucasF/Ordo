@@ -7,6 +7,7 @@ import '../../domain/finance/finance_enums.dart';
 import 'converters.dart';
 import 'database.steps.dart';
 import 'diet_tables.dart';
+import 'journal_tables.dart';
 import 'finance_tables.dart';
 import 'tables.dart';
 import '../../core/app_folder.dart';
@@ -41,6 +42,12 @@ part 'database.g.dart';
     LoanPayments,
     DietFoods,
     DietEntries,
+    DietMeals,
+    DietFoodMeasures,
+    DietPlanItems,
+    FinGoals,
+    FinGoalMoves,
+    JournalEntries,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -49,13 +56,14 @@ class AppDatabase extends _$AppDatabase {
   /// Bump on every schema change and run `dart run drift_dev make-migrations` to freeze the new
   /// schema and generate its migration test.
   @override
-  int get schemaVersion => 19;
+  int get schemaVersion => 20;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onCreate: (m) async {
       await m.createAll();
       await _createInbox();
+      await _createMeals();
     },
     // One step per schema version; each is covered by test/drift/app/migration_test.dart.
     onUpgrade: stepByStep(
@@ -131,6 +139,27 @@ class AppDatabase extends _$AppDatabase {
         await m.createTable(schema.dietFoods);
         await m.createTable(schema.dietEntries);
       },
+      from19To20: (m, schema) async {
+        await m.addColumn(schema.folders, schema.folders.icon);
+        await m.addColumn(schema.folders, schema.folders.color);
+        await m.addColumn(schema.folders, schema.folders.background);
+        await m.addColumn(schema.lists, schema.lists.parentId);
+        await m.addColumn(schema.lists, schema.lists.background);
+        await m.addColumn(schema.countdowns, schema.countdowns.listId);
+        await m.addColumn(schema.countdowns, schema.countdowns.folderId);
+        await m.addColumn(schema.countdowns, schema.countdowns.closedAt);
+        await m.addColumn(schema.countdowns, schema.countdowns.report);
+        await m.addColumn(schema.dietEntries, schema.dietEntries.planItemId);
+        await m.addColumn(schema.loans, schema.loans.installments);
+        await m.addColumn(schema.loans, schema.loans.installmentAmount);
+        await m.createTable(schema.dietMeals);
+        await m.createTable(schema.dietFoodMeasures);
+        await m.createTable(schema.dietPlanItems);
+        await m.createTable(schema.finGoals);
+        await m.createTable(schema.finGoalMoves);
+        await m.createTable(schema.journalEntries);
+        await _createMeals();
+      },
     ),
     beforeOpen: (details) async {
       await customStatement('PRAGMA foreign_keys = ON');
@@ -144,6 +173,19 @@ class AppDatabase extends _$AppDatabase {
   Future<void> _createInbox() async {
     final now = DateTime.now().toUtc();
     await into(lists).insert(ListsCompanion.insert(id: inboxListId, createdAt: now, updatedAt: now, name: 'Inbox', sortOrder: 0));
+  }
+
+  /// The six meals of before (schema v20), kept under their codes so the entries keep them, with their
+  /// usual times; plain SQL, as the migration runs it on the v20 tables.
+  Future<void> _createMeals() async {
+    final now = DateTime.now().toUtc();
+    const meals = [('breakfast', 420), ('morningSnack', 600), ('lunch', 750), ('afternoonSnack', 960), ('dinner', 1170), ('supper', 1320)];
+    for (final (i, (code, time)) in meals.indexed) {
+      await customInsert(
+        "INSERT OR IGNORE INTO diet_meals (id, created_at, updated_at, name, time, sort_order) VALUES (?, ?, ?, '', ?, ?)",
+        variables: [Variable.withString(code), Variable.withDateTime(now), Variable.withDateTime(now), Variable.withInt(time), Variable.withInt(i)],
+      );
+    }
   }
 
   /// `tasks.sqlite` in the app data folder (AppData on Windows, private storage on Android) instead of
