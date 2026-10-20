@@ -22,6 +22,7 @@ import 'package:task_manager/features/countdown/countdown_page.dart';
 import 'package:task_manager/features/detail/content_editor.dart';
 import 'package:task_manager/features/tasks/batch_pane.dart';
 import 'package:task_manager/features/tasks/kanban_board.dart';
+import 'package:task_manager/features/tasks/task_row.dart';
 import 'package:task_manager/features/detail/task_detail_pane.dart';
 import 'package:task_manager/features/habits/habit_form.dart';
 import 'package:task_manager/features/habits/habit_page.dart';
@@ -147,6 +148,30 @@ void main() {
   });
 
   List<String> byOrder(Snapshot s) => [for (final t in s.tasks.toList()..sort((x, y) => x.sortOrder.compareTo(y.sortOrder))) t.title];
+
+  testWidgets('desktop: a drag over the middle of a row reorders (its lower half: after it); Shift makes a subtask', (tester) async {
+    final repo = Repository(db, clock: clock);
+    await tester.runAsync(() async {
+      for (final title in ['a', 'b', 'c']) {
+        await repo.createTask(listId: inboxListId, title: title, atTop: false);
+      }
+    });
+    await pumpApp(tester, '/p/inbox/tasks');
+    // "a" straight down onto the lower half of "c", over the middle of the row: after c, not inside it.
+    final cRow = tester.getRect(find.ancestor(of: find.text('c').first, matching: find.byType(TaskRowTile)).first);
+    await dragTo(tester, find.text('a').first, Offset(tester.getCenter(find.text('a').first).dx + 20, cRow.bottom - 4));
+    var s = (await tester.runAsync(repo.loadSnapshot))!;
+    expect(byOrder(s), ['b', 'c', 'a']);
+    expect(s.tasks.every((t) => t.parentId == null), isTrue);
+    // With Shift held, the same kind of drag makes a subtask.
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.shiftLeft);
+    final bRow = tester.getRect(find.ancestor(of: find.text('b').first, matching: find.byType(TaskRowTile)).first);
+    await dragTo(tester, find.text('a').first, Offset(tester.getCenter(find.text('a').first).dx, bRow.center.dy));
+    await tester.sendKeyUpEvent(LogicalKeyboardKey.shiftLeft);
+    s = (await tester.runAsync(repo.loadSnapshot))!;
+    expect(s.taskById[s.tasks.firstWhere((t) => t.title == 'a').parentId]?.title, 'b');
+    await _dispose(tester);
+  });
 
   testWidgets('phone: a long press and a move reorders; a long press that stays opens the menu', (tester) async {
     final repo = Repository(db, clock: clock);

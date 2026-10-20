@@ -1039,6 +1039,12 @@ abstract class AppLocalizations {
   /// **'Nova Pasta'**
   String get folderNew;
 
+  /// No description provided for @dropAsSubtask.
+  ///
+  /// In pt, this message translates to:
+  /// **'Soltar como subtarefa'**
+  String get dropAsSubtask;
+
   /// No description provided for @listType.
   ///
   /// In pt, this message translates to:

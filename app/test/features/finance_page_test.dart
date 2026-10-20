@@ -276,9 +276,9 @@ void main() {
     expect(find.widgetWithText(PanelNavRow, 'Aluguel'), findsNothing);
     expect(find.textContaining('Nenhuma conta fixa ainda'), findsOneWidget);
 
-    // A loan: a click on a payment edits it; the line's ⋯ deletes the loan.
+    // A loan (its line shows only the name): a click on a payment edits it; the line's ⋯ deletes the loan.
     await goTab(tester, 'Contas fixas', 'Empréstimos');
-    await tester.tap(find.text('Cobrar Ana'));
+    await tester.tap(find.descendant(of: find.byType(AgendaLine), matching: find.text('Ana')));
     await tester.pumpAndSettle();
     await tester.tap(find.widgetWithText(ListTile, r'R$ 500,00'));
     await tester.pumpAndSettle();
@@ -289,13 +289,13 @@ void main() {
     expect(find.text(r'Falta R$ 300,00'), findsOneWidget);
     await tester.tap(find.byTooltip('Fechar'));
     await tester.pumpAndSettle();
-    await tester.tap(find.descendant(of: find.widgetWithText(AgendaLine, 'Cobrar Ana'), matching: find.byType(RowMenuButton)));
+    await tester.tap(find.descendant(of: find.widgetWithText(AgendaLine, 'Ana'), matching: find.byType(RowMenuButton)));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Deletar'));
     await tester.pumpAndSettle();
     await tester.tap(find.widgetWithText(FilledButton, 'Deletar'));
     await settle(tester);
-    expect(find.text('Cobrar Ana'), findsNothing);
+    expect(find.descendant(of: find.byType(AgendaLine), matching: find.text('Ana')), findsNothing);
     expect(find.text('Empréstimo excluído'), findsOneWidget);
     expect(tester.takeException(), isNull);
     await dispose(tester);
@@ -341,13 +341,13 @@ void main() {
     expect(find.text(r'Lucro: R$ 300,00'), findsOneWidget);
     await tester.tap(find.text('Salvar'));
     await settle(tester);
-    expect(find.text('Cobrar João'), findsOneWidget);
+    expect(find.descendant(of: find.byType(AgendaLine), matching: find.text('João')), findsOneWidget);
     expect(find.text(r'Falta R$ 1.300,00'), findsOneWidget);
     expect(find.text(r'lucro R$ 300,00 (30%)'), findsOneWidget);
     // The line's status and the panel's filter.
     expect(find.text('Em dia'), findsNWidgets(2));
 
-    await tester.tap(find.text('Cobrar João'));
+    await tester.tap(find.descendant(of: find.byType(AgendaLine), matching: find.text('João')));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Registrar pagamento'));
     await tester.pumpAndSettle();
@@ -376,7 +376,10 @@ void main() {
     expect(find.text('Outubro 2026'), findsOneWidget);
     expect(find.text('Novembro 2026'), findsOneWidget);
     expect(find.text(r'1 empréstimo · a receber R$ 600,00 · lucro R$ 100,00'), findsOneWidget);
-    expect(tester.getTopLeft(find.text('Cobrar Beto')).dy, lessThan(tester.getTopLeft(find.text('Cobrar Ana')).dy));
+    expect(
+      tester.getTopLeft(find.descendant(of: find.byType(AgendaLine), matching: find.text('Beto'))).dy,
+      lessThan(tester.getTopLeft(find.descendant(of: find.byType(AgendaLine), matching: find.text('Ana'))).dy),
+    );
 
     await tester.tap(find.widgetWithText(PanelNavRow, 'Por mês do empréstimo'));
     await settle(tester);

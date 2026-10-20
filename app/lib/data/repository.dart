@@ -766,6 +766,32 @@ class Repository {
     await _moveWithDescendants(id, target.listId);
   });
 
+  /// Drop on the lower half of a task: right after it among its siblings (after its subtasks).
+  Future<void> moveAfter(String id, String targetId, {Value<String?> sectionId = const Value.absent()}) => _db.transaction(() async {
+    if (id == targetId) return;
+    final target = await task(targetId);
+    final parentId = target.parentId;
+    if (parentId != null && (parentId == id || (await _descendants(id)).contains(parentId))) {
+      throw const RuleViolation(Rule.taskCannotBeItsOwnParent);
+    }
+    var siblings = await _siblings(target.listId, parentId, excluding: id);
+    var index = siblings.indexWhere((t) => t.id == targetId);
+    int? order = index == siblings.length - 1
+        ? SortOrder.after(target.sortOrder)
+        : SortOrder.between(target.sortOrder, siblings[index + 1].sortOrder);
+    if (order == null) {
+      await _reindex(siblings);
+      siblings = await _siblings(target.listId, parentId, excluding: id);
+      index = siblings.indexWhere((t) => t.id == targetId);
+      order = SortOrder.between(siblings[index].sortOrder, siblings[index + 1].sortOrder)!;
+    }
+    await _update(
+      id,
+      TasksCompanion(parentId: Value(parentId), sortOrder: Value(order), sectionId: sectionId.present ? sectionId : Value(target.sectionId)),
+    );
+    await _moveWithDescendants(id, target.listId);
+  });
+
   /// Drop on a section header: the task goes to the top of that section, at the top level.
   Future<void> moveToSectionTop(String id, String listId, String? sectionId) => _db.transaction(() async {
     final roots = await _siblings(listId, null, excluding: id);

@@ -183,7 +183,7 @@ class _LoanLine extends ConsumerWidget {
     return AgendaLine(
       color: color,
       secondary: status,
-      title: t.finCalendarLoan(loan.borrower),
+      title: loan.borrower,
       subtitle: t.finProfit(formatMoney(summary.interest), formatPercent(summary.rate)),
       struck: summary.status == LoanStatus.paid,
       faded: summary.status == LoanStatus.paid,

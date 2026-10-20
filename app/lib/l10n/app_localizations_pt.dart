@@ -490,6 +490,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get folderNew => 'Nova Pasta';
 
   @override
+  String get dropAsSubtask => 'Soltar como subtarefa';
+
+  @override
   String get listType => 'Tipo de lista';
 
   @override

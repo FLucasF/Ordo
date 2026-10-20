@@ -229,6 +229,26 @@ void main() {
     expect(await order(), ['a', 'b', 'c']);
   });
 
+  test('moveAfter places a task after the target, at the end too, and reindexes when needed', () async {
+    final a = await repo.createTask(listId: inboxListId, title: 'a', atTop: false);
+    final b = await repo.createTask(listId: inboxListId, title: 'b', atTop: false);
+    final c = await repo.createTask(listId: inboxListId, title: 'c', atTop: false);
+    Future<List<String>> order() async =>
+        ((await repo.loadSnapshot()).tasks.where((t) => t.parentId == null).toList()..sort((x, y) => x.sortOrder.compareTo(y.sortOrder)))
+            .map((t) => t.title)
+            .toList();
+    await repo.moveAfter(a, c);
+    expect(await order(), ['b', 'c', 'a']);
+    await repo.moveAfter(a, b);
+    expect(await order(), ['b', 'a', 'c']);
+    // Adjacent orders: the siblings get reindexed.
+    await repo.reorder(b, 0);
+    await repo.reorder(a, 1);
+    await repo.reorder(c, 2);
+    await repo.moveAfter(c, b);
+    expect(await order(), ['b', 'c', 'a']);
+  });
+
   test('moveBefore adopts the target level and section; loops are refused', () async {
     final list = await repo.createList(name: 'L');
     final section = await repo.createSection(list, 'S');

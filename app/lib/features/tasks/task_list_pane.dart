@@ -1034,7 +1034,16 @@ Widget _maybeSectionTarget({required bool enabled, required Future<void> Functio
   );
 }
 
-enum _DropMode { before, subtask }
+enum _DropMode { before, after, subtask }
+
+/// Where the task being dragged was picked up (global): moving it well to the right of there, or
+/// holding Shift, drops it as a subtask; anything else reorders.
+abstract final class _DragOrigin {
+  static Offset? start;
+
+  /// How far to the right the pointer must go to make a subtask.
+  static const subtaskShift = 48.0;
+}
 
 /// Saves a view's options: a list in its row, the other views in the preferences.
 Future<void> setScopeViewOptions(WidgetRef ref, Scope scope, ViewOptions options) async {
@@ -1089,12 +1098,17 @@ class _RowDraggableState extends State<_RowDraggable> {
   @override
   Widget build(BuildContext context) {
     if (!widget.touch) {
-      return Draggable<String>(
-        data: widget.taskId,
-        dragAnchorStrategy: pointerDragAnchorStrategy,
-        onDragUpdate: (d) => _autoScroll(d.globalPosition),
-        feedback: widget.feedback,
-        child: widget.child,
+      return Listener(
+        onPointerDown: (e) => _down = e.position,
+        child: Draggable<String>(
+          data: widget.taskId,
+          dragAnchorStrategy: pointerDragAnchorStrategy,
+          onDragStarted: () => _DragOrigin.start = _down,
+          onDragEnd: (_) => _DragOrigin.start = null,
+          onDragUpdate: (d) => _autoScroll(d.globalPosition),
+          feedback: widget.feedback,
+          child: widget.child,
+        ),
       );
     }
     return Listener(
@@ -1103,6 +1117,8 @@ class _RowDraggableState extends State<_RowDraggable> {
         data: widget.taskId,
         dragAnchorStrategy: pointerDragAnchorStrategy,
         hapticFeedbackOnStart: true,
+        onDragStarted: () => _DragOrigin.start = _down,
+        onDragEnd: (_) => _DragOrigin.start = null,
         onDragUpdate: (d) => _autoScroll(d.globalPosition),
         // Let go where it began: it was a long press for the menu.
         onDraggableCanceled: (_, offset) {
@@ -1116,7 +1132,8 @@ class _RowDraggableState extends State<_RowDraggable> {
   }
 }
 
-/// Drop target of a task row: before it (reorder) or, dropped further right, as its subtask.
+/// Drop target of a task row: before it (its upper half) or after it (the lower half) to reorder; as
+/// its subtask when the task was moved well to the right of where it was picked up, or with Shift.
 class _DropRow extends ConsumerStatefulWidget {
   const _DropRow({required this.row, required this.sectionId, required this.canReorder, required this.onReordered, required this.child});
 
@@ -1142,9 +1159,12 @@ class _DropRowState extends ConsumerState<_DropRow> {
   _DropMode? _modeAt(Offset global, String dragged) {
     final box = context.findRenderObject() as RenderBox?;
     if (box == null) return null;
-    final x = box.globalToLocal(global).dx;
-    if (x > _indent + 60) return _DropMode.subtask;
-    return widget.canReorder(dragged) ? _DropMode.before : null;
+    final local = box.globalToLocal(global);
+    final start = _DragOrigin.start;
+    final right = start == null ? local.dx > _indent + 60 : global.dx - start.dx > _DragOrigin.subtaskShift;
+    if (right || HardwareKeyboard.instance.isShiftPressed) return _DropMode.subtask;
+    if (!widget.canReorder(dragged)) return null;
+    return local.dy > box.size.height / 2 ? _DropMode.after : _DropMode.before;
   }
 
   @override
@@ -1164,11 +1184,16 @@ class _DropRowState extends ConsumerState<_DropRow> {
         switch (mode) {
           case _DropMode.subtask:
             fireAndForget(guarded(context, () => repo.makeSubtask(d.data, task.id)));
-          case _DropMode.before:
+          case _DropMode.before || _DropMode.after:
+            final section = Value(widget.sectionId ?? task.sectionId);
             fireAndForget(() async {
-              if (await guarded(context, () => repo.moveBefore(d.data, task.id, sectionId: Value(widget.sectionId ?? task.sectionId)))) {
-                await widget.onReordered();
-              }
+              final moved = await guarded(
+                context,
+                () => mode == _DropMode.before
+                    ? repo.moveBefore(d.data, task.id, sectionId: section)
+                    : repo.moveAfter(d.data, task.id, sectionId: section),
+              );
+              if (moved) await widget.onReordered();
             }());
           case null:
             break;
@@ -1179,10 +1204,27 @@ class _DropRowState extends ConsumerState<_DropRow> {
           widget.child,
           if (candidates.isNotEmpty && _mode != null)
             Positioned(
-              top: 0,
+              top: _mode == _DropMode.after ? null : 0,
+              bottom: _mode == _DropMode.after ? 0 : null,
               left: _mode == _DropMode.subtask ? _indent + TtSizes.subtaskIndent : _indent,
               right: 30,
               child: Container(height: 2, color: context.tt.primary),
+            ),
+          // Dropping as a subtask says so, beside the indented line.
+          if (candidates.isNotEmpty && _mode == _DropMode.subtask)
+            Positioned(
+              top: 4,
+              right: 34,
+              child: IgnorePointer(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(color: context.tt.primary, borderRadius: BorderRadius.circular(10)),
+                  child: Text(
+                    AppLocalizations.of(context).dropAsSubtask,
+                    style: const TextStyle(color: Colors.white, fontSize: TtText.small),
+                  ),
+                ),
+              ),
             ),
         ],
       ),
