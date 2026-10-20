@@ -44,6 +44,7 @@ import 'routes.dart';
 import 'theme/app_theme.dart';
 import 'window_title.dart';
 import '../features/common/color_choice.dart';
+import 'focus_restorer.dart';
 
 GoRouter buildRouter({String initialLocation = Routes.initial}) => GoRouter(
   initialLocation: initialLocation,
@@ -138,6 +139,7 @@ class TasksApp extends ConsumerStatefulWidget {
 class _TasksAppState extends ConsumerState<TasksApp> {
   late final GoRouter _router = buildRouter(initialLocation: widget.initialLocation);
   final _windowTitle = WindowTitle();
+  final _focusRestorer = FocusRestorer();
   Timer? _syncDebounce;
   Timer? _widgetDebounce;
   Timer? _periodicSync;
@@ -158,6 +160,8 @@ class _TasksAppState extends ConsumerState<TasksApp> {
   @override
   void initState() {
     super.initState();
+    // Alt+Tab back to the window: typing goes on in the same field.
+    _focusRestorer.attach();
     // Subscribed calendars older than 12 hours are downloaded again.
     WidgetsBinding.instance.addPostFrameCallback((_) => unawaited(refreshStaleSubscriptions(ref)));
     // The day's local backup, a little after start so it never slows the first screen, then checked
@@ -403,6 +407,7 @@ class _TasksAppState extends ConsumerState<TasksApp> {
 
   @override
   void dispose() {
+    _focusRestorer.detach();
     _syncDebounce?.cancel();
     _widgetDebounce?.cancel();
     _periodicSync?.cancel();
