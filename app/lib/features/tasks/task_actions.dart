@@ -338,20 +338,28 @@ Future<(String, String?)?> pickListTarget(BuildContext context, WidgetRef ref, {
     builder: (context) => SimpleDialog(
       title: Text(t.menuMoveTo, style: const TextStyle(fontSize: 15)),
       children: [
-        for (final l in s.activeLists) ...[
+        // Sublists right under their parent, indented.
+        for (final (l, depth) in s.listTree(s.activeLists)) ...[
           SimpleDialogOption(
+            padding: EdgeInsets.fromLTRB(24 + 20.0 * depth, 8, 24, 8),
             onPressed: () => Navigator.pop(context, (l.id, null)),
             child: Row(
               children: [
                 Text(l.emoji ?? '•'),
                 const SizedBox(width: 10),
-                Text(labels.listName(l), style: TextStyle(fontWeight: l.id == currentListId ? FontWeight.w600 : null)),
+                Flexible(
+                  child: Text(
+                    labels.listName(l),
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontWeight: l.id == currentListId ? FontWeight.w600 : null),
+                  ),
+                ),
               ],
             ),
           ),
           for (final sec in s.sectionsOf(l.id))
             SimpleDialogOption(
-              padding: const EdgeInsets.fromLTRB(48, 6, 24, 6),
+              padding: EdgeInsets.fromLTRB(48 + 20.0 * depth, 6, 24, 6),
               onPressed: () => Navigator.pop(context, (l.id, sec.id)),
               child: Text(sec.name, style: TextStyle(color: context.tt.textSecondary)),
             ),

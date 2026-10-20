@@ -284,6 +284,8 @@ class _Header extends ConsumerWidget {
     final current = ref.read(viewOptionsProvider(scope));
     final list = scope is ListScope ? ref.read(snapshotProvider).value?.listById[(scope as ListScope).listId] : null;
     final mode = ref.read(viewModeProvider(scope));
+    final withSublists = ref.read(preferencesProvider).value?.listsWithSublists ?? const <String>{};
+    final hasSublists = list != null && (ref.read(snapshotProvider).value?.sublistsOf(list.id).isNotEmpty ?? false);
     final box = context.findRenderObject()! as RenderBox;
     final origin = box.localToGlobal(Offset(box.size.width - 20, box.size.height));
     final picked = await showMenu<String>(
@@ -299,6 +301,8 @@ class _Header extends ConsumerWidget {
         const PopupMenuDivider(),
         PopupMenuItem(value: 'completed', height: 36, child: Text(current.showCompleted ? t.hideCompleted : t.showCompleted)),
         PopupMenuItem(value: 'details', height: 36, child: Text(current.showDetails ? t.hideDetails : t.showDetails)),
+        // A list with sublists can show their tasks too.
+        if (hasSublists) CheckedPopupMenuItem(value: 'sublists', checked: withSublists.contains(list.id), child: Text(t.listIncludeSublists)),
         PopupMenuItem(value: 'viewOptions', height: 36, child: Text(t.viewOptions)),
         // The list's "…" ends with Adicionar Seção · Atividades das Listas · Imprimir, then Editar lista ·
         // Deletar lista (the Inbox can't be deleted).
@@ -322,6 +326,8 @@ class _Header extends ConsumerWidget {
         await _setOptions(ref, current.copyWith(showCompleted: !current.showCompleted));
       case 'details':
         await _setOptions(ref, current.copyWith(showDetails: !current.showDetails));
+      case 'sublists':
+        await ref.read(preferencesRepositoryProvider).setListWithSublists(withSublists, list!.id, enabled: !withSublists.contains(list.id));
       case 'section':
         final name = await promptText(context, title: t.sectionAdd, hint: t.sectionNew);
         if (name != null) await ref.read(repositoryProvider).createSection(list!.id, name);

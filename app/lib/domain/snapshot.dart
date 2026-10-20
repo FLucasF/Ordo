@@ -97,6 +97,58 @@ class Snapshot {
 
   List<Folder> get activeFolders => folders.where((f) => f.deletedAt == null).toList()..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
 
+  /// Active sublists by their parent list, in manual order (worked out once: the sidebar asks per row).
+  late final Map<String, List<TaskList>> _sublists = () {
+    final map = <String, List<TaskList>>{};
+    for (final l in activeLists) {
+      final parent = l.parentId;
+      if (parent != null) (map[parent] ??= []).add(l);
+    }
+    return map;
+  }();
+
+  /// The active lists right inside [listId].
+  List<TaskList> sublistsOf(String listId) => _sublists[listId] ?? const [];
+
+  /// The active (not archived) list [l] hangs under; null at the top, and also when the parent is
+  /// archived or gone (the sublist then shows at the top).
+  TaskList? activeParentOf(TaskList l) {
+    final parent = l.parentId == null ? null : listById[l.parentId];
+    return parent == null || parent.deletedAt != null || parent.archivedAt != null ? null : parent;
+  }
+
+  /// Level of [l] among the lists: 0 at the top, up to 2 (three levels).
+  int listDepth(TaskList l) {
+    var depth = 0;
+    for (var p = activeParentOf(l); p != null && depth < 10; p = activeParentOf(p)) {
+      depth++;
+    }
+    return depth;
+  }
+
+  /// The active lists under [listId] at any depth, each parent before its sublists.
+  List<TaskList> sublistsDeep(String listId) => [
+    for (final child in sublistsOf(listId)) ...[child, ...sublistsDeep(child.id)],
+  ];
+
+  /// [lists] in tree order with their depth: each list followed by its sublists among [lists]. A list
+  /// whose parent is not among them is a root.
+  List<(TaskList, int)> listTree(Iterable<TaskList> lists) {
+    final among = {for (final l in lists) l.id: l};
+    final result = <(TaskList, int)>[];
+    void visit(TaskList l, int depth) {
+      result.add((l, depth));
+      for (final child in sublistsOf(l.id)) {
+        if (among.containsKey(child.id) && depth < 10) visit(child, depth + 1);
+      }
+    }
+
+    for (final l in among.values) {
+      if (l.parentId == null || !among.containsKey(l.parentId) || activeParentOf(l) == null) visit(l, 0);
+    }
+    return result;
+  }
+
   List<Tag> get activeTags => tags.where((t) => t.deletedAt == null).toList()..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
 
   List<Section> sectionsOf(String listId) =>

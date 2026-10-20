@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:drift/drift.dart' show Value;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -12,9 +13,11 @@ import '../../domain/countdown.dart';
 import '../../domain/enums.dart';
 import '../../domain/recurrence.dart';
 import '../../domain/reminders.dart';
+import '../../domain/snapshot.dart';
 import '../../l10n/app_localizations.dart';
 import '../common/color_choice.dart';
 import '../common/feedback.dart';
+import '../common/labels.dart';
 import '../date_picker/custom_repeat_dialog.dart';
 import '../date_picker/date_picker.dart';
 import 'countdown_card.dart';
@@ -70,6 +73,10 @@ class _CountdownFormState extends ConsumerState<_CountdownForm> {
   int _style = 0;
   String? _color;
 
+  /// "Vincular a uma lista ou área": the project it counts down to (one of the two, or none).
+  late String? _listId = widget.editing?.listId;
+  late String? _folderId = widget.editing?.folderId;
+
   bool get _hasDirection => _type == CountdownType.birthday || _type == CountdownType.specialDay;
 
   /// Only the types with a "Modo de Contagem" count up.
@@ -108,6 +115,8 @@ class _CountdownFormState extends ConsumerState<_CountdownForm> {
         reminders: _reminders,
         repeatRule: _rule,
         visibility: _visibility,
+        listId: Value(_listId),
+        folderId: Value(_folderId),
       );
     } else {
       await repo.createCountdown(
@@ -126,9 +135,44 @@ class _CountdownFormState extends ConsumerState<_CountdownForm> {
         icon: _icon,
         iconColor: _iconColor,
         image: _image,
+        listId: _listId,
+        folderId: _folderId,
       );
     }
     if (mounted) Navigator.pop(context);
+  }
+
+  /// "Vincular a uma lista ou área": none, the areas, then the lists (sublists indented). The value is
+  /// `f:id` or `l:id`; '' for none.
+  Widget _linkField(AppLocalizations t) {
+    final s = ref.watch(snapshotProvider).value ?? Snapshot.empty();
+    final value = _listId != null ? 'l:$_listId' : (_folderId != null ? 'f:$_folderId' : '');
+    final items = <DropdownMenuItem<String>>[
+      DropdownMenuItem(value: '', child: Text(t.countdownLinkNone)),
+      for (final f in s.activeFolders)
+        DropdownMenuItem(
+          value: 'f:${f.id}',
+          child: Text(t.countdownLinkArea(f.name), overflow: TextOverflow.ellipsis),
+        ),
+      for (final (l, depth) in s.listTree(s.activeLists))
+        DropdownMenuItem(
+          value: 'l:${l.id}',
+          child: Padding(
+            padding: EdgeInsets.only(left: 16.0 * depth),
+            child: Text('${l.emoji == null ? '' : '${l.emoji} '}${Labels(t).listName(l)}', overflow: TextOverflow.ellipsis),
+          ),
+        ),
+    ];
+    return DropdownButton<String>(
+      // A project that is gone reads as none.
+      value: items.any((i) => i.value == value) ? value : '',
+      isExpanded: true,
+      items: items,
+      onChanged: (v) => setState(() {
+        _listId = v != null && v.startsWith('l:') ? v.substring(2) : null;
+        _folderId = v != null && v.startsWith('f:') ? v.substring(2) : null;
+      }),
+    );
   }
 
   @override
@@ -329,6 +373,7 @@ class _CountdownFormState extends ConsumerState<_CountdownForm> {
               onChanged: (v) => setState(() => _mode = v ?? _mode),
             ),
           ),
+        _row(t.countdownLink, _linkField(t), wide: true),
         _row(
           t.countdownVisibility,
           DropdownButton<CountdownVisibility>(

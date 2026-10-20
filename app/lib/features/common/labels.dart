@@ -84,6 +84,9 @@ class Labels {
     Rule.subtaskDepthLimit => t.errorSubtaskDepthLimit,
     Rule.taskWithSubtasksCannotBecomeNote => t.errorTaskWithSubtasksCannotBecomeNote,
     Rule.tagNameTaken => t.errorTagNameTaken,
+    Rule.listCannotBeItsOwnParent => t.errorListCannotBeItsOwnParent,
+    Rule.sublistDepthLimit => t.errorSublistDepthLimit,
+    Rule.inboxCannotNest => t.errorInboxCannotNest,
   };
 
   String priority(Priority p) => switch (p) {

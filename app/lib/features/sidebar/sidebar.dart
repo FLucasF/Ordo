@@ -28,7 +28,8 @@ import '../calendar/calendar_page.dart' show calendarAnchorProvider;
 import '../../domain/calendar.dart' show CalendarMode;
 import '../../core/clock.dart';
 import '../../app/format/date_labels.dart';
-import '../../data/repository.dart' show ListCopyMode;
+import '../../data/repository.dart' show ListCopyMode, maxListLevels;
+import '../lists/folder_dialog.dart';
 
 /// Lists sidebar: smart lists, Lists (folders), Filters, Tags and the closed lists.
 class Sidebar extends ConsumerWidget {
@@ -91,7 +92,7 @@ class Sidebar extends ConsumerWidget {
       for (final l in lists)
         if (l.pinnedAt case final at?) (at, _Pinned(ListScope(l.id), _listIcon(l), l.name)),
       for (final f in s.activeFolders)
-        if (f.pinnedAt case final at?) (at, _Pinned(FolderScope(f.id), const Icon(Icons.folder_outlined), f.name)),
+        if (f.pinnedAt case final at?) (at, _Pinned(FolderScope(f.id), folderIcon(f), f.name)),
       for (final tag in s.activeTags)
         if (tag.pinnedAt case final at?) (at, _Pinned(TagScope(tag.id), const Icon(Icons.sell_outlined), tag.name)),
       for (final f in s.filters)
@@ -121,8 +122,8 @@ class Sidebar extends ConsumerWidget {
             ),
           smart(SmartList.summary, const Icon(Icons.summarize_outlined)),
           _divider(tt),
-          _SectionHeader(label: t.sidebarLists, onAdd: () => _addList(context, ref)),
-          ..._listsAndFolders(context, ref, s, lists, counts, go),
+          _SectionHeader(label: t.sidebarLists, onAdd: () => _addList(context, ref), onAddFolder: () => createFolderWithDialog(context, ref)),
+          ..._listsAndFolders(context, ref, s, lists, counts, go, prefs.collapsedLists),
           if (s.archivedLists.isNotEmpty) ..._archived(context, ref, s, go),
           const SizedBox(height: 4),
           if (visibleIn(prefs.filtersVisibility, s.filters.isNotEmpty)) ...[
@@ -212,10 +213,50 @@ class Sidebar extends ConsumerWidget {
     child: Divider(height: 1, color: tt.divider),
   );
 
-  List<Widget> _listsAndFolders(BuildContext context, WidgetRef ref, Snapshot s, List<TaskList> lists, Counts counts, void Function(Scope) go) {
+  List<Widget> _listsAndFolders(
+    BuildContext context,
+    WidgetRef ref,
+    Snapshot s,
+    List<TaskList> lists,
+    Counts counts,
+    void Function(Scope) go,
+    Set<String> collapsedLists,
+  ) {
     final widgets = <Widget>[];
     final folders = s.activeFolders;
-    // Folders and loose lists share one manual order.
+    // A list (and its sublists below it, unless folded) with its drag target.
+    List<Widget> tree(List<(TaskList, int)> entries, double indent) {
+      final rows = <Widget>[];
+      int? hiddenBelow;
+      for (final (l, depth) in entries) {
+        if (hiddenBelow != null && depth > hiddenBelow) continue;
+        final hasSublists = s.sublistsOf(l.id).isNotEmpty;
+        final folded = hasSublists && collapsedLists.contains(l.id);
+        hiddenBelow = folded ? depth : null;
+        rows.add(
+          _Reorderable(
+            item: _SidebarDrag(l.id),
+            label: l.name,
+            acceptsInside: true,
+            onDrop: (dragged, where) => _dropOnListItem(context, ref, s, dragged, l, where),
+            child: _listItem(
+              context,
+              ref,
+              l,
+              counts,
+              go,
+              indent: indent + 20.0 * depth,
+              expanded: hasSublists ? !folded : null,
+              onToggle: () => ref.read(preferencesRepositoryProvider).setListCollapsed(collapsedLists, l.id, collapsed: !folded),
+            ),
+          ),
+        );
+      }
+      return rows;
+    }
+
+    // Folders and loose lists (each with its sublists) share one manual order.
+    final loose = s.listTree(lists.where((l) => l.folderId == null || s.folderById[l.folderId]?.deletedAt != null));
     final entries = <(int, Widget Function())>[
       for (final f in folders)
         (
@@ -223,32 +264,20 @@ class Sidebar extends ConsumerWidget {
           () => _Reorderable(
             item: _SidebarDrag(f.id, isFolder: true),
             label: f.name,
-            onDrop: (dragged, after) => _dropOnFolder(ref, s, dragged, f, after: after),
+            onDrop: (dragged, where) => _dropOnFolder(ref, s, dragged, f, after: where == _Drop.after),
             child: _FolderItem(
               folder: f,
-              lists: lists.where((l) => l.folderId == f.id).toList(),
               count: counts.byFolder[f.id],
-              counts: counts,
               current: current,
               onOpen: go,
               onToggle: () => ref.read(repositoryProvider).setFolderCollapsed(f.id, collapsed: !f.isCollapsed),
               onMenu: (p) => _folderMenu(context, ref, f, p),
-              onListMenu: (l, p) => _listMenu(context, ref, l, p),
-              onTaskDropped: (taskId, l) => _dropOnList(context, ref, taskId, l),
-              onListDropped: (dragged, target, after) => _dropOnListItem(ref, s, dragged, target, after: after),
+              lists: tree(s.listTree(lists.where((l) => l.folderId == f.id)), 24),
             ),
           ),
         ),
-      for (final l in lists.where((l) => l.folderId == null || s.folderById[l.folderId]?.deletedAt != null))
-        (
-          l.sortOrder,
-          () => _Reorderable(
-            item: _SidebarDrag(l.id),
-            label: l.name,
-            onDrop: (dragged, after) => _dropOnListItem(ref, s, dragged, l, after: after),
-            child: _listItem(context, ref, l, counts, go),
-          ),
-        ),
+      for (final (i, (l, depth)) in loose.indexed)
+        if (depth == 0) (l.sortOrder, () => Column(children: tree([(l, 0), ...loose.skip(i + 1).takeWhile((e) => e.$2 > 0)], 0))),
     ]..sort((a, b) => a.$1.compareTo(b.$1));
     for (final e in entries) {
       widgets.add(e.$2());
@@ -256,14 +285,17 @@ class Sidebar extends ConsumerWidget {
     return widgets;
   }
 
-  /// Orders of the siblings a dragged item goes between: the lists of [folderId], or the folders and
-  /// loose lists at the top; [except] (the dragged item) left out.
-  static List<int> _siblingOrders(Snapshot s, String? folderId, String except) => [
-    if (folderId == null)
+  /// Orders of the siblings a dragged item goes between: the sublists of [parentId], the lists of
+  /// [folderId], or the folders and loose lists at the top; [except] (the dragged item) left out.
+  static List<int> _siblingOrders(Snapshot s, String? folderId, String except, {String? parentId}) => [
+    if (folderId == null && parentId == null)
       for (final f in s.activeFolders)
         if (f.id != except) f.sortOrder,
     for (final l in s.activeLists)
-      if (l.id != inboxListId && l.id != except && l.folderId == folderId) l.sortOrder,
+      if (l.id != inboxListId &&
+          l.id != except &&
+          (parentId != null ? l.parentId == parentId : l.folderId == folderId && s.activeParentOf(l) == null))
+        l.sortOrder,
   ]..sort();
 
   /// The order right before or after [target] among [orders].
@@ -277,21 +309,35 @@ class Sidebar extends ConsumerWidget {
     return previous == null ? SortOrder.before(target) : (SortOrder.between(previous, target) ?? target - 1);
   }
 
-  /// A list or folder dropped on list [target]: it goes before or after it, in the same folder. A
-  /// folder dropped on a list inside a folder goes beside that folder.
-  Future<void> _dropOnListItem(WidgetRef ref, Snapshot s, _SidebarDrag dragged, TaskList target, {required bool after}) async {
+  /// A list or folder dropped on list [target]: on its middle a list becomes its sublist; on its edges
+  /// it goes before or after it, at its level (same parent and folder). A folder dropped on a list goes
+  /// beside the folder holding it, or beside its top list.
+  Future<void> _dropOnListItem(BuildContext context, WidgetRef ref, Snapshot s, _SidebarDrag dragged, TaskList target, _Drop where) async {
     final repo = ref.read(repositoryProvider);
     if (dragged.isFolder) {
-      final holder = target.folderId == null ? null : s.folderById[target.folderId];
-      final anchor = holder?.sortOrder ?? target.sortOrder;
-      await repo.moveFolder(dragged.id, _orderBeside(_siblingOrders(s, null, dragged.id), anchor, after: after));
+      var top = target;
+      for (var p = s.activeParentOf(top); p != null; p = s.activeParentOf(p)) {
+        top = p;
+      }
+      final holder = top.folderId == null ? null : s.folderById[top.folderId];
+      final anchor = holder?.sortOrder ?? top.sortOrder;
+      await repo.moveFolder(dragged.id, _orderBeside(_siblingOrders(s, null, dragged.id), anchor, after: where == _Drop.after));
       return;
     }
-    final order = _orderBeside(_siblingOrders(s, target.folderId, dragged.id), target.sortOrder, after: after);
-    await repo.moveList(dragged.id, folderId: target.folderId, sortOrder: order);
+    final t = AppLocalizations.of(context);
+    if (where == _Drop.inside) {
+      final ok = await guarded(context, () => repo.makeSublist(dragged.id, target.id));
+      final name = s.listById[dragged.id]?.name ?? '';
+      if (ok && context.mounted) showToast(context, t.toastMadeSublist(name, target.name));
+      return;
+    }
+    final parentId = s.activeParentOf(target)?.id;
+    final order = _orderBeside(_siblingOrders(s, target.folderId, dragged.id, parentId: parentId), target.sortOrder, after: where == _Drop.after);
+    await guarded(context, () => repo.moveList(dragged.id, folderId: target.folderId, parentId: parentId, sortOrder: order));
   }
 
-  /// Dropped on folder [target]: a list goes into it (at the end); a folder goes before or after it.
+  /// Dropped on folder [target]: a list goes into it (at the end, at its top level); a folder goes
+  /// before or after it.
   Future<void> _dropOnFolder(WidgetRef ref, Snapshot s, _SidebarDrag dragged, Folder target, {required bool after}) async {
     final repo = ref.read(repositoryProvider);
     if (dragged.isFolder) {
@@ -302,7 +348,17 @@ class Sidebar extends ConsumerWidget {
     await repo.moveList(dragged.id, folderId: target.id, sortOrder: SortOrder.after(inside.isEmpty ? null : inside.last));
   }
 
-  Widget _listItem(BuildContext context, WidgetRef ref, TaskList l, Counts counts, void Function(Scope) go, {double indent = 0}) => _SidebarItem(
+  /// [expanded]: null for a list without sublists; otherwise its arrow folds them ([onToggle]).
+  Widget _listItem(
+    BuildContext context,
+    WidgetRef ref,
+    TaskList l,
+    Counts counts,
+    void Function(Scope) go, {
+    double indent = 0,
+    bool? expanded,
+    VoidCallback? onToggle,
+  }) => _SidebarItem(
     indent: indent,
     icon: _listIcon(l),
     label: l.name,
@@ -313,6 +369,8 @@ class Sidebar extends ConsumerWidget {
     onMenu: (p) => _listMenu(context, ref, l, p),
     acceptsTaskDrop: true,
     onTaskDropped: (taskId) => _dropOnList(context, ref, taskId, l),
+    expanded: expanded,
+    onToggle: onToggle,
   );
 
   List<Widget> _archived(BuildContext context, WidgetRef ref, Snapshot s, void Function(Scope) go) {
@@ -358,24 +416,12 @@ class Sidebar extends ConsumerWidget {
 
   // ---------------------------------------------------------------- actions
 
-  Future<void> _addList(BuildContext context, WidgetRef ref, {String? folderId}) async {
-    final form = await showListDialog(context, folderId: folderId);
-    if (form == null || !context.mounted) return;
-    final id = await ref
-        .read(repositoryProvider)
-        .createList(
-          name: form.name,
-          emoji: form.emoji,
-          color: form.color,
-          folderId: form.folderId,
-          kind: form.kind,
-          viewMode: form.viewMode,
-          showInSmartLists: form.showInSmartLists,
-        );
-    if (!context.mounted) return;
+  Future<void> _addList(BuildContext context, WidgetRef ref, {String? folderId, String? parentId}) async {
+    final id = await addListWithDialog(context, ref, folderId: folderId, parentId: parentId);
+    if (id == null || !context.mounted) return;
     context.go(Routes.of(ListScope(id)));
     onNavigate?.call();
-    if (form.kind == ListKind.notes) {
+    if (ref.read(snapshotProvider).value?.listById[id]?.kind == ListKind.notes) {
       final t = AppLocalizations.of(context);
       await showDialog<void>(
         context: context,
@@ -429,8 +475,11 @@ class Sidebar extends ConsumerWidget {
   Future<void> _listMenu(BuildContext context, WidgetRef ref, TaskList l, Offset position) async {
     final t = AppLocalizations.of(context);
     final repo = ref.read(repositoryProvider);
+    final s = ref.read(snapshotProvider).value ?? Snapshot.empty();
     final choice = await _showMenuAt<String>(context, position, [
       ('edit', t.actionEdit),
+      // A sublist inside it, while there is a level left.
+      if (s.listDepth(l) + 1 < maxListLevels) ('sublist', t.listAddSublist),
       ('pin', l.pinnedAt == null ? t.menuPin : t.menuUnpin),
       ('duplicate', t.actionDuplicate),
       ('activities', t.activityListTitleDialog),
@@ -449,6 +498,8 @@ class Sidebar extends ConsumerWidget {
             if (current == ListScope(l.id)) router.go(Routes.of(const ListScope(inboxListId)));
           },
         );
+      case 'sublist':
+        await _addList(context, ref, parentId: l.id);
       case 'pin':
         await repo.pinList(l.id, pinned: l.pinnedAt == null);
       case 'duplicate':
@@ -457,9 +508,7 @@ class Sidebar extends ConsumerWidget {
       case 'activities':
         await showListActivities(context, l.id);
       case 'archive':
-        if (await confirm(context, message: t.archiveListConfirm, confirmLabel: t.actionArchive) && context.mounted) {
-          if (await guarded(context, () => repo.archiveList(l.id, archived: true)) && context.mounted) showToast(context, t.toastArchived);
-        }
+        if (await archiveListAsking(context, ref, l) && context.mounted) showToast(context, t.toastArchived);
       case 'delete':
         await _deleteList(context, ref, l);
     }
@@ -502,51 +551,42 @@ class Sidebar extends ConsumerWidget {
     if (!context.mounted) return;
     switch (choice) {
       case 'edit':
-        final form = await showListDialog(context, editing: l);
-        if (form != null) {
-          await repo.editList(
-            l.id,
-            name: form.name,
-            emoji: form.emoji,
-            color: form.color,
-            folderId: form.folderId,
-            kind: form.kind,
-            viewMode: form.viewMode,
-            showInSmartLists: form.showInSmartLists,
-          );
-        }
+        await editListWithDialog(context, ref, l);
       case 'unarchive':
         await repo.archiveList(l.id, archived: false);
       case 'duplicate':
         final mode = await _pickCopyMode(context);
         if (mode != null) await repo.duplicateList(l.id, copySuffix: t.copySuffix, mode: mode);
       case 'delete':
-        if (await confirm(context, message: t.deleteListConfirm, confirmLabel: t.actionDelete) && context.mounted) {
-          await guarded(context, () => repo.deleteList(l.id));
-        }
+        await deleteListAsking(context, ref, l);
     }
   }
 
+  /// An area's ⋯: Adicionar lista · Editar · Fixar · Deletar (its lists stay, with "Desfazer").
   Future<void> _folderMenu(BuildContext context, WidgetRef ref, Folder f, Offset position) async {
     final t = AppLocalizations.of(context);
     final repo = ref.read(repositoryProvider);
     final choice = await _showMenuAt<String>(context, position, [
       ('add', t.actionAddList),
-      ('rename', t.actionEdit),
+      ('edit', t.actionEdit),
       ('pin', f.pinnedAt == null ? t.menuPin : t.menuUnpin),
-      ('ungroup', t.actionUngroup),
+      ('delete', t.actionDelete),
     ]);
     if (!context.mounted) return;
+    final router = GoRouter.of(context);
+    void leave() {
+      if (current == FolderScope(f.id)) router.go(Routes.initial);
+    }
+
     switch (choice) {
       case 'add':
         await _addList(context, ref, folderId: f.id);
-      case 'rename':
-        final name = await promptText(context, title: t.actionEdit, initial: f.name);
-        if (name != null) await repo.renameFolder(f.id, name);
+      case 'edit':
+        await editFolderWithDialog(context, ref, f, onDeleted: leave);
       case 'pin':
         await repo.pinFolder(f.id, pinned: f.pinnedAt == null);
-      case 'ungroup':
-        await repo.ungroupFolder(f.id);
+      case 'delete':
+        if (await deleteFolderWithUndo(context, ref, f)) leave();
     }
   }
 
@@ -665,10 +705,13 @@ class _DayIcon extends StatelessWidget {
 }
 
 class _SectionHeader extends StatefulWidget {
-  const _SectionHeader({required this.label, this.onAdd});
+  const _SectionHeader({required this.label, this.onAdd, this.onAddFolder});
 
   final String label;
   final VoidCallback? onAdd;
+
+  /// "Nova área", beside the "+" of the lists.
+  final VoidCallback? onAddFolder;
 
   @override
   State<_SectionHeader> createState() => _SectionHeaderState();
@@ -695,6 +738,17 @@ class _SectionHeaderState extends State<_SectionHeader> {
                   style: TextStyle(fontSize: TtText.small, fontWeight: FontWeight.w700, color: tt.textFaint),
                 ),
               ),
+              if (widget.onAddFolder != null && (_hover || Theme.of(context).platform == TargetPlatform.android))
+                Padding(
+                  padding: const EdgeInsets.only(right: 10),
+                  child: Tooltip(
+                    message: AppLocalizations.of(context).folderNew,
+                    child: InkWell(
+                      onTap: widget.onAddFolder,
+                      child: Icon(Icons.create_new_folder_outlined, size: 16, color: tt.textSecondary),
+                    ),
+                  ),
+                ),
               if (widget.onAdd != null && (_hover || Theme.of(context).platform == TargetPlatform.android))
                 InkWell(
                   onTap: widget.onAdd,
@@ -742,6 +796,8 @@ class _SidebarItem extends ConsumerStatefulWidget {
     this.onMenu,
     this.acceptsTaskDrop = false,
     this.onTaskDropped,
+    this.expanded,
+    this.onToggle,
   });
 
   final Widget icon;
@@ -754,6 +810,11 @@ class _SidebarItem extends ConsumerStatefulWidget {
   final void Function(Offset globalPosition)? onMenu;
   final bool acceptsTaskDrop;
   final void Function(String taskId)? onTaskDropped;
+
+  /// A list with sublists: the arrow before the icon shows whether they are unfolded, and [onToggle]
+  /// folds them. Null for an item without sublists.
+  final bool? expanded;
+  final VoidCallback? onToggle;
 
   @override
   ConsumerState<_SidebarItem> createState() => _SidebarItemState();
@@ -779,13 +840,27 @@ class _SidebarItemState extends ConsumerState<_SidebarItem> {
           borderRadius: BorderRadius.circular(10),
           child: Container(
             height: TtSizes.sidebarItemHeight,
-            padding: EdgeInsets.only(left: 12 + widget.indent, right: 12),
+            // The arrow takes room from the indent, so the icons stay in line.
+            padding: EdgeInsets.only(left: widget.expanded == null ? 12 + widget.indent : (widget.indent - 4).clamp(0, double.infinity), right: 12),
             decoration: BoxDecoration(
               color: highlighted ? tt.primary.withValues(alpha: 0.2) : (widget.selected ? tt.selected : (_hover ? tt.hover : null)),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Row(
               children: [
+                if (widget.expanded case final expanded?)
+                  Tooltip(
+                    message: expanded ? AppLocalizations.of(context).sublistsFold : AppLocalizations.of(context).sublistsUnfold,
+                    child: InkWell(
+                      customBorder: const CircleBorder(),
+                      onTap: widget.onToggle,
+                      child: SizedBox(
+                        width: 16,
+                        height: 24,
+                        child: Icon(expanded ? Icons.expand_more : Icons.chevron_right, size: 16, color: tt.textTertiary),
+                      ),
+                    ),
+                  ),
                 SizedBox(
                   width: 18,
                   child: IconTheme.merge(
@@ -843,34 +918,26 @@ class _SidebarItemState extends ConsumerState<_SidebarItem> {
   }
 }
 
+/// An area ("Área"): its emoji or folder icon, its color dot, and its lists (already laid out, with
+/// their sublists) when unfolded.
 class _FolderItem extends StatelessWidget {
   const _FolderItem({
     required this.folder,
     required this.lists,
     required this.count,
-    required this.counts,
     required this.current,
     required this.onOpen,
     required this.onToggle,
     required this.onMenu,
-    required this.onListMenu,
-    required this.onTaskDropped,
-    required this.onListDropped,
   });
 
-  /// A list or folder dropped on one of the folder's lists.
-  final Future<void> Function(_SidebarDrag dragged, TaskList target, bool after) onListDropped;
-
   final Folder folder;
-  final List<TaskList> lists;
+  final List<Widget> lists;
   final int? count;
-  final Counts counts;
   final Scope? current;
   final void Function(Scope) onOpen;
   final VoidCallback onToggle;
   final void Function(Offset) onMenu;
-  final void Function(TaskList, Offset) onListMenu;
-  final void Function(String taskId, TaskList list) onTaskDropped;
 
   @override
   Widget build(BuildContext context) => Column(
@@ -878,9 +945,10 @@ class _FolderItem extends StatelessWidget {
       _SidebarItem(
         icon: GestureDetector(
           onTap: () => unawaited(Future.sync(onToggle)),
-          child: Icon(folder.isCollapsed ? Icons.folder_outlined : Icons.folder_open_outlined),
+          child: folderIcon(folder, open: !folder.isCollapsed),
         ),
         label: folder.name,
+        color: parseHexColor(folder.color),
         count: count,
         selected: current == FolderScope(folder.id),
         onTap: () {
@@ -889,28 +957,14 @@ class _FolderItem extends StatelessWidget {
         },
         onMenu: onMenu,
       ),
-      if (!folder.isCollapsed)
-        for (final l in lists)
-          _Reorderable(
-            item: _SidebarDrag(l.id),
-            label: l.name,
-            onDrop: (dragged, after) => onListDropped(dragged, l, after),
-            child: _SidebarItem(
-              indent: 24,
-              icon: Sidebar._listIcon(l),
-              label: l.name,
-              color: parseHexColor(l.color),
-              count: counts.byList[l.id],
-              selected: current == ListScope(l.id),
-              onTap: () => onOpen(ListScope(l.id)),
-              onMenu: (p) => onListMenu(l, p),
-              acceptsTaskDrop: true,
-              onTaskDropped: (taskId) => onTaskDropped(taskId, l),
-            ),
-          ),
+      if (!folder.isCollapsed) ...lists,
     ],
   );
 }
+
+/// Where a dragged sidebar item lands on another: before it, after it, or inside it (a list onto the
+/// middle of a list becomes its sublist).
+enum _Drop { before, inside, after }
 
 /// A list or folder being dragged in the sidebar.
 class _SidebarDrag {
@@ -927,26 +981,30 @@ class _SidebarDrag {
 }
 
 /// Lets a sidebar list or folder be dragged to another place (desktop; on touch screens a long press
-/// opens the menu). A drop on the upper half puts the item before this one, on the lower half after.
+/// opens the menu). A drop on the upper half puts the item before this one, on the lower half after;
+/// with [acceptsInside] (a list), a list dropped on the middle third goes inside it.
 class _Reorderable extends StatefulWidget {
-  const _Reorderable({required this.item, required this.label, required this.onDrop, required this.child});
+  const _Reorderable({required this.item, required this.label, required this.onDrop, required this.child, this.acceptsInside = false});
 
   final _SidebarDrag item;
   final String label;
-  final Future<void> Function(_SidebarDrag dragged, bool after) onDrop;
+  final Future<void> Function(_SidebarDrag dragged, _Drop where) onDrop;
   final Widget child;
+  final bool acceptsInside;
 
   @override
   State<_Reorderable> createState() => _ReorderableState();
 }
 
 class _ReorderableState extends State<_Reorderable> {
-  /// Where a hovering item would go: before (false) or after (true); null when nothing hovers.
-  bool? _after;
+  /// Where a hovering item would go; null when nothing hovers.
+  _Drop? _where;
 
-  bool _lowerHalf(Offset global) {
+  _Drop _dropAt(Offset global, _SidebarDrag dragged) {
     final box = context.findRenderObject()! as RenderBox;
-    return box.globalToLocal(global).dy > box.size.height / 2;
+    final y = box.globalToLocal(global).dy / box.size.height;
+    if (widget.acceptsInside && !dragged.isFolder) return y < 1 / 3 ? _Drop.before : (y > 2 / 3 ? _Drop.after : _Drop.inside);
+    return y > 0.5 ? _Drop.after : _Drop.before;
   }
 
   @override
@@ -957,14 +1015,14 @@ class _ReorderableState extends State<_Reorderable> {
     return DragTarget<_SidebarDrag>(
       onWillAcceptWithDetails: (d) => d.data != widget.item,
       onMove: (d) {
-        final after = _lowerHalf(d.offset);
-        if (after != _after) setState(() => _after = after);
+        final where = _dropAt(d.offset, d.data);
+        if (where != _where) setState(() => _where = where);
       },
-      onLeave: (_) => setState(() => _after = null),
+      onLeave: (_) => setState(() => _where = null),
       onAcceptWithDetails: (d) {
-        final after = _lowerHalf(d.offset);
-        setState(() => _after = null);
-        unawaited(widget.onDrop(d.data, after));
+        final where = _dropAt(d.offset, d.data);
+        setState(() => _where = null);
+        unawaited(widget.onDrop(d.data, where));
       },
       builder: (context, candidates, _) => Stack(
         children: [
@@ -982,12 +1040,24 @@ class _ReorderableState extends State<_Reorderable> {
             childWhenDragging: Opacity(opacity: 0.4, child: widget.child),
             child: widget.child,
           ),
-          if (candidates.isNotEmpty && _after != null)
+          // Inside: the whole row outlined; before or after: a line on that edge.
+          if (candidates.isNotEmpty && _where == _Drop.inside)
+            Positioned.fill(
+              child: IgnorePointer(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    border: Border.all(color: tt.primary, width: 1.5),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+            )
+          else if (candidates.isNotEmpty && _where != null)
             Positioned(
               left: 8,
               right: 8,
-              top: _after! ? null : 0,
-              bottom: _after! ? 0 : null,
+              top: _where == _Drop.after ? null : 0,
+              bottom: _where == _Drop.after ? 0 : null,
               height: 2,
               child: ColoredBox(color: tt.primary),
             ),

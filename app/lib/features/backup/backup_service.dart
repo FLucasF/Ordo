@@ -135,7 +135,8 @@ class BackupService {
         }
         await _db.batch((b) {
           b.insertAll(_db.folders, folders);
-          b.insertAll(_db.lists, lists);
+          // Sublists point at their parent list (schema v20).
+          b.insertAll(_db.lists, _parentsFirst(lists, (l) => l.id, (l) => l.parentId));
           b.insertAll(_db.sections, sections);
           b.insertAll(_db.tags, _parentsFirst(tags, (t) => t.id, (t) => t.parentId));
           b.insertAll(_db.tasks, _parentsFirst(tasks, (t) => t.id, (t) => t.parentId));

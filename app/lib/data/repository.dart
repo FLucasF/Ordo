@@ -20,7 +20,26 @@ class RuleViolation implements Exception {
   String toString() => 'RuleViolation($rule)';
 }
 
-enum Rule { inboxCannotBeArchived, inboxCannotBeDeleted, taskCannotBeItsOwnParent, subtaskDepthLimit, taskWithSubtasksCannotBecomeNote, tagNameTaken }
+enum Rule {
+  inboxCannotBeArchived,
+  inboxCannotBeDeleted,
+  taskCannotBeItsOwnParent,
+  subtaskDepthLimit,
+  taskWithSubtasksCannotBecomeNote,
+  tagNameTaken,
+
+  /// A list can't go inside itself or one of its sublists.
+  listCannotBeItsOwnParent,
+
+  /// Sublists go 3 levels deep at most.
+  sublistDepthLimit,
+
+  /// The Inbox is neither a sublist nor holds any.
+  inboxCannotNest,
+}
+
+/// Levels of lists, the top one included ("Faculdade → Cálculo → Lista 3").
+const maxListLevels = 3;
 
 /// Every write of the app. Created/updated/deleted times are UTC.
 class Repository {
@@ -84,17 +103,47 @@ class Repository {
 
   // ------------------------------------------------------------------ folders
 
-  Future<String> createFolder(String name) async {
+  /// A folder ("Área" on screen) with its emoji and color (`#RRGGBB`).
+  Future<String> createFolder(String name, {String? icon, String? color}) async {
     final id = newId();
     final last = await _maxTopOrder();
     await _db
         .into(_db.folders)
-        .insert(FoldersCompanion.insert(id: id, createdAt: _now, updatedAt: _now, name: name.trim(), sortOrder: SortOrder.after(last)));
+        .insert(
+          FoldersCompanion.insert(
+            id: id,
+            createdAt: _now,
+            updatedAt: _now,
+            name: name.trim(),
+            icon: Value(icon),
+            color: Value(color),
+            sortOrder: SortOrder.after(last),
+          ),
+        );
     return id;
   }
 
   Future<void> renameFolder(String id, String name) =>
       (_db.update(_db.folders)..where((f) => f.id.equals(id))).write(FoldersCompanion(name: Value(name.trim()), updatedAt: Value(_now)));
+
+  /// "Editar área": name, emoji and color.
+  Future<void> editFolder(String id, {required String name, String? icon, String? color}) => (_db.update(
+    _db.folders,
+  )..where((f) => f.id.equals(id))).write(FoldersCompanion(name: Value(name.trim()), icon: Value(icon), color: Value(color), updatedAt: Value(_now)));
+
+  /// "Deletar área": its lists leave it and nothing else is deleted. Returns the lists that left, for
+  /// [restoreFolder] ("Desfazer").
+  Future<List<String>> deleteFolder(String id) => _db.transaction(() async {
+    final lists = await (_db.select(_db.lists)..where((l) => l.folderId.equals(id))).get();
+    await ungroupFolder(id);
+    return [for (final l in lists) l.id];
+  });
+
+  /// Undoes [deleteFolder]: the area comes back with [listIds] in it.
+  Future<void> restoreFolder(String id, Iterable<String> listIds) => _db.transaction(() async {
+    await (_db.update(_db.folders)..where((f) => f.id.equals(id))).write(FoldersCompanion(deletedAt: const Value(null), updatedAt: Value(_now)));
+    await (_db.update(_db.lists)..where((l) => l.id.isIn(listIds))).write(ListsCompanion(folderId: Value(id), updatedAt: Value(_now)));
+  });
 
   Future<void> pinFolder(String id, {required bool pinned}) =>
       (_db.update(_db.folders)..where((f) => f.id.equals(id))).write(FoldersCompanion(pinnedAt: Value(pinned ? _now : null), updatedAt: Value(_now)));
@@ -110,17 +159,20 @@ class Repository {
 
   // ------------------------------------------------------------------ lists
 
+  /// [parentId] makes it a sublist (it then takes the parent's folder), at the end of its siblings.
   Future<String> createList({
     required String name,
     String? emoji,
     String? color,
     String? folderId,
+    String? parentId,
     ListKind kind = ListKind.tasks,
     ViewMode viewMode = ViewMode.list,
     bool showInSmartLists = true,
-  }) async {
+  }) => _db.transaction(() async {
     final id = newId();
-    final last = await _maxTopOrder();
+    final parent = parentId == null ? null : await _validParent(null, parentId);
+    final last = parent == null ? await _maxTopOrder() : await _lastSublistOrder(parent.id);
     await _db
         .into(_db.lists)
         .insert(
@@ -131,7 +183,8 @@ class Repository {
             name: name.trim(),
             emoji: Value(emoji),
             color: Value(color),
-            folderId: Value(folderId),
+            folderId: Value(parent == null ? folderId : parent.folderId),
+            parentId: Value(parent?.id),
             kind: Value(kind),
             viewMode: Value(viewMode),
             showInSmartLists: Value(showInSmartLists),
@@ -140,32 +193,107 @@ class Repository {
         );
     await _log(ActivityAction.listCreated, listId: id);
     return id;
-  }
+  });
 
+  /// [parentId] absent keeps the list where it is; a sublist always has its parent's folder, and the
+  /// folder goes down to the list's own sublists.
   Future<void> editList(
     String id, {
     required String name,
     String? emoji,
     String? color,
     String? folderId,
+    Value<String?> parentId = const Value.absent(),
     required ListKind kind,
     required ViewMode viewMode,
     required bool showInSmartLists,
-  }) async {
+  }) => _db.transaction(() async {
     final before = await (_db.select(_db.lists)..where((l) => l.id.equals(id))).getSingleOrNull();
+    final newParentId = parentId.present ? parentId.value : before?.parentId;
+    final parent = newParentId == null ? null : await _validParent(id, newParentId);
+    final moved = newParentId != before?.parentId;
     await (_db.update(_db.lists)..where((l) => l.id.equals(id))).write(
       ListsCompanion(
         name: Value(name.trim()),
         emoji: Value(emoji),
         color: Value(color),
-        folderId: Value(folderId),
+        parentId: Value(parent?.id),
         kind: Value(kind),
         viewMode: Value(viewMode),
         showInSmartLists: Value(showInSmartLists),
+        sortOrder: moved ? Value(SortOrder.after(parent == null ? await _maxTopOrder() : await _lastSublistOrder(parent.id))) : const Value.absent(),
         updatedAt: Value(_now),
       ),
     );
+    await _setFolderDeep(id, parent == null ? folderId : parent.folderId);
     if (before != null && before.name != name.trim()) await _log(ActivityAction.listTitle, listId: id, detail: name.trim());
+  });
+
+  /// Dropping a list on the middle of another: it becomes the other's last sublist.
+  Future<void> makeSublist(String id, String parentId) => _db.transaction(() async {
+    final parent = await _validParent(id, parentId);
+    await (_db.update(_db.lists)..where((l) => l.id.equals(id))).write(
+      ListsCompanion(parentId: Value(parent.id), sortOrder: Value(SortOrder.after(await _lastSublistOrder(parent.id))), updatedAt: Value(_now)),
+    );
+    await _setFolderDeep(id, parent.folderId);
+  });
+
+  /// The parent [id] (null for a new list) can go into: it exists, it is not [id] or one of its
+  /// sublists, and the deepest sublist stays within [maxListLevels].
+  Future<TaskList> _validParent(String? id, String parentId) async {
+    if (id == inboxListId || parentId == inboxListId) throw const RuleViolation(Rule.inboxCannotNest);
+    if (id == parentId) throw const RuleViolation(Rule.listCannotBeItsOwnParent);
+    final lists = await (_db.select(_db.lists)..where((l) => l.deletedAt.isNull())).get();
+    final byId = {for (final l in lists) l.id: l};
+    final parent = byId[parentId];
+    if (parent == null) throw const RuleViolation(Rule.listCannotBeItsOwnParent);
+    // The parent's level (1 at the top), and no loop back to [id] above it.
+    var level = 0;
+    for (TaskList? p = parent; p != null && level <= maxListLevels; p = p.parentId == null ? null : byId[p.parentId]) {
+      if (p.id == id) throw const RuleViolation(Rule.listCannotBeItsOwnParent);
+      level++;
+    }
+    // How many levels [id] brings along (itself and its sublists).
+    int height(String listId) {
+      final children = lists.where((l) => l.parentId == listId);
+      return 1 + children.fold(0, (deepest, c) => deepest > height(c.id) ? deepest : height(c.id));
+    }
+
+    if (level + (id == null ? 1 : height(id)) > maxListLevels) throw const RuleViolation(Rule.sublistDepthLimit);
+    return parent;
+  }
+
+  Future<int?> _lastSublistOrder(String parentId) =>
+      (_db.selectOnly(_db.lists)
+            ..addColumns([_db.lists.sortOrder.max()])
+            ..where(_db.lists.parentId.equals(parentId) & _db.lists.deletedAt.isNull()))
+          .map((r) => r.read(_db.lists.sortOrder.max()))
+          .getSingle();
+
+  /// The lists under [id] at any depth (deleted ones left out).
+  Future<List<TaskList>> _sublistsDeep(String id) async {
+    final result = <TaskList>[];
+    var frontier = [id];
+    while (frontier.isNotEmpty && result.length < 1000) {
+      final children = await (_db.select(_db.lists)..where((l) => l.parentId.isIn(frontier) & l.deletedAt.isNull())).get();
+      result.addAll(children);
+      frontier = [for (final c in children) c.id];
+    }
+    return result;
+  }
+
+  /// Puts [id] and its sublists in [folderId].
+  Future<void> _setFolderDeep(String id, String? folderId) async {
+    final ids = [id, for (final l in await _sublistsDeep(id)) l.id];
+    await (_db.update(_db.lists)..where((l) => l.id.isIn(ids))).write(ListsCompanion(folderId: Value(folderId), updatedAt: Value(_now)));
+  }
+
+  /// The sublists right inside [id] move up one level (to [id]'s parent, in the same folder).
+  Future<void> _liftSublists(String id) async {
+    final list = await (_db.select(_db.lists)..where((l) => l.id.equals(id))).getSingle();
+    await (_db.update(
+      _db.lists,
+    )..where((l) => l.parentId.equals(id) & l.deletedAt.isNull())).write(ListsCompanion(parentId: Value(list.parentId), updatedAt: Value(_now)));
   }
 
   Future<void> setListViewOptions(String id, {Grouping? grouping, Sorting? sorting, bool? showCompleted, bool? showDetails, ViewMode? viewMode}) =>
@@ -183,21 +311,39 @@ class Repository {
   Future<void> pinList(String id, {required bool pinned}) =>
       (_db.update(_db.lists)..where((l) => l.id.equals(id))).write(ListsCompanion(pinnedAt: Value(pinned ? _now : null), updatedAt: Value(_now)));
 
-  Future<void> archiveList(String id, {required bool archived}) {
+  /// Archiving a list with sublists moves them up a level, or archives them too with [withSublists];
+  /// unarchiving brings back the sublists archived along with it.
+  Future<void> archiveList(String id, {required bool archived, bool withSublists = false}) {
     if (id == inboxListId) throw const RuleViolation(Rule.inboxCannotBeArchived);
-    return (_db.update(
-      _db.lists,
-    )..where((l) => l.id.equals(id))).write(ListsCompanion(archivedAt: Value(archived ? _now : null), updatedAt: Value(_now)));
+    return _db.transaction(() async {
+      final list = await (_db.select(_db.lists)..where((l) => l.id.equals(id))).getSingleOrNull();
+      final sublists = await _sublistsDeep(id);
+      if (archived && !withSublists) await _liftSublists(id);
+      final along = [
+        for (final l in sublists)
+          if (archived ? withSublists && l.archivedAt == null : l.archivedAt != null && l.archivedAt == list?.archivedAt) l.id,
+      ];
+      await (_db.update(
+        _db.lists,
+      )..where((l) => l.id.isIn([id, ...along]))).write(ListsCompanion(archivedAt: Value(archived ? _now : null), updatedAt: Value(_now)));
+    });
   }
 
-  /// Deleting a list sends its tasks to the Trash.
-  Future<void> deleteList(String id) {
+  /// Deleting a list sends its tasks to the Trash. Its sublists move up a level, or go too (with their
+  /// tasks) with [withSublists].
+  Future<void> deleteList(String id, {bool withSublists = false}) {
     if (id == inboxListId) throw const RuleViolation(Rule.inboxCannotBeDeleted);
     return _db.transaction(() async {
+      final ids = [
+        id,
+        if (withSublists)
+          for (final l in await _sublistsDeep(id)) l.id,
+      ];
+      if (!withSublists) await _liftSublists(id);
       await (_db.update(
         _db.tasks,
-      )..where((t) => t.listId.equals(id) & t.deletedAt.isNull())).write(TasksCompanion(deletedAt: Value(_now), updatedAt: Value(_now)));
-      await (_db.update(_db.lists)..where((l) => l.id.equals(id))).write(ListsCompanion(deletedAt: Value(_now), updatedAt: Value(_now)));
+      )..where((t) => t.listId.isIn(ids) & t.deletedAt.isNull())).write(TasksCompanion(deletedAt: Value(_now), updatedAt: Value(_now)));
+      await (_db.update(_db.lists)..where((l) => l.id.isIn(ids))).write(ListsCompanion(deletedAt: Value(_now), updatedAt: Value(_now)));
     });
   }
 
@@ -205,10 +351,15 @@ class Repository {
   Future<void> moveFolder(String id, int sortOrder) =>
       (_db.update(_db.folders)..where((f) => f.id.equals(id))).write(FoldersCompanion(sortOrder: Value(sortOrder), updatedAt: Value(_now)));
 
-  /// Moves a list into a folder (or out of one with `null`) and optionally to [sortOrder].
-  Future<void> moveList(String id, {String? folderId, int? sortOrder}) => (_db.update(_db.lists)..where((l) => l.id.equals(id))).write(
-    ListsCompanion(folderId: Value(folderId), sortOrder: Value.absentIfNull(sortOrder), updatedAt: Value(_now)),
-  );
+  /// Moves a list into a folder (or out of one with `null`), beside the lists of [parentId] (null =
+  /// at the folder's top level) and optionally to [sortOrder]. Its sublists go along.
+  Future<void> moveList(String id, {String? folderId, String? parentId, int? sortOrder}) => _db.transaction(() async {
+    final parent = parentId == null ? null : await _validParent(id, parentId);
+    await (_db.update(_db.lists)..where((l) => l.id.equals(id))).write(
+      ListsCompanion(parentId: Value(parent?.id), sortOrder: Value.absentIfNull(sortOrder), updatedAt: Value(_now)),
+    );
+    await _setFolderDeep(id, parent == null ? folderId : parent.folderId);
+  });
 
   /// Duplicate: same settings, sections and open tasks; the name gets " copiar" (as TickTick does).
   /// The suffix is the localized one passed by the UI.
@@ -1236,6 +1387,8 @@ class Repository {
     String? icon,
     String? iconColor,
     String? image,
+    String? listId,
+    String? folderId,
   }) async {
     final id = newId();
     final last = await (_db.selectOnly(
@@ -1261,6 +1414,8 @@ class Repository {
             icon: Value(icon),
             iconColor: Value(iconColor),
             image: Value(image),
+            listId: Value(listId),
+            folderId: Value(listId == null ? folderId : null),
             sortOrder: SortOrder.after(last),
             createdAt: _now,
             updatedAt: _now,
@@ -1269,7 +1424,9 @@ class Repository {
     return id;
   }
 
-  /// Saves the edit form (one step, "Salvar").
+  /// Saves the edit form (one step, "Salvar"). [listId] / [folderId] link it to a project (one of
+  /// them); absent leaves the link as it is. Moving the day of a project still open drops the report
+  /// frozen for the old day, so the new day closes it again.
   Future<void> updateCountdown(
     String id, {
     required String name,
@@ -1282,21 +1439,41 @@ class Repository {
     required Set<String> reminders,
     required String? repeatRule,
     required CountdownVisibility visibility,
-  }) => (_db.update(_db.countdowns)..where((c) => c.id.equals(id))).write(
-    CountdownsCompanion(
-      name: Value(name.trim()),
-      date: Value(_calendarDate(date)),
-      type: Value(type),
-      countMode: Value(countMode),
-      countUp: Value(countUp),
-      ignoreYear: Value(ignoreYear),
-      showAge: Value(showAge),
-      reminders: Value(reminders.join(',')),
-      repeatRule: Value(repeatRule),
-      visibility: Value(visibility),
-      updatedAt: Value(_now),
-    ),
-  );
+    Value<String?> listId = const Value.absent(),
+    Value<String?> folderId = const Value.absent(),
+  }) => _db.transaction(() async {
+    final before = await (_db.select(_db.countdowns)..where((c) => c.id.equals(id))).getSingleOrNull();
+    final dayMoved = before != null && before.closedAt == null && before.date != _calendarDate(date);
+    await (_db.update(_db.countdowns)..where((c) => c.id.equals(id))).write(
+      CountdownsCompanion(
+        name: Value(name.trim()),
+        date: Value(_calendarDate(date)),
+        type: Value(type),
+        countMode: Value(countMode),
+        countUp: Value(countUp),
+        ignoreYear: Value(ignoreYear),
+        showAge: Value(showAge),
+        reminders: Value(reminders.join(',')),
+        repeatRule: Value(repeatRule),
+        visibility: Value(visibility),
+        listId: listId,
+        folderId: listId.present && listId.value != null ? const Value(null) : folderId,
+        report: dayMoved ? const Value(null) : const Value.absent(),
+        updatedAt: Value(_now),
+      ),
+    );
+  });
+
+  /// "Encerrar projeto": the project closes with its final [report] (JSON) frozen.
+  Future<void> closeProject(String id, String report) => (_db.update(
+    _db.countdowns,
+  )..where((c) => c.id.equals(id))).write(CountdownsCompanion(closedAt: Value(_now), report: Value(report), updatedAt: Value(_now)));
+
+  /// "Reabrir projeto": open again. The last report stays (it can be seen until the project closes
+  /// again, which freezes a new one), and keeping it also stops the project from closing by itself
+  /// again when its day is already over.
+  Future<void> reopenProject(String id) =>
+      (_db.update(_db.countdowns)..where((c) => c.id.equals(id))).write(CountdownsCompanion(closedAt: const Value(null), updatedAt: Value(_now)));
 
   /// "Estilo": layout, color, icon and background picture.
   Future<void> setCountdownStyle(String id, {required int style, String? color, String? icon, String? iconColor, String? image}) =>

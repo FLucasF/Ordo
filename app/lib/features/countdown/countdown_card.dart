@@ -11,6 +11,7 @@ import '../../core/ids.dart';
 import '../../data/db/database.dart';
 import '../../domain/countdown.dart';
 import '../../domain/enums.dart';
+import '../../domain/project.dart';
 import '../../l10n/app_localizations.dart';
 import '../common/color_choice.dart';
 import '../common/emoji_picker.dart';
@@ -115,12 +116,15 @@ int countdownIn(CountdownUnit unit, int days, DateTime from, DateTime target) {
 /// The card's face in one of the [countdownStyles] layouts, with its icon and background picture.
 /// Clicking the number cycles days, weeks, months and years.
 class CountdownCardBody extends ConsumerStatefulWidget {
-  const CountdownCardBody({super.key, required this.countdown, required this.style, required this.color, this.compact = false});
+  const CountdownCardBody({super.key, required this.countdown, required this.style, required this.color, this.compact = false, this.progress});
 
   final Countdown countdown;
   final int style;
   final Color color;
   final bool compact;
+
+  /// A project's done / total tasks, as a bar under the legend; null for a countdown without one.
+  final ProjectProgress? progress;
 
   @override
   ConsumerState<CountdownCardBody> createState() => _CountdownCardBodyState();
@@ -238,6 +242,24 @@ class _CountdownCardBodyState extends ConsumerState<CountdownCardBody> {
             onTap: compact ? null : () => setState(() => _flipped = !_flipped),
             child: Text(legend, maxLines: 1, overflow: TextOverflow.ellipsis, style: legendStyle),
           ),
+          if (widget.progress case final p?)
+            Row(
+              children: [
+                Expanded(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(3),
+                    child: LinearProgressIndicator(
+                      value: p.ratio,
+                      minHeight: 5,
+                      color: filled ? Colors.white : color,
+                      backgroundColor: (filled ? Colors.white : color).withValues(alpha: 0.25),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Text('${p.done}/${p.total}', style: legendStyle),
+              ],
+            ),
         ],
       ),
     );

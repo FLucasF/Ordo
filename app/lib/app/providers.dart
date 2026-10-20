@@ -177,6 +177,7 @@ final viewProvider = Provider.family<ViewContent?, Scope>((ref, scope) {
     collapsed: ref.watch(collapsedTasksProvider),
     overdueLast: overdueLast,
     closedFilter: scope is SmartScope ? ref.watch(closedFiltersProvider)[scope.smartList] ?? const ClosedFilter() : const ClosedFilter(),
+    withSublists: scope is ListScope && (ref.watch(preferencesProvider).value?.listsWithSublists.contains(scope.listId) ?? false),
   );
 });
 

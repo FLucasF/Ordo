@@ -13,6 +13,7 @@ import '../../data/db/database.dart';
 import '../../data/preferences_repository.dart';
 import '../../data/repository.dart';
 import '../../domain/enums.dart';
+import '../../domain/project.dart';
 import '../../domain/snapshot.dart';
 import '../../l10n/app_localizations.dart';
 import '../common/color_choice.dart';
@@ -21,6 +22,7 @@ import '../common/shell_widgets.dart';
 import '../shell/app_shell.dart';
 import 'countdown_card.dart';
 import 'countdown_form.dart';
+import 'project_dashboard.dart';
 
 /// The countdowns of a new TickTick account, created once on the first run: "Use o
 /// Tarefas" (since today), "Fim de semana" (every Saturday) and "Dia de Ano Novo".
@@ -53,6 +55,21 @@ class _CountdownPageState extends ConsumerState<CountdownPage> {
   /// Types unchecked in the left panel ("Tipos").
   Set<CountdownType> _hidden = {};
   bool _panel = true;
+
+  /// Projects being closed by themselves now (their day is over), so each closes once.
+  final Set<String> _closing = {};
+
+  void _closeFinished(Snapshot s, DateTime now) {
+    final due = s.countdowns.where((c) => closesByItself(c, now) && !_closing.contains(c.id)).toList();
+    if (due.isEmpty) return;
+    _closing.addAll(due.map((c) => c.id));
+    final repo = ref.read(repositoryProvider);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      for (final c in due) {
+        await closeProjectNow(repo, s, c, now, byItself: true);
+      }
+    });
+  }
 
   /// "+ Criar": which kind, then the form.
   Future<void> _create() async {
@@ -88,6 +105,7 @@ class _CountdownPageState extends ConsumerState<CountdownPage> {
     final now = ref.watch(nowProvider).value ?? ref.watch(clockProvider).now();
     final narrow = MediaQuery.sizeOf(context).width < TtSizes.narrowBreakpoint;
     final countdowns = sortCountdowns(s.countdowns.where((c) => (c.archivedAt != null) == _archived && !_hidden.contains(c.type)), now);
+    _closeFinished(s, now);
 
     // A fixed card height: on a phone the two columns are narrow, and a width-based height cut the
     // legend off.
@@ -210,6 +228,14 @@ class _CountdownTile extends ConsumerWidget {
       context: context,
       position: RelativeRect.fromLTRB(at.dx, at.dy, at.dx + 1, at.dy + 1),
       items: [
+        // A project: its dashboard, and closing or reopening it.
+        if (isProject(c)) ...[
+          PopupMenuItem(value: 'dashboard', height: 36, child: Text(c.closedAt == null ? t.projectDashboard : t.projectReport)),
+          if (c.closedAt == null)
+            PopupMenuItem(value: 'close', height: 36, child: Text(t.projectClose))
+          else
+            PopupMenuItem(value: 'reopen', height: 36, child: Text(t.projectReopen)),
+        ],
         if (archived)
           PopupMenuItem(value: 'restore', height: 36, child: Text(t.countdownRestore))
         else ...[
@@ -224,6 +250,16 @@ class _CountdownTile extends ConsumerWidget {
     );
     if (!context.mounted || picked == null) return;
     switch (picked) {
+      case 'dashboard':
+        await showProjectDashboard(context, c.id);
+      case 'close':
+        if (await confirm(context, message: t.projectCloseConfirm, confirmLabel: t.projectClose)) {
+          final s = ref.read(snapshotProvider).value ?? Snapshot.empty();
+          await closeProjectNow(repo, s, c, ref.read(clockProvider).now());
+          if (context.mounted) await showProjectDashboard(context, c.id);
+        }
+      case 'reopen':
+        await repo.reopenProject(c.id);
       case 'edit':
         await showCountdownForm(context, type: c.type, editing: c);
       case 'style':
@@ -378,9 +414,16 @@ class _CountdownTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final tt = context.tt;
+    final project = isProject(countdown);
+    final progress = project ? ProjectProgress.of(projectTasks(ref.watch(snapshotProvider).value ?? Snapshot.empty(), countdown)) : null;
     return GestureDetector(
+      // A project opens its dashboard; another countdown, its form.
       onTapUp: (d) => unawaited(
-        countdown.archivedAt == null ? showCountdownForm(context, type: countdown.type, editing: countdown) : _menu(context, ref, d.globalPosition),
+        countdown.archivedAt != null
+            ? _menu(context, ref, d.globalPosition)
+            : project
+            ? showProjectDashboard(context, countdown.id)
+            : showCountdownForm(context, type: countdown.type, editing: countdown),
       ),
       onSecondaryTapUp: (d) => unawaited(_menu(context, ref, d.globalPosition)),
       onLongPressStart: (d) => unawaited(_menu(context, ref, d.globalPosition)),
@@ -388,8 +431,23 @@ class _CountdownTile extends ConsumerWidget {
         children: [
           Opacity(
             opacity: countdown.archivedAt == null ? 1 : 0.6,
-            child: CountdownCardBody(countdown: countdown, style: countdown.style, color: parseHexColor(countdown.color) ?? tt.primary),
+            child: CountdownCardBody(
+              countdown: countdown,
+              style: countdown.style,
+              color: parseHexColor(countdown.color) ?? tt.primary,
+              progress: progress,
+            ),
           ),
+          // A closed project shows its trophy.
+          if (countdown.closedAt != null)
+            Positioned(
+              top: 8,
+              right: 40,
+              child: Tooltip(
+                message: AppLocalizations.of(context).projectReport,
+                child: Icon(Icons.emoji_events, size: 18, color: tt.palette.priorityMedium),
+              ),
+            ),
           // ⋯ on a dark round, readable over any style or picture.
           Positioned(
             top: 6,

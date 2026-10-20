@@ -481,19 +481,232 @@ class AppLocalizationsPt extends AppLocalizations {
   String get viewTimeline => 'Linha do tempo';
 
   @override
-  String get listFolder => 'Pasta';
+  String get listFolder => 'Área';
 
   @override
   String get folderNone => 'Nenhuma';
 
   @override
-  String get folderNew => 'Nova Pasta';
+  String get folderNew => 'Nova área';
 
   @override
   String get dropAsSubtask => 'Soltar como subtarefa';
 
   @override
   String get listType => 'Tipo de lista';
+
+  @override
+  String get folderEditTitle => 'Editar área';
+
+  @override
+  String get folderNameHint => 'Nome da área (ex.: Saúde, Faculdade)';
+
+  @override
+  String get folderIcon => 'Ícone';
+
+  @override
+  String get folderColor => 'Cor';
+
+  @override
+  String folderDeleted(String name) {
+    return 'Área \"$name\" deletada; as listas ficaram';
+  }
+
+  @override
+  String get listParent => 'Dentro de';
+
+  @override
+  String get listParentNone => 'Nenhuma (no topo)';
+
+  @override
+  String get listAddSublist => 'Adicionar sublista';
+
+  @override
+  String get listIncludeSublists => 'Incluir sublistas';
+
+  @override
+  String get sublistsFold => 'Recolher sublistas';
+
+  @override
+  String get sublistsUnfold => 'Mostrar sublistas';
+
+  @override
+  String get sublistsWhatTitle => 'E as sublistas?';
+
+  @override
+  String get sublistsMoveUp => 'Mover as sublistas um nível acima';
+
+  @override
+  String get sublistsDeleteToo => 'Deletar as sublistas também';
+
+  @override
+  String get sublistsArchiveToo => 'Arquivar as sublistas também';
+
+  @override
+  String toastMadeSublist(String name, String parent) {
+    return '\"$name\" agora está dentro de \"$parent\"';
+  }
+
+  @override
+  String get errorListCannotBeItsOwnParent => 'Uma lista não pode ficar dentro dela mesma nem de uma sublista sua';
+
+  @override
+  String get errorSublistDepthLimit => 'As sublistas vão até 3 níveis';
+
+  @override
+  String get errorInboxCannotNest => 'A Caixa de Entrada não entra em sublistas';
+
+  @override
+  String get countdownLink => 'Vincular a uma lista ou área';
+
+  @override
+  String get countdownLinkNone => 'Nenhuma';
+
+  @override
+  String countdownLinkArea(String name) {
+    return 'Área: $name';
+  }
+
+  @override
+  String get projectDashboard => 'Painel do projeto';
+
+  @override
+  String get projectDays => 'Prazo';
+
+  @override
+  String projectDaysLeft(int count) {
+    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: 'Faltam $count dias', one: 'Falta 1 dia', zero: 'É hoje');
+    return '$_temp0';
+  }
+
+  @override
+  String get projectDayPassed => 'O dia já passou';
+
+  @override
+  String get projectGone => 'A lista ou área deste projeto não existe mais.';
+
+  @override
+  String get projectEmpty => 'Nenhuma tarefa no projeto ainda.';
+
+  @override
+  String get projectProgress => 'Progresso';
+
+  @override
+  String projectTasksDone(int done, int total) {
+    return '$done de $total tarefas';
+  }
+
+  @override
+  String get projectAccuracy => 'Taxa de exatidão';
+
+  @override
+  String get projectAccuracyNone => 'Nenhum prazo vencido ou cumprido ainda';
+
+  @override
+  String projectAccuracyDetail(int onTime, int late, int missed) {
+    return '$onTime no prazo · $late depois · $missed vencidas';
+  }
+
+  @override
+  String get projectPace => 'Ritmo';
+
+  @override
+  String projectPacePerDay(String count) {
+    return 'Faça $count tarefas por dia';
+  }
+
+  @override
+  String projectPaceRecent(String count) {
+    return 'Média dos últimos 7 dias: $count por dia';
+  }
+
+  @override
+  String get projectPaceDone => 'Tudo feito';
+
+  @override
+  String get projectBySection => 'Tarefas por seção';
+
+  @override
+  String get projectUpcoming => 'Próximas com prazo';
+
+  @override
+  String get projectNoUpcoming => 'Nenhuma tarefa com prazo pela frente.';
+
+  @override
+  String get projectEvolution => 'Evolução (concluídas por dia)';
+
+  @override
+  String get projectLate => 'Atrasadas';
+
+  @override
+  String get projectLateDone => 'concluída depois do prazo';
+
+  @override
+  String get projectLateOpen => 'prazo vencido';
+
+  @override
+  String get projectClose => 'Encerrar projeto';
+
+  @override
+  String get projectCloseConfirm => 'Encerrar o projeto agora? O relatório final fica guardado e o projeto pode ser reaberto depois.';
+
+  @override
+  String get projectClosedToast => 'Projeto encerrado';
+
+  @override
+  String get projectReopen => 'Reabrir projeto';
+
+  @override
+  String get projectReport => 'Relatório final';
+
+  @override
+  String projectClosedOn(String date) {
+    return 'Encerrado em $date';
+  }
+
+  @override
+  String projectReportPeriod(String start, String end) {
+    return 'De $start a $end';
+  }
+
+  @override
+  String get projectDeadlines => 'Prazos';
+
+  @override
+  String get projectBestDay => 'Melhor dia';
+
+  @override
+  String projectBestDayCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: '$count concluídas', one: '1 concluída');
+    return '$_temp0';
+  }
+
+  @override
+  String get projectNoTrophies => 'Nenhum troféu desta vez.';
+
+  @override
+  String get trophyAllDone => 'Tudo concluído';
+
+  @override
+  String get trophyAllDoneHint => 'Todas as tarefas do projeto foram concluídas';
+
+  @override
+  String get trophyAllOnTime => 'Tudo no prazo';
+
+  @override
+  String get trophyAllOnTimeHint => 'Nenhuma tarefa com prazo atrasou';
+
+  @override
+  String get trophyStrongFinish => 'Reta final forte';
+
+  @override
+  String get trophyStrongFinishHint => 'Os últimos 7 dias renderam acima da média do projeto (3 tarefas ou mais)';
+
+  @override
+  String get trophyNoLate7 => 'Sem atrasos 7 dias';
+
+  @override
+  String get trophyNoLate7Hint => 'Tudo o que vencia na última semana saiu no prazo';
 
   @override
   String get listTypeTasks => 'Lista de tarefas';
