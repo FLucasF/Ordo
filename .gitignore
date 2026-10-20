@@ -5,3 +5,6 @@ desktop.ini
 
 # Working notes kept on this PC only (plan, TickTick and Google Calendar surveys, development report).
 _notas/
+
+# Copies of the repo the agents work in.
+.claude/worktrees/
