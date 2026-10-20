@@ -15,6 +15,7 @@ import '../../domain/enums.dart';
 import '../../domain/snapshot.dart';
 import '../../domain/views.dart';
 import '../../l10n/app_localizations.dart';
+import '../appearance/backdrop.dart' show showBackgroundDialog;
 import '../common/color_choice.dart';
 import '../common/feedback.dart';
 import '../activities/activities_dialog.dart';
@@ -372,6 +373,7 @@ class Sidebar extends ConsumerWidget {
           viewMode: form.viewMode,
           showInSmartLists: form.showInSmartLists,
         );
+    if (form.background != null) await ref.read(repositoryProvider).setListBackground(id, form.background);
     if (!context.mounted) return;
     context.go(Routes.of(ListScope(id)));
     onNavigate?.call();
@@ -514,6 +516,7 @@ class Sidebar extends ConsumerWidget {
             viewMode: form.viewMode,
             showInSmartLists: form.showInSmartLists,
           );
+          if (form.background != l.background) await repo.setListBackground(l.id, form.background);
         }
       case 'unarchive':
         await repo.archiveList(l.id, archived: false);
@@ -533,6 +536,7 @@ class Sidebar extends ConsumerWidget {
     final choice = await _showMenuAt<String>(context, position, [
       ('add', t.actionAddList),
       ('rename', t.actionEdit),
+      ('background', t.backgroundTitle),
       ('pin', f.pinnedAt == null ? t.menuPin : t.menuUnpin),
       ('ungroup', t.actionUngroup),
     ]);
@@ -543,6 +547,10 @@ class Sidebar extends ConsumerWidget {
       case 'rename':
         final name = await promptText(context, title: t.actionEdit, initial: f.name);
         if (name != null) await repo.renameFolder(f.id, name);
+      case 'background':
+        // The folder's lists show it, unless they have their own.
+        final picked = await showBackgroundDialog(context, initial: f.background);
+        if (picked != null) await repo.setFolderBackground(f.id, picked.code);
       case 'pin':
         await repo.pinFolder(f.id, pinned: f.pinnedAt == null);
       case 'ungroup':

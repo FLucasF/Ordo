@@ -22,6 +22,8 @@ import '../../domain/snapshot.dart';
 import '../../domain/task_defaults.dart';
 import '../../domain/views.dart';
 import '../../l10n/app_localizations.dart';
+import '../appearance/backdrop.dart';
+import '../appearance/backgrounds.dart';
 import '../backup/backup_actions.dart';
 import '../common/feedback.dart';
 import '../common/labels.dart';
@@ -652,6 +654,28 @@ class _AppearanceTab extends ConsumerWidget {
             ],
           ),
         ),
+        // "Temas prontos": color, background and corners at once.
+        _Section(t.appearanceThemePresets),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+          child: Text(
+            t.appearanceThemePresetsHint,
+            style: TextStyle(fontSize: TtText.small, color: tt.textTertiary),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Wrap(
+            spacing: 8,
+            runSpacing: 10,
+            children: [
+              for (final preset in ThemePreset.values)
+                _PresetTile(preset: preset, standard: standard, selected: preset.matches(prefs), onTap: () => unawaited(preset.apply(repo))),
+            ],
+          ),
+        ),
+        _Section(t.appearanceWallpaper),
+        _WallpaperSection(prefs: prefs),
         _Section(t.settingsDisplay),
         _Choice<SidebarCount>(
           label: t.settingsSidebarCount,
@@ -671,6 +695,154 @@ class _AppearanceTab extends ConsumerWidget {
           options: {false: t.completedStyleDefault, true: t.completedStyleStrike},
           onChanged: (v) => unawaited(repo.setStrikeCompleted(enabled: v)),
         ),
+      ],
+    );
+  }
+}
+
+/// A "Temas prontos" card: the preset's background with its color and corners, and its name.
+class _PresetTile extends StatelessWidget {
+  const _PresetTile({required this.preset, required this.standard, required this.selected, required this.onTap});
+
+  final ThemePreset preset;
+  final Color standard;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
+    final tt = context.tt;
+    // "Noite" shows how it will look: dark.
+    final dark = preset.theme == ThemeChoice.dark || tt.isDark;
+    final accent = seriesPrimary(preset.series) ?? standard;
+    final radius = BorderRadius.circular(preset.card ? 10 : 3);
+    return Tooltip(
+      message: presetName(t, preset),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(10),
+        onTap: onTap,
+        child: SizedBox(
+          width: 84,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                height: 52,
+                decoration: BoxDecoration(
+                  color: dark ? const Color(0xFF1C1C1C) : Colors.white,
+                  gradient: preset.gradient?.gradient(dark: dark),
+                  borderRadius: radius,
+                  border: Border.all(color: selected ? tt.primary : tt.divider, width: selected ? 2 : 1),
+                ),
+                alignment: Alignment.center,
+                child: Container(
+                  width: 22,
+                  height: 22,
+                  decoration: BoxDecoration(color: accent, shape: BoxShape.circle),
+                  child: selected ? const Icon(Icons.check, size: 14, color: Colors.white) : null,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                presetName(t, preset),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 11, color: tt.textSecondary),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// "Papel de parede": the live preview, the choices and "Escurecer", which the preview follows while
+/// it's dragged (saved when let go).
+class _WallpaperSection extends ConsumerStatefulWidget {
+  const _WallpaperSection({required this.prefs});
+
+  final Preferences prefs;
+
+  @override
+  ConsumerState<_WallpaperSection> createState() => _WallpaperSectionState();
+}
+
+class _WallpaperSectionState extends ConsumerState<_WallpaperSection> {
+  double? _dragging;
+
+  @override
+  void didUpdateWidget(_WallpaperSection old) {
+    super.didUpdateWidget(old);
+    // The saved value arrived: the slider follows the settings again.
+    if (old.prefs.backgroundDim != widget.prefs.backgroundDim) _dragging = null;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
+    final tt = context.tt;
+    final prefs = widget.prefs;
+    final repo = ref.read(preferencesRepositoryProvider);
+    final dim = _dragging ?? prefs.backgroundDim;
+    final shown = hasBackground(prefs.background) ? prefs.background : null;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: LayoutBuilder(
+            builder: (context, box) {
+              final preview = SizedBox(
+                width: 210,
+                height: 120,
+                child: AppearancePreview(background: shown, dim: dim, card: prefs.cardStyle),
+              );
+              final choices = BackgroundChoices(value: prefs.background, onChanged: (c) => unawaited(repo.setBackground(c)));
+              return box.maxWidth >= 520
+                  ? Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        preview,
+                        const SizedBox(width: 16),
+                        Expanded(child: choices),
+                      ],
+                    )
+                  : Column(crossAxisAlignment: CrossAxisAlignment.start, children: [preview, const SizedBox(height: 12), choices]);
+            },
+          ),
+        ),
+        // "Escurecer" in the dark theme, "Clarear" in the light one: the veil is the theme's own color.
+        if (shown != null)
+          ListTile(
+            title: Text(tt.isDark ? t.backgroundDim : t.backgroundLighten),
+            trailing: SizedBox(
+              width: 220,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Slider(
+                      value: dim.clamp(0.0, maxBackgroundDim),
+                      max: maxBackgroundDim,
+                      divisions: 18,
+                      onChanged: (v) => setState(() => _dragging = v),
+                      onChangeEnd: (v) => unawaited(repo.setBackgroundDim(v)),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 40,
+                    child: Text(
+                      '${(dim * 100).round()}%',
+                      textAlign: TextAlign.end,
+                      style: TextStyle(fontSize: TtText.small, color: tt.textSecondary),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
       ],
     );
   }

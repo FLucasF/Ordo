@@ -14,6 +14,7 @@ import '../../domain/enums.dart';
 import '../../domain/focus.dart';
 import '../../domain/views.dart';
 import '../../l10n/app_localizations.dart';
+import '../appearance/backdrop.dart';
 import '../backup/backup_actions.dart';
 import '../detail/task_detail_pane.dart';
 import '../tasks/batch_pane.dart';
@@ -94,11 +95,14 @@ class _AppShellState extends ConsumerState<AppShell> {
                 ? SearchPane(initialQuery: widget.searchQuery!, selectedTaskId: null, isNarrow: true)
                 : widget.scope == const SmartScope(SmartList.summary)
                 ? SummaryPane(isNarrow: true, onToggleSidebar: () => _scaffold.currentState?.openDrawer())
-                : TaskListPane(
+                : AppBackdrop(
                     scope: widget.scope,
-                    selectedTaskId: null,
-                    isNarrow: true,
-                    onToggleSidebar: () => _scaffold.currentState?.openDrawer(),
+                    child: TaskListPane(
+                      scope: widget.scope,
+                      selectedTaskId: null,
+                      isNarrow: true,
+                      onToggleSidebar: () => _scaffold.currentState?.openDrawer(),
+                    ),
                   ),
           ),
         ),
@@ -147,10 +151,14 @@ class _AppShellState extends ConsumerState<AppShell> {
                             ? SearchPane(initialQuery: widget.searchQuery!, selectedTaskId: widget.taskId)
                             : summary
                             ? SummaryPane(onToggleSidebar: () => setState(() => _sidebarOpen = !_sidebarOpen))
-                            : TaskListPane(
+                            // The "Papel de parede" goes behind the list only: the sidebar and the detail stay solid.
+                            : AppBackdrop(
                                 scope: widget.scope,
-                                selectedTaskId: widget.taskId,
-                                onToggleSidebar: () => setState(() => _sidebarOpen = !_sidebarOpen),
+                                child: TaskListPane(
+                                  scope: widget.scope,
+                                  selectedTaskId: widget.taskId,
+                                  onToggleSidebar: () => setState(() => _sidebarOpen = !_sidebarOpen),
+                                ),
                               ),
                       ),
                       if (showDetail) ...[
@@ -381,7 +389,7 @@ class _ModuleScaffoldState extends State<ModuleScaffold> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               IconBar(current: widget.module),
-              Expanded(child: widget.child),
+              Expanded(child: AppBackdrop(child: widget.child)),
             ],
           ),
         ),
@@ -396,7 +404,9 @@ class _ModuleScaffoldState extends State<ModuleScaffold> {
         onDrawerChanged: (open) => setState(() => _drawerOpen = open),
         drawer: const NavDrawer(),
         body: SafeArea(
-          child: _DrawerOpener(open: () => _scaffold.currentState?.openDrawer(), child: widget.child),
+          child: AppBackdrop(
+            child: _DrawerOpener(open: () => _scaffold.currentState?.openDrawer(), child: widget.child),
+          ),
         ),
       ),
     );

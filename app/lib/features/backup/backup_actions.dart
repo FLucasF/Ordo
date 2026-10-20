@@ -14,6 +14,7 @@ import '../../app/routes.dart';
 import '../../l10n/app_localizations.dart';
 import '../common/feedback.dart';
 import '../settings/settings_dialog.dart';
+import '../appearance/backgrounds.dart' show backgroundsDirProvider;
 import '../countdown/countdown_card.dart' show countdownImagesProvider;
 import '../subscriptions/subscriptions.dart' show subscriptionStoreProvider;
 import '../sync/sync_dialog.dart';
@@ -51,7 +52,11 @@ Future<BackupService> backupServiceOf(WidgetRef ref) async => BackupService(
   ref.read(databaseProvider),
   tempDir: await getTemporaryDirectory(),
   attachments: ref.read(attachmentStoreProvider),
-  folders: {'countdown_images/': ref.read(countdownImagesProvider), 'calendars/': ref.read(subscriptionStoreProvider).dir},
+  folders: {
+    'countdown_images/': ref.read(countdownImagesProvider),
+    'calendars/': ref.read(subscriptionStoreProvider).dir,
+    'backgrounds/': ref.read(backgroundsDirProvider),
+  },
 );
 
 /// "Gerar Backup": saves a zip with the database and the attachments.

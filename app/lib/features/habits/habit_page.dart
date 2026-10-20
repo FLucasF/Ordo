@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:go_router/go_router.dart';
 
 import '../../domain/enums.dart';
+import '../appearance/backdrop.dart';
 import '../../domain/focus.dart';
 import '../../app/routes.dart';
 import '../../app/focus_controller.dart';
@@ -432,7 +433,7 @@ class _HabitPageState extends ConsumerState<HabitPage> {
     }
 
     final page = Container(
-      color: tt.screen,
+      color: context.paneColor,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

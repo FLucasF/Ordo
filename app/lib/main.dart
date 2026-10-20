@@ -12,6 +12,7 @@ import 'data/attachment_store.dart';
 import 'data/db/database.dart';
 import 'data/subscription_store.dart';
 import 'features/backup/auto_backup.dart';
+import 'features/appearance/backgrounds.dart';
 import 'features/countdown/countdown_card.dart';
 import 'features/mini_calendar/mini_calendar.dart';
 import 'features/subscriptions/subscriptions.dart';
@@ -29,6 +30,7 @@ Future<void> main() async {
         attachmentStoreProvider.overrideWithValue(AttachmentStore(Directory(p.join(support.path, 'attachments')))),
         subscriptionStoreProvider.overrideWithValue(SubscriptionStore(Directory(p.join(support.path, 'calendars')))),
         countdownImagesProvider.overrideWithValue(Directory(p.join(support.path, 'countdown_images'))),
+        backgroundsDirProvider.overrideWithValue(Directory(p.join(support.path, 'backgrounds'))),
         autoBackupProvider.overrideWithValue(AutoBackup(Directory(p.join(support.path, 'backups')))),
       ],
       child: const TasksApp(),

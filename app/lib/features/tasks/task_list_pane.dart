@@ -26,6 +26,7 @@ import '../../domain/snapshot.dart';
 import '../../domain/subscriptions.dart';
 import '../../domain/views.dart';
 import '../../l10n/app_localizations.dart';
+import '../appearance/backdrop.dart';
 import '../common/color_choice.dart';
 import '../common/feedback.dart';
 import '../common/labels.dart';
@@ -57,7 +58,6 @@ class TaskListPane extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final t = AppLocalizations.of(context);
     final labels = Labels(t);
-    final tt = context.tt;
     final snapshot = ref.watch(snapshotProvider).value ?? Snapshot.empty();
     final view = ref.watch(viewProvider(scope));
     final now = ref.watch(nowProvider).value ?? ref.watch(clockProvider).now();
@@ -89,7 +89,7 @@ class TaskListPane extends ConsumerWidget {
     final timeline = !isNarrow && mode == ViewMode.timeline && supportsTimeline(scope);
 
     return Container(
-      color: tt.screen,
+      color: context.paneColor,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

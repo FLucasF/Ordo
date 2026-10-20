@@ -6,6 +6,7 @@ import '../../app/theme/app_theme.dart';
 import '../../data/db/database.dart';
 import '../../domain/enums.dart';
 import '../../l10n/app_localizations.dart';
+import '../appearance/backdrop.dart';
 import '../common/color_choice.dart';
 import '../common/emoji_picker.dart';
 import '../common/feedback.dart';
@@ -20,6 +21,7 @@ class ListForm {
     required this.kind,
     required this.viewMode,
     required this.showInSmartLists,
+    this.background,
   });
 
   final String name;
@@ -29,6 +31,9 @@ class ListForm {
   final ListKind kind;
   final ViewMode viewMode;
   final bool showInSmartLists;
+
+  /// "Fundo" (features/appearance/backgrounds.dart): null = the folder's or the app's.
+  final String? background;
 }
 
 /// Deletes a list after asking (its tasks go to the trash); true when it did. Leaving it, when it was
@@ -63,6 +68,7 @@ Future<void> editListWithDialog(BuildContext context, WidgetRef ref, TaskList l,
     viewMode: form.viewMode,
     showInSmartLists: form.showInSmartLists,
   );
+  if (form.background != l.background) await repo.setListBackground(l.id, form.background);
 }
 
 /// "Adicionar lista" / "Editar lista". Returns null when cancelled.
@@ -93,6 +99,7 @@ class _ListDialogState extends ConsumerState<_ListDialog> {
   late ListKind _kind = widget.editing?.kind ?? ListKind.tasks;
   late ViewMode _viewMode = widget.editing?.viewMode ?? ViewMode.list;
   late bool _showInSmartLists = widget.editing?.showInSmartLists ?? true;
+  late String? _background = widget.editing?.background;
 
   @override
   void dispose() {
@@ -112,6 +119,7 @@ class _ListDialogState extends ConsumerState<_ListDialog> {
         kind: _kind,
         viewMode: _viewMode,
         showInSmartLists: _showInSmartLists,
+        background: _background,
       ),
     );
   }
@@ -253,6 +261,8 @@ class _ListDialogState extends ConsumerState<_ListDialog> {
                     t.listShowInSmartList,
                     segmented(_showInSmartLists, {true: t.listShowAllTasks, false: t.listDontShow}, (v) => setState(() => _showInSmartLists = v)),
                   ),
+                  // Shown behind the list when it's open, instead of the app's.
+                  row(t.backgroundTitle, BackgroundChoices(value: _background, inherit: true, onChanged: (c) => setState(() => _background = c))),
                 ],
               ),
             ),

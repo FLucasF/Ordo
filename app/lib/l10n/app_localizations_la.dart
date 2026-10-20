@@ -2476,6 +2476,81 @@ class AppLocalizationsLa extends AppLocalizations {
   String get colorGrey => 'Cinereus';
 
   @override
+  String get appearanceThemePresets => 'Species paratae';
+
+  @override
+  String get appearanceThemePresetsHint => 'Color, fundus et anguli simul; singula infra mutari possunt';
+
+  @override
+  String get appearanceWallpaper => 'Pictura fundi';
+
+  @override
+  String get backgroundTitle => 'Fundus';
+
+  @override
+  String get backgroundDefault => 'Usitatus (fasciculi vel Ordinis)';
+
+  @override
+  String get backgroundNone => 'Nullus';
+
+  @override
+  String get backgroundPicture => 'Imago';
+
+  @override
+  String get backgroundPickPicture => 'Imaginem elige';
+
+  @override
+  String get backgroundDim => 'Obscura';
+
+  @override
+  String get backgroundLighten => 'Clarifica';
+
+  @override
+  String get gradientDawn => 'Aurora';
+
+  @override
+  String get gradientSunset => 'Occasus';
+
+  @override
+  String get gradientOcean => 'Oceanus';
+
+  @override
+  String get gradientForest => 'Silva';
+
+  @override
+  String get gradientLavender => 'Lavandula';
+
+  @override
+  String get gradientNight => 'Nox';
+
+  @override
+  String get gradientPeach => 'Persicum';
+
+  @override
+  String get gradientMint => 'Mentha';
+
+  @override
+  String get presetStandard => 'Usitata';
+
+  @override
+  String get presetStudies => 'Studia';
+
+  @override
+  String get presetWork => 'Labor';
+
+  @override
+  String get presetNight => 'Nox';
+
+  @override
+  String get presetNature => 'Natura';
+
+  @override
+  String get presetBeach => 'Litus';
+
+  @override
+  String get presetCozy => 'Tepor';
+
+  @override
   String get settingsDisplay => 'Ostensio';
 
   @override

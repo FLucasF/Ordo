@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../app/format/date_labels.dart';
 import '../../app/theme/app_theme.dart';
 import '../../l10n/app_localizations.dart';
+import '../appearance/backdrop.dart';
 import '../shell/app_shell.dart';
 
 // The Calendar's look (Google Calendar's), shared by the module screens: a left panel with collapsible
@@ -42,12 +43,13 @@ class ShellLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     final tt = context.tt;
     final narrow = MediaQuery.sizeOf(context).width < TtSizes.narrowBreakpoint;
+    // Over a "Papel de parede" only the body shows it: the panels keep the solid color.
     return Container(
-      color: tt.screen,
+      color: context.paneColor,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (panel != null && panelOpen && !narrow) ...[panel!, VerticalDivider(width: 1, color: tt.divider)],
+          if (panel != null && panelOpen && !narrow) ...[ColoredBox(color: tt.screen, child: panel), VerticalDivider(width: 1, color: tt.divider)],
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -76,7 +78,7 @@ class ShellLayout extends StatelessWidget {
               ],
             ),
           ),
-          if (trailing != null) ...[VerticalDivider(width: 1, color: tt.divider), trailing!],
+          if (trailing != null) ...[VerticalDivider(width: 1, color: tt.divider), ColoredBox(color: tt.screen, child: trailing)],
         ],
       ),
     );
