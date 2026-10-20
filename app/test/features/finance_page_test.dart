@@ -69,6 +69,9 @@ void main() {
   Future<void> goTab(WidgetTester tester, String from, String to) async {
     final tabs = find.byType(ShellTabs<FinanceTab>);
     expect(find.descendant(of: tabs, matching: find.text(from)), findsOneWidget);
+    // The tabs scroll sideways when they don't fit (the test font is wide).
+    await tester.ensureVisible(find.descendant(of: tabs, matching: find.text(to)));
+    await tester.pumpAndSettle();
     await tester.tap(find.descendant(of: tabs, matching: find.text(to)));
     await settle(tester);
   }

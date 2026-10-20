@@ -8732,6 +8732,300 @@ abstract class AppLocalizations {
   /// **'Categorias…'**
   String get finCategoriesFilter;
 
+  /// No description provided for @finNewEntryOnDay.
+  ///
+  /// In pt, this message translates to:
+  /// **'Novo lançamento neste dia'**
+  String get finNewEntryOnDay;
+
+  /// No description provided for @finOpenInFinance.
+  ///
+  /// In pt, this message translates to:
+  /// **'Abrir em Finanças'**
+  String get finOpenInFinance;
+
+  /// No description provided for @finTabGoals.
+  ///
+  /// In pt, this message translates to:
+  /// **'Caixinhas'**
+  String get finTabGoals;
+
+  /// No description provided for @finNewGoal.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nova caixinha'**
+  String get finNewGoal;
+
+  /// No description provided for @finEditGoal.
+  ///
+  /// In pt, this message translates to:
+  /// **'Editar caixinha'**
+  String get finEditGoal;
+
+  /// No description provided for @finGoalName.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nome da caixinha'**
+  String get finGoalName;
+
+  /// No description provided for @finGoalTarget.
+  ///
+  /// In pt, this message translates to:
+  /// **'Meta'**
+  String get finGoalTarget;
+
+  /// No description provided for @finGoalDueOn.
+  ///
+  /// In pt, this message translates to:
+  /// **'Data-alvo'**
+  String get finGoalDueOn;
+
+  /// No description provided for @finGoalNoDue.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sem data'**
+  String get finGoalNoDue;
+
+  /// No description provided for @finGoalColor.
+  ///
+  /// In pt, this message translates to:
+  /// **'Cor'**
+  String get finGoalColor;
+
+  /// No description provided for @finGoalInvalid.
+  ///
+  /// In pt, this message translates to:
+  /// **'Preencha o nome e uma meta maior que zero.'**
+  String get finGoalInvalid;
+
+  /// No description provided for @finGoalSave.
+  ///
+  /// In pt, this message translates to:
+  /// **'Guardar'**
+  String get finGoalSave;
+
+  /// No description provided for @finGoalWithdraw.
+  ///
+  /// In pt, this message translates to:
+  /// **'Retirar'**
+  String get finGoalWithdraw;
+
+  /// No description provided for @finGoalSaved.
+  ///
+  /// In pt, this message translates to:
+  /// **'Guardado'**
+  String get finGoalSaved;
+
+  /// No description provided for @finGoalTakenOut.
+  ///
+  /// In pt, this message translates to:
+  /// **'Retirado'**
+  String get finGoalTakenOut;
+
+  /// No description provided for @finGoalLeft.
+  ///
+  /// In pt, this message translates to:
+  /// **'Faltam {amount}'**
+  String finGoalLeft(String amount);
+
+  /// No description provided for @finGoalLeftLabel.
+  ///
+  /// In pt, this message translates to:
+  /// **'Falta'**
+  String get finGoalLeftLabel;
+
+  /// No description provided for @finGoalReached.
+  ///
+  /// In pt, this message translates to:
+  /// **'Meta alcançada'**
+  String get finGoalReached;
+
+  /// No description provided for @finGoalProgress.
+  ///
+  /// In pt, this message translates to:
+  /// **'{saved} de {target}'**
+  String finGoalProgress(String saved, String target);
+
+  /// No description provided for @finGoalPerMonth.
+  ///
+  /// In pt, this message translates to:
+  /// **'Guarde {amount} por mês até {date}'**
+  String finGoalPerMonth(String amount, String date);
+
+  /// No description provided for @finGoalPastDue.
+  ///
+  /// In pt, this message translates to:
+  /// **'A data-alvo passou ({date})'**
+  String finGoalPastDue(String date);
+
+  /// No description provided for @finGoalMoves.
+  ///
+  /// In pt, this message translates to:
+  /// **'Movimentos'**
+  String get finGoalMoves;
+
+  /// No description provided for @finGoalMoveDeleted.
+  ///
+  /// In pt, this message translates to:
+  /// **'Movimento excluído'**
+  String get finGoalMoveDeleted;
+
+  /// No description provided for @finGoalDeleted.
+  ///
+  /// In pt, this message translates to:
+  /// **'Caixinha excluída'**
+  String get finGoalDeleted;
+
+  /// No description provided for @finDeleteGoal.
+  ///
+  /// In pt, this message translates to:
+  /// **'Excluir a caixinha \"{name}\" e os movimentos dela?'**
+  String finDeleteGoal(String name);
+
+  /// No description provided for @finGoalArchived.
+  ///
+  /// In pt, this message translates to:
+  /// **'Caixinha arquivada'**
+  String get finGoalArchived;
+
+  /// No description provided for @finArchivedGoals.
+  ///
+  /// In pt, this message translates to:
+  /// **'Arquivadas'**
+  String get finArchivedGoals;
+
+  /// No description provided for @finNoGoals.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhuma caixinha ainda. Crie uma para juntar dinheiro para uma meta.'**
+  String get finNoGoals;
+
+  /// No description provided for @finNoGoalsHere.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhuma caixinha aqui.'**
+  String get finNoGoalsHere;
+
+  /// No description provided for @finGoalMoveIn.
+  ///
+  /// In pt, this message translates to:
+  /// **'Guardar em {name}'**
+  String finGoalMoveIn(String name);
+
+  /// No description provided for @finGoalMoveOut.
+  ///
+  /// In pt, this message translates to:
+  /// **'Retirar de {name}'**
+  String finGoalMoveOut(String name);
+
+  /// No description provided for @finEditGoalMove.
+  ///
+  /// In pt, this message translates to:
+  /// **'Editar movimento'**
+  String get finEditGoalMove;
+
+  /// No description provided for @finGoalsCount.
+  ///
+  /// In pt, this message translates to:
+  /// **'{count, plural, =0{nenhuma caixinha} =1{1 caixinha} other{{count} caixinhas}}'**
+  String finGoalsCount(int count);
+
+  /// No description provided for @finGoalTargetsHint.
+  ///
+  /// In pt, this message translates to:
+  /// **'de {amount} em metas'**
+  String finGoalTargetsHint(String amount);
+
+  /// No description provided for @finGoalsSavedLine.
+  ///
+  /// In pt, this message translates to:
+  /// **'Guardado nas caixinhas: {total} · neste mês {month}'**
+  String finGoalsSavedLine(String total, String month);
+
+  /// No description provided for @finLoanAtOnce.
+  ///
+  /// In pt, this message translates to:
+  /// **'Pago à vista'**
+  String get finLoanAtOnce;
+
+  /// No description provided for @finLoanInInstallments.
+  ///
+  /// In pt, this message translates to:
+  /// **'Parcelado'**
+  String get finLoanInInstallments;
+
+  /// No description provided for @finLoanInstallmentCount.
+  ///
+  /// In pt, this message translates to:
+  /// **'Número de parcelas'**
+  String get finLoanInstallmentCount;
+
+  /// No description provided for @finLoanInstallmentAmount.
+  ///
+  /// In pt, this message translates to:
+  /// **'Valor da parcela'**
+  String get finLoanInstallmentAmount;
+
+  /// No description provided for @finLoanFirstDue.
+  ///
+  /// In pt, this message translates to:
+  /// **'Vencimento da 1ª parcela'**
+  String get finLoanFirstDue;
+
+  /// No description provided for @finLoanInstallmentsTotal.
+  ///
+  /// In pt, this message translates to:
+  /// **'{count}x de {amount} = {total}'**
+  String finLoanInstallmentsTotal(int count, String amount, String total);
+
+  /// No description provided for @finInstallmentPaid.
+  ///
+  /// In pt, this message translates to:
+  /// **'Paga'**
+  String get finInstallmentPaid;
+
+  /// No description provided for @finInstallmentOpen.
+  ///
+  /// In pt, this message translates to:
+  /// **'Em aberto'**
+  String get finInstallmentOpen;
+
+  /// No description provided for @finInstallmentOverdue.
+  ///
+  /// In pt, this message translates to:
+  /// **'Atrasada'**
+  String get finInstallmentOverdue;
+
+  /// No description provided for @finInstallmentPaidOn.
+  ///
+  /// In pt, this message translates to:
+  /// **'paga em {date}'**
+  String finInstallmentPaidOn(String date);
+
+  /// No description provided for @finInstallmentLabel.
+  ///
+  /// In pt, this message translates to:
+  /// **'Parcela {number} de {count}'**
+  String finInstallmentLabel(int number, int count);
+
+  /// No description provided for @finReceiveInstallment.
+  ///
+  /// In pt, this message translates to:
+  /// **'Receber parcela'**
+  String get finReceiveInstallment;
+
+  /// No description provided for @finInstallmentReceived.
+  ///
+  /// In pt, this message translates to:
+  /// **'Parcela {number} recebida'**
+  String finInstallmentReceived(int number);
+
+  /// No description provided for @finLoanNextInstallment.
+  ///
+  /// In pt, this message translates to:
+  /// **'parcela {number}/{count} vence {date}'**
+  String finLoanNextInstallment(int number, int count, String date);
+
   /// No description provided for @finSituation.
   ///
   /// In pt, this message translates to:

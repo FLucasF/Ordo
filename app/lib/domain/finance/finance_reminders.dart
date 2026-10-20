@@ -19,12 +19,16 @@ enum FinanceAlertKind {
 }
 
 class FinanceAlert {
-  const FinanceAlert({required this.kind, required this.name, required this.amount, required this.due});
+  const FinanceAlert({required this.kind, required this.name, required this.amount, required this.due, this.installment, this.installments = 1});
 
   final FinanceAlertKind kind;
   final String name;
   final int amount;
   final DateTime due;
+
+  /// A loan's installment ("2/5"); null when paid at once.
+  final int? installment;
+  final int installments;
 }
 
 /// Finance notifications fire at 9:00.
@@ -34,7 +38,8 @@ const financeReminderHour = 9;
 const loanLateDays = [1, 8, 15, 22, 29];
 
 /// The notifications of the next [days]: recurring bills not yet paid ("Lembrete": on the due day
-/// or some days before) and loans with something left (on the due day and while overdue).
+/// or some days before) and loans with something left (each installment on its day and while
+/// overdue).
 List<PlannedReminder> planFinanceReminders(
   FinanceSnapshot s,
   DateTime now, {
@@ -67,16 +72,23 @@ List<PlannedReminder> planFinanceReminders(
 
   for (final l in loanSummaries(s, today)) {
     if (!l.loan.remind || l.status == LoanStatus.paid || l.loan.archivedAt != null) continue;
-    final due = finDay(l.loan.dueOn);
     final owner = '${financePrefix}loan:${l.loan.id}';
-    add(owner, 'due', due, FinanceAlert(kind: FinanceAlertKind.loanDue, name: l.loan.borrower, amount: l.balance, due: due));
-    for (final after in loanLateDays) {
-      add(
-        owner,
-        'late$after',
-        due.add(Duration(days: after)),
-        FinanceAlert(kind: FinanceAlertKind.loanLate, name: l.loan.borrower, amount: l.balance, due: due),
+    for (final i in l.installments) {
+      if (i.status == InstallmentStatus.paid) continue;
+      // Paid at once keeps the keys of before (the notifications already scheduled stay the same).
+      final key = i.count == 1 ? '' : '${i.number}_';
+      FinanceAlert alert(FinanceAlertKind kind) => FinanceAlert(
+        kind: kind,
+        name: l.loan.borrower,
+        amount: i.open,
+        due: i.due,
+        installment: i.count == 1 ? null : i.number,
+        installments: i.count,
       );
+      add(owner, i.count == 1 ? 'due' : 'due${i.number}', i.due, alert(FinanceAlertKind.loanDue));
+      for (final after in loanLateDays) {
+        add(owner, 'late$key$after', i.due.add(Duration(days: after)), alert(FinanceAlertKind.loanLate));
+      }
     }
   }
   return planned;

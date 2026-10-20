@@ -540,7 +540,19 @@ void main() {
     await tester.runAsync(() => prefs.setCalendarOptions(options));
     await settle(tester);
 
+    // A click offers a new entry on that day…
     await tester.tap(find.text(r'Cobrar João · R$ 1.300,00'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Novo lançamento neste dia'));
+    await tester.pumpAndSettle();
+    expect(find.text('Novo lançamento'), findsOneWidget);
+    expect(find.text('28/09/2026'), findsOneWidget);
+    await tester.tap(find.text('Cancelar'));
+    await tester.pumpAndSettle();
+    // …or opens its tab.
+    await tester.tap(find.text(r'Cobrar João · R$ 1.300,00'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Abrir em Finanças'));
     await settle(tester);
     expect(find.text('Empréstimos'), findsWidgets);
     expect(find.text(r'Falta R$ 1.300,00'), findsOneWidget);

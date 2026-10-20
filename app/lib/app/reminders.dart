@@ -250,9 +250,12 @@ class FiredReminders extends Notifier<List<PlannedReminder>> {
 final firedRemindersProvider = NotifierProvider<FiredReminders, List<PlannedReminder>>(FiredReminders.new);
 
 /// "Aluguel vence hoje", "Internet vence em 12/10", "Hoje vence o empréstimo de João"…
+/// A loan's installment goes after the name: "Hoje vence o empréstimo de João 2/5".
 String financeAlertTitle(AppLocalizations t, FinanceAlert a) => switch (a.kind) {
   FinanceAlertKind.billDue => t.finReminderBillTitle(a.name),
   FinanceAlertKind.billSoon => t.finReminderBillSoon(a.name, DateLabels.numeric(a.due, withYear: false)),
-  FinanceAlertKind.loanDue => t.finReminderLoanDue(a.name),
-  FinanceAlertKind.loanLate => t.finReminderLoanLate(a.name),
+  FinanceAlertKind.loanDue => t.finReminderLoanDue(_withInstallment(a)),
+  FinanceAlertKind.loanLate => t.finReminderLoanLate(_withInstallment(a)),
 };
+
+String _withInstallment(FinanceAlert a) => a.installment == null ? a.name : '${a.name} ${a.installment}/${a.installments}';

@@ -14,6 +14,7 @@ import '../../l10n/app_localizations.dart';
 import '../common/shell_widgets.dart';
 import 'entry_form.dart';
 import 'finance_widgets.dart';
+import 'goals_tab.dart';
 
 /// "Lançamentos": the period's figures (Receitas, Despesas, Saldo) and its entries laid out as the
 /// Agenda: each day with its entries; a card's purchases come together on their invoice's due day.
@@ -40,7 +41,19 @@ class EntriesBody extends ConsumerWidget {
         if (!hiddenCategories.contains(e.categoryId ?? '')) e,
     ];
     final totals = totalsOf(inPeriod);
-    final groups = groupEntries(s, shown);
+    // The goals' moves are transfers: in the days, never in the figures, and only among all kinds.
+    final words = search.trim().toLowerCase();
+    final goals = {for (final g in s.goals) g.id: g};
+    final moves = [
+      for (final m in s.goalMoves)
+        if (kind == null &&
+            goals[m.goalId] != null &&
+            !finDay(m.date).isBefore(range.from) &&
+            !finDay(m.date).isAfter(range.to) &&
+            (words.isEmpty || goals[m.goalId]!.name.toLowerCase().contains(words) || m.note.toLowerCase().contains(words)))
+          m,
+    ];
+    final groups = groupEntries(s, shown, moves: moves);
 
     return ListView(
       padding: EdgeInsets.fromLTRB(narrow ? 12 : 20, 4, narrow ? 12 : 20, 32),
@@ -70,7 +83,13 @@ class EntriesBody extends ConsumerWidget {
             today: today,
             // An invoice's block names its card under the due day.
             label: g.card?.name,
-            children: [for (final e in g.entries) EntryLine(entry: e, snapshot: s, inInvoice: g.card != null)],
+            // A plain day: its "+" (and the day itself) starts an entry on it.
+            onAdd: g.card == null ? () => unawaited(showEntryForm(context, date: g.day)) : null,
+            addTooltip: t.finNewEntryOnDay,
+            children: [
+              for (final e in g.entries) EntryLine(entry: e, snapshot: s, inInvoice: g.card != null),
+              for (final m in g.moves) GoalMoveLine(move: m, goal: goals[m.goalId]!),
+            ],
           ),
         ],
       ],

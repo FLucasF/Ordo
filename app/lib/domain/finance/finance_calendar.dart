@@ -9,7 +9,16 @@ import 'recurring.dart';
 enum FinanceDueKind { bill, income, invoice, loan }
 
 class FinanceDue {
-  const FinanceDue({required this.kind, required this.id, required this.name, required this.amount, required this.day, required this.done});
+  const FinanceDue({
+    required this.kind,
+    required this.id,
+    required this.name,
+    required this.amount,
+    required this.day,
+    required this.done,
+    this.installment,
+    this.installments = 1,
+  });
 
   final FinanceDueKind kind;
 
@@ -23,10 +32,14 @@ class FinanceDue {
 
   /// Paid, received or collected.
   final bool done;
+
+  /// A loan in installments: which one ("2/5") of how many; null when paid at once.
+  final int? installment;
+  final int installments;
 }
 
 /// The due days from [from] (included) to [to] (excluded): every occurrence of the recurring bills,
-/// the invoices with purchases (on their due day) and the loans' collection day.
+/// the invoices with purchases (on their due day) and the loans' collection days (each installment's).
 List<FinanceDue> financeDues(FinanceSnapshot s, DateTime from, DateTime to, DateTime today) {
   final last = to.subtract(const Duration(days: 1));
   bool inRange(DateTime day) => !day.isBefore(from) && !day.isAfter(last);
@@ -60,18 +73,23 @@ List<FinanceDue> financeDues(FinanceSnapshot s, DateTime from, DateTime to, Date
     }
   }
   for (final l in loanSummaries(s, today)) {
-    final due = finDay(l.loan.dueOn);
-    if (l.loan.archivedAt != null || !inRange(due)) continue;
-    dues.add(
-      FinanceDue(
-        kind: FinanceDueKind.loan,
-        id: l.loan.id,
-        name: l.loan.borrower,
-        amount: l.status == LoanStatus.paid ? l.loan.total : l.balance,
-        day: due,
-        done: l.status == LoanStatus.paid,
-      ),
-    );
+    if (l.loan.archivedAt != null) continue;
+    for (final i in l.installments) {
+      if (!inRange(i.due)) continue;
+      final paid = i.status == InstallmentStatus.paid;
+      dues.add(
+        FinanceDue(
+          kind: FinanceDueKind.loan,
+          id: l.loan.id,
+          name: l.loan.borrower,
+          amount: paid ? i.amount : i.open,
+          day: i.due,
+          done: paid,
+          installment: i.count > 1 ? i.number : null,
+          installments: i.count,
+        ),
+      );
+    }
   }
   return dues..sort((a, b) => a.day.compareTo(b.day));
 }

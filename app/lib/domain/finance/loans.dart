@@ -1,7 +1,8 @@
 import '../../data/db/database.dart';
 import 'finance.dart';
+import 'money.dart';
 
-/// "Em dia", "Atrasado" (past the due day with something left) or "Quitado".
+/// "Em dia", "Atrasado" (an installment past its day with something left) or "Quitado".
 enum LoanStatus { onTime, overdue, paid }
 
 /// A loan with its payments: what came back, what is left and the profit.
@@ -30,14 +31,132 @@ class LoanSummary {
   /// the total is all profit.
   int get interestReceived => interestIn(loan, received);
 
+  /// The installments (one, on the due day, when paid at once) with what each has received.
+  late final List<LoanInstallment> installments = loanSchedule(loan, payments, _today);
+
+  /// Overdue when an installment is past its day with something left.
   LoanStatus get status => balance <= 0
       ? LoanStatus.paid
-      : _today.isAfter(finDay(loan.dueOn))
+      : installments.any((i) => i.status == InstallmentStatus.overdue)
       ? LoanStatus.overdue
       : LoanStatus.onTime;
 
-  /// Days past the due day (0 when not overdue).
-  int get daysLate => status == LoanStatus.overdue ? _today.difference(finDay(loan.dueOn)).inDays : 0;
+  /// Days past the oldest overdue installment's day (0 when not overdue).
+  int get daysLate => switch (installments.where((i) => i.status == InstallmentStatus.overdue).firstOrNull) {
+    final i? => _today.difference(i.due).inDays,
+    null => 0,
+  };
+
+  /// What is left of the installments already past their day.
+  int get overdueAmount => installments.where((i) => i.status == InstallmentStatus.overdue).fold(0, (sum, i) => sum + i.open);
+
+  /// The first installment not fully paid ("Receber parcela"); null when paid off.
+  LoanInstallment? get next => installments.where((i) => i.status != InstallmentStatus.paid).firstOrNull;
+
+  /// The day that matters now: the next installment's, or the last one's when paid off.
+  DateTime get nextDue => next?.due ?? installments.lastOrNull?.due ?? finDay(loan.dueOn);
+}
+
+/// An installment "Paga", "Em aberto" (its day not past yet, perhaps partly paid) or "Atrasada".
+enum InstallmentStatus { paid, open, overdue }
+
+/// One installment of a loan: its [number] of [count], day and amount, and how much of it the
+/// payments cover.
+class LoanInstallment {
+  const LoanInstallment({
+    required this.number,
+    required this.count,
+    required this.due,
+    required this.amount,
+    required this.paid,
+    required this.status,
+    this.paidOn,
+  });
+
+  final int number;
+  final int count;
+  final DateTime due;
+  final int amount;
+  final int paid;
+  final InstallmentStatus status;
+
+  /// The day of the payment that completed it.
+  final DateTime? paidOn;
+
+  int get open => amount - paid;
+}
+
+/// The amounts of [loan]'s installments, adding up to its total: [Loan.installmentAmount] each when
+/// set (the last one takes what is left over), else the total split evenly. Empty installments (a
+/// total smaller than the agreed ones) are left out.
+List<int> installmentAmounts(Loan loan) {
+  final count = loan.installments < 1 ? 1 : loan.installments;
+  final each = loan.installmentAmount;
+  if (count == 1 || each == null || each <= 0) {
+    return [
+      for (final a in splitCents(loan.total, count))
+        if (a > 0) a,
+    ];
+  }
+  var left = loan.total;
+  final amounts = <int>[];
+  for (var i = 0; i < count && left > 0; i++) {
+    final amount = i == count - 1 ? left : (each < left ? each : left);
+    amounts.add(amount);
+    left -= amount;
+  }
+  return amounts;
+}
+
+/// The day of the installment [index] (0 = the first, on [Loan.dueOn]): monthly on the due day's
+/// date, on the month's last day when it is shorter.
+DateTime installmentDue(Loan loan, int index) {
+  final first = finDay(loan.dueOn);
+  return clampedDay(first.year, first.month + index, first.day);
+}
+
+/// The installments of [loan] as [payments] (any order) cover them: payments go to the installments
+/// in order, oldest payment first, so paying more or early lowers the next ones.
+List<LoanInstallment> loanSchedule(Loan loan, List<LoanPayment> payments, DateTime today) {
+  final day = DateTime(today.year, today.month, today.day);
+  final sorted = [...payments]..sort((a, b) => a.date != b.date ? a.date.compareTo(b.date) : a.createdAt.compareTo(b.createdAt));
+  final received = sorted.fold(0, (sum, p) => sum + p.amount);
+  final amounts = installmentAmounts(loan);
+  final schedule = <LoanInstallment>[];
+  var before = 0;
+  for (final (i, amount) in amounts.indexed) {
+    final covered = (received - before).clamp(0, amount);
+    final due = installmentDue(loan, i);
+    DateTime? paidOn;
+    if (covered >= amount) {
+      // The payment that took the running total past this installment's end.
+      var running = 0;
+      for (final p in sorted) {
+        running += p.amount;
+        if (running >= before + amount) {
+          paidOn = finDay(p.date);
+          break;
+        }
+      }
+    }
+    schedule.add(
+      LoanInstallment(
+        number: i + 1,
+        count: amounts.length,
+        due: due,
+        amount: amount,
+        paid: covered,
+        status: covered >= amount
+            ? InstallmentStatus.paid
+            : day.isAfter(due)
+            ? InstallmentStatus.overdue
+            : InstallmentStatus.open,
+        paidOn: paidOn,
+      ),
+    );
+    before += amount;
+  }
+  return schedule;
 }
 
 /// The profit within [received] of [loan] (see [LoanSummary.interestReceived]).
@@ -49,6 +168,7 @@ int interestIn(Loan loan, int received) {
 
 /// The profit of the loans received in each month (keyed by its first day): each payment brings
 /// what it adds to [interestIn], oldest payment first, so a loan's months add up to its profit received.
+/// Installments don't change it: they add up to the total, and the profit is a share of each payment.
 Map<DateTime, int> loanInterestByMonth(FinanceSnapshot s) {
   final loans = {for (final l in s.loans) l.id: l};
   final payments = [
@@ -110,7 +230,8 @@ LoansOverview loansOverview(List<LoanSummary> loans) {
     toReceive += l.balance;
     interestToCome += l.interest - l.interestReceived < 0 ? 0 : l.interest - l.interestReceived;
     if (l.status == LoanStatus.overdue) {
-      overdue += l.balance;
+      // Only the installments already late; the ones still to come are not.
+      overdue += l.overdueAmount;
       overdueCount++;
     }
   }
@@ -126,17 +247,17 @@ LoansOverview loansOverview(List<LoanSummary> loans) {
   );
 }
 
-/// Loans in months: by the due day's month (soonest first) or by the month they were lent (latest
-/// first).
+/// Loans in months: by the month of the day that matters now (the next installment's; soonest
+/// first) or by the month they were lent (latest first).
 List<({DateTime month, List<LoanSummary> loans})> loansByMonth(List<LoanSummary> loans, {required bool byDue}) {
   final months = <DateTime, List<LoanSummary>>{};
   for (final l in loans) {
-    final day = finDay(byDue ? l.loan.dueOn : l.loan.lentOn);
+    final day = byDue ? l.nextDue : finDay(l.loan.lentOn);
     months.putIfAbsent(DateTime(day.year, day.month), () => []).add(l);
   }
   final keys = months.keys.toList()..sort((a, b) => byDue ? a.compareTo(b) : b.compareTo(a));
   return [
     for (final m in keys)
-      (month: m, loans: months[m]!..sort((a, b) => byDue ? a.loan.dueOn.compareTo(b.loan.dueOn) : b.loan.lentOn.compareTo(a.loan.lentOn))),
+      (month: m, loans: months[m]!..sort((a, b) => byDue ? a.nextDue.compareTo(b.nextDue) : b.loan.lentOn.compareTo(a.loan.lentOn))),
   ];
 }
