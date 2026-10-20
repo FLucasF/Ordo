@@ -1,4 +1,4 @@
-# Builds the Windows installer (build\installer\TarefasSetup-<version>.exe) in one go:
+# Builds the Windows installer (build\installer\OrdoSetup-<version>.exe) in one go:
 #   1. flutter build windows --release
 #   2. copies the Visual C++ runtime next to the app (app-local, so it runs on a Windows without it)
 #   3. compiles tarefas.iss with Inno Setup 6

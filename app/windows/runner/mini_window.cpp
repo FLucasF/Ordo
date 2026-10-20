@@ -101,7 +101,7 @@ void MiniWindow::Open() {
   }
 
   // No taskbar button and no Alt+Tab; a frame only to resize it (WM_NCCALCSIZE hides it).
-  hwnd_ = ::CreateWindowExW(WS_EX_TOOLWINDOW, kClassName, L"Tarefas", WS_POPUP | WS_THICKFRAME | WS_CLIPCHILDREN, rect.left, rect.top,
+  hwnd_ = ::CreateWindowExW(WS_EX_TOOLWINDOW, kClassName, L"Ordo", WS_POPUP | WS_THICKFRAME | WS_CLIPCHILDREN, rect.left, rect.top,
                             rect.right - rect.left, rect.bottom - rect.top, nullptr, nullptr, ::GetModuleHandleW(nullptr), this);
   if (hwnd_ == nullptr) {
     return;

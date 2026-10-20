@@ -613,7 +613,7 @@ void main() {
     await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 200)));
     await tester.pump(const Duration(milliseconds: 100));
     expect(find.text('Contagem Regressiva'), findsOneWidget);
-    expect(find.text('Use o Tarefas'), findsOneWidget);
+    expect(find.text('Use o Ordo'), findsOneWidget);
 
     await tester.tap(find.byTooltip('Contagem Regressiva'));
     for (var i = 0; i < 4; i++) {

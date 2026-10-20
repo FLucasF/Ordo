@@ -76,7 +76,7 @@ O script faz tudo:
 2. copia as DLLs do Visual C++ (`msvcp140`, `vcruntime140`, `vcruntime140_1`), tiradas da pasta de redistribuíveis do Visual Studio, para junto do app, e assim ele abre num Windows que não tenha esse pacote;
 3. compila `windows\installer\tarefas.iss`.
 
-O instalador sai em `app/build/installer/TarefasSetup-1.0.0.exe`.
+O instalador sai em `app/build/installer/OrdoSetup-1.0.0.exe`.
 
 Ele instala só para o seu usuário (sem pedir administrador), em `%LOCALAPPDATA%\Programs\Tarefas`. Também cria o atalho no menu Iniciar (e na área de trabalho, se você marcar).
 
@@ -84,10 +84,10 @@ Na primeira execução o Windows pode mostrar o aviso do SmartScreen: clique em 
 
 ### Publicar para os usuários
 
-Crie uma versão em **Releases** no GitHub e anexe o `TarefasSetup-<versão>.exe`. Pelo terminal:
+Crie uma versão em **Releases** no GitHub e anexe o `OrdoSetup-<versão>.exe`. Pelo terminal:
 
 ```
-gh release create v1.1.0 app/build/installer/TarefasSetup-1.1.0.exe Tarefas-1.1.0.apk --title "Tarefas 1.1.0" --notes "O que mudou…"
+gh release create v1.1.0 app/build/installer/OrdoSetup-1.1.0.exe Ordo-1.1.0.apk --title "Ordo 1.1.0" --notes "O que mudou…"
 ```
 
 ### 3. Atualizar

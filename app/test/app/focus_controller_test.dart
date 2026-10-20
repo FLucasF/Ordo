@@ -39,17 +39,17 @@ void main() {
     addTearDown(sub.close);
     final focus = container.read(focusProvider.notifier)..start(mode: FocusMode.pomo);
     await pumpEventQueue();
-    expect(container.read(windowTitleProvider), 'Tarefas', reason: 'off by default');
+    expect(container.read(windowTitleProvider), 'Ordo', reason: 'off by default');
 
     await container.read(preferencesRepositoryProvider).setFocusSettings(const FocusSettings(timeInTitle: true));
     await pumpEventQueue();
     clock.value = clock.value.add(const Duration(minutes: 1, seconds: 9));
     container.invalidate(windowTitleProvider);
-    expect(container.read(windowTitleProvider), '23:51 · Tarefas');
+    expect(container.read(windowTitleProvider), '23:51 · Ordo');
     focus.pause();
-    expect(container.read(windowTitleProvider), 'Pausado 23:51 · Tarefas');
+    expect(container.read(windowTitleProvider), 'Pausado 23:51 · Ordo');
     await focus.finish();
-    expect(container.read(windowTitleProvider), 'Tarefas');
+    expect(container.read(windowTitleProvider), 'Ordo');
   });
 
   test('extra time and a new duration change the record of the Pomo that just ended', () async {

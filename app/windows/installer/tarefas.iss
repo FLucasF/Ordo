@@ -1,13 +1,13 @@
-; Windows installer of Tarefas, for Inno Setup 6 (https://jrsoftware.org/isinfo.php).
+; Windows installer of Ordo (formerly Tarefas), for Inno Setup 6 (https://jrsoftware.org/isinfo.php).
 ; Build it with windows\installer\build_installer.ps1: it builds the app, puts the Visual C++ runtime
 ; next to it and compiles this script.
-; The installer goes to build\installer\TarefasSetup-<version>.exe.
+; The installer goes to build\installer\OrdoSetup-<version>.exe.
 ;
 ; It installs for the current user only (no administrator), in %LOCALAPPDATA%\Programs\Tarefas.
 ; The data (database, attachments, calendars) lives in the user's AppData and is kept when the app is
 ; updated or removed.
 
-#define AppName "Tarefas"
+#define AppName "Ordo"
 #define AppVersion "1.5.2"
 #define AppExe "task_manager.exe"
 
@@ -16,12 +16,15 @@ AppId={{E8FC1625-378E-4016-B181-A938F16BD25E}
 AppName={#AppName}
 AppVersion={#AppVersion}
 AppVerName={#AppName} {#AppVersion}
+; An update installs where the app already is (Programs\Tarefas before the rename).
 DefaultDirName={localappdata}\Programs\{#AppName}
 DefaultGroupName={#AppName}
 DisableProgramGroupPage=yes
 PrivilegesRequired=lowest
 OutputDir=..\..\build\installer
-OutputBaseFilename=TarefasSetup-{#AppVersion}
+OutputBaseFilename=OrdoSetup-{#AppVersion}
+; The Start menu folder follows the new name, not the one an older version made.
+UsePreviousGroup=no
 Compression=lzma2
 SolidCompression=yes
 ArchitecturesAllowed=x64compatible
@@ -46,6 +49,12 @@ Root: HKCU; Subkey: "Software\dev.lucasfelipe"; Flags: uninsdeletekeyifempty
 Root: HKCU; Subkey: "Software\dev.lucasfelipe\Tarefas"; Flags: uninsdeletekey
 ; "Iniciar com o Windows" (set by the app): the startup entry goes with the app.
 Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueType: none; ValueName: "Tarefas"; Flags: uninsdeletevalue dontcreatekey
+
+[InstallDelete]
+; The shortcuts of the versions named "Tarefas".
+Type: files; Name: "{userprograms}\Tarefas\Tarefas.lnk"
+Type: dirifempty; Name: "{userprograms}\Tarefas"
+Type: files; Name: "{userdesktop}\Tarefas.lnk"
 
 [Icons]
 Name: "{group}\{#AppName}"; Filename: "{app}\{#AppExe}"

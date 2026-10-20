@@ -1,4 +1,6 @@
-# Tarefas
+# Ordo
+
+> Antes chamado **Tarefas**. Só o nome mudou: atualizar instala por cima e mantém todos os dados.
 
 App pessoal de tarefas e produtividade para **Windows** e **Android**, com o jeito de usar do TickTick: listas, calendário, matriz de Eisenhower, Pomodoro, hábitos, contagem regressiva, resumo e estatísticas.
 
@@ -30,17 +32,17 @@ Os dados ficam **só no seu aparelho**: não tem conta, login nem servidor. Para
 
 ### Baixar e instalar (jeito fácil)
 
-1. Abra a página de [**Releases**](https://github.com/FLucasF/toDO-manager/releases/latest) e baixe o **`TarefasSetup-1.5.2.exe`**.
+1. Abra a página de [**Releases**](https://github.com/FLucasF/toDO-manager/releases/latest) e baixe o **`OrdoSetup-1.5.2.exe`**.
 2. Dê dois cliques no arquivo baixado.
 3. O Windows pode mostrar o aviso azul do **SmartScreen** ("O Windows protegeu o computador"), porque o instalador não tem assinatura digital paga. Clique em **Mais informações → Executar assim mesmo**.
-4. Siga o instalador: **Avançar → Instalar → Concluir**. Ele não pede senha de administrador e cria o atalho **Tarefas** no menu Iniciar. Se você marcar a opção, cria também na área de trabalho.
+4. Siga o instalador: **Avançar → Instalar → Concluir**. Ele não pede senha de administrador e cria o atalho **Ordo** no menu Iniciar. Se você marcar a opção, cria também na área de trabalho.
 
 Funciona no Windows 10 e 11 (64 bits). Não precisa instalar mais nada, porque o instalador já leva tudo o que o app usa.
 
 > **Erro "desktop_drop_plugin.dll não foi projetado para ser executado no Windows" (0xc0e90002):** é o **Controle Inteligente de Aplicativos** do Windows 11 bloqueando o app, porque os arquivos dele não têm assinatura digital paga (o arquivo não está estragado). Para usar, desligue essa proteção em *Segurança do Windows → Controle de aplicativos e navegador → Configurações do Controle Inteligente de Aplicativos*. Atenção: em muitas versões do Windows 11, depois de desligada ela só volta reinstalando o Windows.
 
 - **Atualizar:** baixe o instalador da versão nova e rode por cima, mesmo com o app aberto na bandeja (o instalador fecha o app sozinho). Suas tarefas continuam.
-- **Desinstalar:** use *Configurações do Windows → Aplicativos → Tarefas → Desinstalar*. Seus dados **não** são apagados; se instalar de novo, eles voltam.
+- **Desinstalar:** use *Configurações do Windows → Aplicativos → Ordo → Desinstalar*. Seus dados **não** são apagados; se instalar de novo, eles voltam.
 
 ### Onde ficam os dados
 
@@ -62,7 +64,7 @@ flutter pub get
 powershell -ExecutionPolicy Bypass -File windows\installer\build_installer.ps1
 ```
 
-O script gera o app, coloca junto as DLLs do Visual C++ e cria o instalador em `app\build\installer\TarefasSetup-<versão>.exe`. Para só rodar sem instalar, use `flutter build windows --release` e abra `app\build\windows\x64\runner\Release\task_manager.exe`. Mais detalhes estão em [docs/distribuicao.md](docs/distribuicao.md).
+O script gera o app, coloca junto as DLLs do Visual C++ e cria o instalador em `app\build\installer\OrdoSetup-<versão>.exe`. Para só rodar sem instalar, use `flutter build windows --release` e abra `app\build\windows\x64\runner\Release\task_manager.exe`. Mais detalhes estão em [docs/distribuicao.md](docs/distribuicao.md).
 
 ---
 
@@ -72,19 +74,19 @@ Funciona no Android 7.0 ou mais novo.
 
 ### Baixar e instalar (jeito fácil)
 
-1. **No celular**, abra a página de [**Releases**](https://github.com/FLucasF/toDO-manager/releases/latest) e toque em **`Tarefas-1.5.2.apk`** para baixar.
+1. **No celular**, abra a página de [**Releases**](https://github.com/FLucasF/toDO-manager/releases/latest) e toque em **`Ordo-1.5.2.apk`** para baixar.
 2. Quando terminar, toque na notificação do download, ou abra o app **Arquivos → Downloads** e toque no arquivo.
 3. O Android avisa que, por segurança, o app de onde você está instalando (Chrome ou Arquivos) não pode instalar apps. Toque em **Configurações**, ligue **Permitir desta fonte** e volte.
 4. Toque em **Instalar** e depois em **Abrir**.
-5. Na primeira abertura, toque em **Permitir** para as notificações. Para os lembretes tocarem na hora exata, ative também *Configurações do Android → Apps → Tarefas → Alarmes e lembretes*.
+5. Na primeira abertura, toque em **Permitir** para as notificações. Para os lembretes tocarem na hora exata, ative também *Configurações do Android → Apps → Ordo → Alarmes e lembretes*.
 
 Se aparecer um aviso do **Play Protect** ("app desconhecido"), toque em **Mais detalhes → Instalar mesmo assim**. O aviso aparece porque o app não vem da Play Store.
 
 - **Atualizar:** baixe o APK da versão nova e instale por cima. Suas tarefas continuam.
 - **Desinstalar:** no Android, desinstalar **apaga os dados** do app. Antes, faça um backup (veja [Backup](#backup-e-troca-de-aparelho)).
 
-- **Widget de calendário:** segure um espaço vazio da tela inicial → **Widgets** → **Tarefas → Calendário**. No próprio widget escolha **Dia**, **Semana** ou **Mês** (cada widget guarda a sua escolha); **‹ ›** avançam e voltam, o título volta para hoje, o **+** cria uma tarefa, e tocar num dia abre o app nele. No modo **Dia**, cada compromisso fica tão alto quanto dura (um das 8h às 12h vira um bloco com início e fim): pequeno, o widget é uma lista; aumentando, os blocos crescem e ocupam o espaço todo. Quando o dia não cabe, a lista rola com o dedo (Android 12 ou mais novo; antes disso, o que não cabe vira "+N").
-- **Mini calendário (Windows):** clique com o botão direito no ícone do Tarefas perto do relógio → **Mini calendário** (ou **Configurações → Notificações → Mini calendário → Abrir**). É uma janelinha com o calendário na área de trabalho, igual ao widget do celular: **Dia**, **Semana** ou **Mês**, **‹ ›**, **+** e clique num compromisso para abrir o app nele. Arraste pelo título e redimensione pelas bordas. O 📌 escolhe se ela fica **por cima das janelas**, **normal** ou **na área de trabalho** (atrás das janelas; aparece com Win + D). Ela lembra o lugar, o tamanho e o modo, e volta aberta quando o Tarefas inicia; o **×** fecha.
+- **Widget de calendário:** segure um espaço vazio da tela inicial → **Widgets** → **Ordo → Calendário**. No próprio widget escolha **Dia**, **Semana** ou **Mês** (cada widget guarda a sua escolha); **‹ ›** avançam e voltam, o título volta para hoje, o **+** cria uma tarefa, e tocar num dia abre o app nele. No modo **Dia**, cada compromisso fica tão alto quanto dura (um das 8h às 12h vira um bloco com início e fim): pequeno, o widget é uma lista; aumentando, os blocos crescem e ocupam o espaço todo. Quando o dia não cabe, a lista rola com o dedo (Android 12 ou mais novo; antes disso, o que não cabe vira "+N").
+- **Mini calendário (Windows):** clique com o botão direito no ícone do Ordo perto do relógio → **Mini calendário** (ou **Configurações → Notificações → Mini calendário → Abrir**). É uma janelinha com o calendário na área de trabalho, igual ao widget do celular: **Dia**, **Semana** ou **Mês**, **‹ ›**, **+** e clique num compromisso para abrir o app nele. Arraste pelo título e redimensione pelas bordas. O 📌 escolhe se ela fica **por cima das janelas**, **normal** ou **na área de trabalho** (atrás das janelas; aparece com Win + D). Ela lembra o lugar, o tamanho e o modo, e volta aberta quando o Ordo inicia; o **×** fecha.
 
 > **Aparelhos autorizados (Android):** este app está registrado no Google numa conta de *distribuição limitada*. A partir de 30/09/2026, no Brasil, **só os celulares autorizados pelo dono do app** (até 20) conseguem instalar e atualizar. Para autorizar um celular, o dono gera um QR code ou um link no Android Developer Console. A pessoa abre no celular, aceita e manda de volta o código que aparece. Se quiser usar o app, peça esse link.
 
@@ -179,7 +181,7 @@ Escreva tudo no título, e o app entende:
 
 ### Segundo plano e sons
 
-- **Windows:** fechar a janela deixa o Tarefas na **bandeja**, perto do relógio. Os lembretes e o Pomodoro continuam; clique no ícone para abrir, ou use o botão direito → **Sair** para fechar de vez. Em Configurações → Notificações dá para desligar isso e ligar **Iniciar com o Windows**.
+- **Windows:** fechar a janela deixa o Ordo na **bandeja**, perto do relógio. Os lembretes e o Pomodoro continuam; clique no ícone para abrir, ou use o botão direito → **Sair** para fechar de vez. Em Configurações → Notificações dá para desligar isso e ligar **Iniciar com o Windows**.
 - **Som:** lembretes e fim do Pomo tocam um **despertador**. Em Configurações → Notificações → **Som do lembrete** (e em Foco → Configurações de foco → **Som do Pomo**) dá para trocar por Padrão ou Silencioso. No Windows, o despertador do Pomo toca até você tocar no app ou clicar em **Parar** no aviso.
 
 ### Configurações

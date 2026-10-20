@@ -94,7 +94,7 @@ abstract class AppLocalizations {
   /// No description provided for @appTitle.
   ///
   /// In pt, this message translates to:
-  /// **'Tarefas'**
+  /// **'Ordo'**
   String get appTitle;
 
   /// No description provided for @inbox.
@@ -3004,7 +3004,7 @@ abstract class AppLocalizations {
   /// No description provided for @countdownSeedUseApp.
   ///
   /// In pt, this message translates to:
-  /// **'Use o Tarefas'**
+  /// **'Use o Ordo'**
   String get countdownSeedUseApp;
 
   /// No description provided for @countdownSeedWeekend.
@@ -4828,7 +4828,7 @@ abstract class AppLocalizations {
   /// No description provided for @aboutText.
   ///
   /// In pt, this message translates to:
-  /// **'Tarefas é um clone pessoal do TickTick, feito em Flutter para Windows e Android. Tudo fica salvo neste aparelho; use Gerar Backup para levar seus dados para outro lugar.'**
+  /// **'Ordo (antes chamado Tarefas) é um app pessoal no estilo do TickTick, feito em Flutter para Windows e Android. Tudo fica salvo neste aparelho; use Gerar Backup para levar seus dados para outro lugar.'**
   String get aboutText;
 
   /// No description provided for @settingsMore.
@@ -6820,7 +6820,7 @@ abstract class AppLocalizations {
   /// No description provided for @helpAbout.
   ///
   /// In pt, this message translates to:
-  /// **'Sobre o Tarefas'**
+  /// **'Sobre o Ordo'**
   String get helpAbout;
 
   /// No description provided for @commentImage.
@@ -7534,7 +7534,7 @@ abstract class AppLocalizations {
   /// No description provided for @trayOpen.
   ///
   /// In pt, this message translates to:
-  /// **'Abrir o Tarefas'**
+  /// **'Abrir o Ordo'**
   String get trayOpen;
 
   /// No description provided for @trayQuit.
@@ -8920,7 +8920,7 @@ abstract class AppLocalizations {
   /// No description provided for @syncSameWifi.
   ///
   /// In pt, this message translates to:
-  /// **'Os dois precisam estar no mesmo Wi-Fi, com o Tarefas aberto e na mesma versão.'**
+  /// **'Os dois precisam estar no mesmo Wi-Fi, com o Ordo aberto e na mesma versão.'**
   String get syncSameWifi;
 
   /// No description provided for @syncWaiting.
@@ -9016,7 +9016,7 @@ abstract class AppLocalizations {
   /// No description provided for @syncFailed.
   ///
   /// In pt, this message translates to:
-  /// **'Não deu certo. Confira se os dois estão no mesmo Wi-Fi, com o Tarefas aberto e na mesma versão.'**
+  /// **'Não deu certo. Confira se os dois estão no mesmo Wi-Fi, com o Ordo aberto e na mesma versão.'**
   String get syncFailed;
 
   /// No description provided for @syncCodeLabel.

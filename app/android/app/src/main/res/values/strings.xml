@@ -2,5 +2,5 @@
 <resources>
     <!-- The home-screen widget, as the launcher's widget list shows it. -->
     <string name="calendar_widget_label">Calendário</string>
-    <string name="calendar_widget_description">Seu calendário do Tarefas: dia, semana ou mês</string>
+    <string name="calendar_widget_description">Seu calendário do Ordo: dia, semana ou mês</string>
 </resources>

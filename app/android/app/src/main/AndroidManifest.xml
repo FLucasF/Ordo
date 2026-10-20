@@ -8,7 +8,7 @@
     <uses-permission android:name="android.permission.USE_EXACT_ALARM"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
     <application
-        android:label="Tarefas"
+        android:label="Ordo"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

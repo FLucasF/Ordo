@@ -10,7 +10,7 @@ class AppLocalizationsPt extends AppLocalizations {
   AppLocalizationsPt([String locale = 'pt']) : super(locale);
 
   @override
-  String get appTitle => 'Tarefas';
+  String get appTitle => 'Ordo';
 
   @override
   String get inbox => 'Caixa de Entrada';
@@ -1530,7 +1530,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get countdownEmpty => 'Nenhuma contagem regressiva';
 
   @override
-  String get countdownSeedUseApp => 'Use o Tarefas';
+  String get countdownSeedUseApp => 'Use o Ordo';
 
   @override
   String get countdownSeedWeekend => 'Fim de semana';
@@ -2503,7 +2503,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get aboutText =>
-      'Tarefas é um clone pessoal do TickTick, feito em Flutter para Windows e Android. Tudo fica salvo neste aparelho; use Gerar Backup para levar seus dados para outro lugar.';
+      'Ordo (antes chamado Tarefas) é um app pessoal no estilo do TickTick, feito em Flutter para Windows e Android. Tudo fica salvo neste aparelho; use Gerar Backup para levar seus dados para outro lugar.';
 
   @override
   String get settingsMore => 'Mais configurações';
@@ -3563,7 +3563,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get helpHome => 'Página inicial';
 
   @override
-  String get helpAbout => 'Sobre o Tarefas';
+  String get helpAbout => 'Sobre o Ordo';
 
   @override
   String get commentImage => 'Imagem';
@@ -3956,7 +3956,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get notificationAlarmClockChannelName => 'Lembretes (despertador)';
 
   @override
-  String get trayOpen => 'Abrir o Tarefas';
+  String get trayOpen => 'Abrir o Ordo';
 
   @override
   String get trayQuit => 'Sair';
@@ -4736,7 +4736,7 @@ class AppLocalizationsPt extends AppLocalizations {
       'Este aparelho fica igual ao outro. Antes, é feita uma cópia de segurança dos dados daqui (em Configurações → Conta → Backups automáticos).';
 
   @override
-  String get syncSameWifi => 'Os dois precisam estar no mesmo Wi-Fi, com o Tarefas aberto e na mesma versão.';
+  String get syncSameWifi => 'Os dois precisam estar no mesmo Wi-Fi, com o Ordo aberto e na mesma versão.';
 
   @override
   String syncWaiting(String name) {
@@ -4794,7 +4794,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get syncRefused => 'O outro aparelho parou de aceitar depois de muitas tentativas. Lá, feche e abra Receber de novo.';
 
   @override
-  String get syncFailed => 'Não deu certo. Confira se os dois estão no mesmo Wi-Fi, com o Tarefas aberto e na mesma versão.';
+  String get syncFailed => 'Não deu certo. Confira se os dois estão no mesmo Wi-Fi, com o Ordo aberto e na mesma versão.';
 
   @override
   String get syncCodeLabel => 'Código';

@@ -90,11 +90,13 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "dev.lucasfelipe" "\0"
-            VALUE "FileDescription", "Tarefas" "\0"
+            VALUE "FileDescription", "Ordo" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "task_manager" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2026 dev.lucasfelipe. All rights reserved." "\0"
             VALUE "OriginalFilename", "task_manager.exe" "\0"
+            // Stays "Tarefas": path_provider names the data folder (%APPDATA%\dev.lucasfelipe\Tarefas)
+            // after it, so renaming it would leave the data behind.
             VALUE "ProductName", "Tarefas" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END

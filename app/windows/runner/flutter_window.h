@@ -71,7 +71,7 @@ class FlutterWindow : public Win32Window {
   bool quitting_ = false;
 
   // Texts come from Dart (the ARB file); these stand in until it configures the tray.
-  std::wstring tray_tooltip_ = L"Tarefas";
+  std::wstring tray_tooltip_ = L"Ordo";
   std::wstring tray_open_ = L"Abrir";
   std::wstring tray_mini_ = L"Mini calendário";
   std::wstring tray_quit_ = L"Sair";
