@@ -4847,6 +4847,132 @@ class AppLocalizationsLa extends AppLocalizations {
   String get featureDietHint => 'Commentarius ciborum cum tabula TACO: calores et macronutrientia diei';
 
   @override
+  String get navJournal => 'Diarium';
+
+  @override
+  String get featureJournalHint => 'Animus, vigor et notae cuiusque diei, cum summario rerum gestarum';
+
+  @override
+  String get journalTabDay => 'Dies';
+
+  @override
+  String get journalTabTimeline => 'Series temporum';
+
+  @override
+  String get journalTabCalendar => 'Calendarium';
+
+  @override
+  String get journalWriteToday => 'Hodie scribe';
+
+  @override
+  String get journalMood => 'Animus';
+
+  @override
+  String get journalMood1 => 'Pessime';
+
+  @override
+  String get journalMood2 => 'Male';
+
+  @override
+  String get journalMood3 => 'Mediocriter';
+
+  @override
+  String get journalMood4 => 'Bene';
+
+  @override
+  String get journalMood5 => 'Optime';
+
+  @override
+  String get journalEnergy => 'Vigor';
+
+  @override
+  String journalEnergyLevel(int level) {
+    return 'Vigor $level ex 5';
+  }
+
+  @override
+  String get journalHighlight => 'Praecipuum / Gratia';
+
+  @override
+  String get journalHighlightHint => 'Optimum diei, aut aliquid pro quo gratus es';
+
+  @override
+  String get journalNotes => 'Notae diei';
+
+  @override
+  String get journalNotesPlaceholder => 'Quomodo dies tuus fuit? Scribe / ut formes aut imagines adiungas';
+
+  @override
+  String get journalPickDay => 'Diem elige';
+
+  @override
+  String get journalDeleteEntry => 'Inscriptionem huius diei dele';
+
+  @override
+  String get journalEntryDeleted => 'Inscriptio diarii deleta';
+
+  @override
+  String get journalSummary => 'Summarium diei';
+
+  @override
+  String get journalSummaryHint => 'Statim computatum, ex ceteris partibus';
+
+  @override
+  String journalSummaryTasks(int count) {
+    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: '$count pensa perfecta', one: 'Unum pensum perfectum');
+    return '$_temp0';
+  }
+
+  @override
+  String journalSummaryHabits(int done, int total) {
+    return '$done ex $total consuetudinibus factae';
+  }
+
+  @override
+  String journalSummaryDiet(String kcal) {
+    return '$kcal kcal sumptae';
+  }
+
+  @override
+  String journalSummaryDietTarget(String kcal, String target) {
+    return '$kcal ex $target kcal sumptae';
+  }
+
+  @override
+  String journalSummaryFocus(int minutes) {
+    return '$minutes min attentionis';
+  }
+
+  @override
+  String journalSummaryFinance(String income, String expense) {
+    return 'Accepta $income · expensa $expense';
+  }
+
+  @override
+  String get journalSummaryEmpty => 'Nihil hoc die in ceteris partibus inscriptum.';
+
+  @override
+  String get journalSearchHint => 'In notis et praecipuis quaere';
+
+  @override
+  String get journalFilterClear => 'Filtra purga';
+
+  @override
+  String get journalTimelineEmpty => 'Nulla inscriptio adhuc. Incipe de hodierno die scribere.';
+
+  @override
+  String get journalNoResults => 'Nulla inscriptio huic quaestioni aut filtro respondet.';
+
+  @override
+  String get journalChart => 'Animus et vigor';
+
+  @override
+  String get journalChartEmpty => 'Nec animus nec vigor hoc mense inscripti.';
+
+  @override
+  String get journalNoText => 'Sine notis';
+
+  @override
   String get dietTabDiary => 'Commentarius';
 
   @override

@@ -4842,6 +4842,132 @@ class AppLocalizationsPt extends AppLocalizations {
   String get featureDietHint => 'Diário de refeições com a Tabela TACO: calorias e macros do dia';
 
   @override
+  String get navJournal => 'Diário';
+
+  @override
+  String get featureJournalHint => 'Humor, energia e notas de cada dia, com um resumo do que você fez';
+
+  @override
+  String get journalTabDay => 'Dia';
+
+  @override
+  String get journalTabTimeline => 'Linha do tempo';
+
+  @override
+  String get journalTabCalendar => 'Calendário';
+
+  @override
+  String get journalWriteToday => 'Escrever hoje';
+
+  @override
+  String get journalMood => 'Humor';
+
+  @override
+  String get journalMood1 => 'Péssimo';
+
+  @override
+  String get journalMood2 => 'Ruim';
+
+  @override
+  String get journalMood3 => 'Normal';
+
+  @override
+  String get journalMood4 => 'Bom';
+
+  @override
+  String get journalMood5 => 'Ótimo';
+
+  @override
+  String get journalEnergy => 'Energia';
+
+  @override
+  String journalEnergyLevel(int level) {
+    return 'Energia $level de 5';
+  }
+
+  @override
+  String get journalHighlight => 'Destaque / Gratidão';
+
+  @override
+  String get journalHighlightHint => 'O melhor do dia, ou algo pelo qual você é grato';
+
+  @override
+  String get journalNotes => 'Notas do dia';
+
+  @override
+  String get journalNotesPlaceholder => 'Como foi o seu dia? Digite / para formatar ou anexar imagens';
+
+  @override
+  String get journalPickDay => 'Escolher dia';
+
+  @override
+  String get journalDeleteEntry => 'Apagar a entrada deste dia';
+
+  @override
+  String get journalEntryDeleted => 'Entrada do diário deletada';
+
+  @override
+  String get journalSummary => 'Resumo do dia';
+
+  @override
+  String get journalSummaryHint => 'Calculado na hora, a partir dos outros módulos';
+
+  @override
+  String journalSummaryTasks(int count) {
+    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: '$count tarefas concluídas', one: '1 tarefa concluída');
+    return '$_temp0';
+  }
+
+  @override
+  String journalSummaryHabits(int done, int total) {
+    return '$done de $total hábitos feitos';
+  }
+
+  @override
+  String journalSummaryDiet(String kcal) {
+    return '$kcal kcal consumidas';
+  }
+
+  @override
+  String journalSummaryDietTarget(String kcal, String target) {
+    return '$kcal de $target kcal consumidas';
+  }
+
+  @override
+  String journalSummaryFocus(int minutes) {
+    return '$minutes min de foco';
+  }
+
+  @override
+  String journalSummaryFinance(String income, String expense) {
+    return 'Entrou $income · saiu $expense';
+  }
+
+  @override
+  String get journalSummaryEmpty => 'Nada registrado nos outros módulos neste dia.';
+
+  @override
+  String get journalSearchHint => 'Buscar nas notas e destaques';
+
+  @override
+  String get journalFilterClear => 'Limpar filtros';
+
+  @override
+  String get journalTimelineEmpty => 'Nenhuma entrada ainda. Comece escrevendo sobre hoje.';
+
+  @override
+  String get journalNoResults => 'Nenhuma entrada com essa busca ou filtro.';
+
+  @override
+  String get journalChart => 'Humor e energia';
+
+  @override
+  String get journalChartEmpty => 'Sem humor nem energia registrados neste mês.';
+
+  @override
+  String get journalNoText => 'Sem notas';
+
+  @override
   String get dietTabDiary => 'Diário';
 
   @override
