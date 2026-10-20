@@ -121,4 +121,25 @@ void main() {
     expect(tester.takeException(), isNull);
     await dispose(tester);
   });
+  testWidgets('own food: empty calories come from the macros (P×4 + C×4 + G×9)', (tester) async {
+    await pumpApp(tester, '/diet');
+    await tester.tap(find.descendant(of: find.byType(ShellTabs<DietTab>), matching: find.text('Alimentos')));
+    await settle(tester);
+    await tester.tap(find.widgetWithText(CreateButton, 'Novo alimento'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.widgetWithText(TextField, 'Nome'), 'Iogurte da casa');
+    await tester.enterText(find.widgetWithText(TextField, 'Proteínas'), '10');
+    await tester.enterText(find.widgetWithText(TextField, 'Carboidratos'), '5');
+    await tester.enterText(find.widgetWithText(TextField, 'Gorduras'), '3');
+    await tester.pump();
+    // 40 + 20 + 27.
+    expect(find.text('87'), findsOneWidget);
+    expect(find.text('Pelos macros: P×4 + C×4 + G×9'), findsOneWidget);
+    await tester.tap(find.text('Salvar'));
+    await settle(tester);
+    final s = await tester.runAsync(() => DietRepository(db, clock: clock).load());
+    expect(s!.foods.single.kcal, 87);
+    expect(tester.takeException(), isNull);
+    await dispose(tester);
+  });
 }

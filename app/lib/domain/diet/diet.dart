@@ -160,3 +160,8 @@ String portionText(double quantity, String? measure, double grams) {
   String n(double v) => (v == v.roundToDouble() ? v.toStringAsFixed(0) : v.toStringAsFixed(1)).replaceAll('.', ',');
   return measure == null ? '${n(grams)} g' : '${n(quantity)} $measure (${n(grams)} g)';
 }
+
+/// Calories from the macros (Atwater: 4 kcal per gram of protein and of carbohydrate, 9 per gram of
+/// fat); null when none of them is known.
+double? kcalFromMacros({double? protein, double? carbs, double? fat}) =>
+    protein == null && carbs == null && fat == null ? null : (protein ?? 0) * 4 + (carbs ?? 0) * 4 + (fat ?? 0) * 9;

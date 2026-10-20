@@ -1654,6 +1654,7 @@
   "dietQuantity": "Quantidade",
   "dietGrams": "gramas",
   "dietNotFound": "Não achei: cadastrar alimento",
+  "dietKcalFromMacros": "Pelos macros: P×4 + C×4 + G×9",
   "dietPer100": "Valores por 100 g (deixe em branco o que não souber)",
   "dietName": "Nome",
   "dietNameRequired": "Dê um nome ao alimento.",

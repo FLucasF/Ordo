@@ -9235,6 +9235,12 @@ abstract class AppLocalizations {
   /// **'Não achei: cadastrar alimento'**
   String get dietNotFound;
 
+  /// No description provided for @dietKcalFromMacros.
+  ///
+  /// In pt, this message translates to:
+  /// **'Pelos macros: P×4 + C×4 + G×9'**
+  String get dietKcalFromMacros;
+
   /// No description provided for @dietPer100.
   ///
   /// In pt, this message translates to:

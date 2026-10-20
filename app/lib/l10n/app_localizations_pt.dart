@@ -4907,6 +4907,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get dietNotFound => 'Não achei: cadastrar alimento';
 
   @override
+  String get dietKcalFromMacros => 'Pelos macros: P×4 + C×4 + G×9';
+
+  @override
   String get dietPer100 => 'Valores por 100 g (deixe em branco o que não souber)';
 
   @override

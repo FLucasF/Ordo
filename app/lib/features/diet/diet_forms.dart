@@ -340,8 +340,11 @@ class _FoodFormState extends ConsumerState<_FoodForm> {
     super.dispose();
   }
 
+  /// The calories from the macros, used when the field is left empty.
+  double? get _kcalFromMacros => kcalFromMacros(protein: parseDecimal(_protein.text), carbs: parseDecimal(_carbs.text), fat: parseDecimal(_fat.text));
+
   Nutrients get _per100g => Nutrients(
-    kcal: parseDecimal(_kcal.text),
+    kcal: parseDecimal(_kcal.text) ?? _kcalFromMacros,
     protein: parseDecimal(_protein.text),
     carbs: parseDecimal(_carbs.text),
     fat: parseDecimal(_fat.text),
@@ -392,12 +395,23 @@ class _FoodFormState extends ConsumerState<_FoodForm> {
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
     final tt = context.tt;
-    Widget number(TextEditingController c, String label, String unit) => Expanded(
+    // Empty calories show what the macros give (and that is what is saved).
+    final fromMacros = _kcal.text.trim().isEmpty ? _kcalFromMacros : null;
+    Widget number(TextEditingController c, String label, String unit, {String? hint, String? helper}) => Expanded(
       child: TextField(
         controller: c,
         keyboardType: const TextInputType.numberWithOptions(decimal: true),
         inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]'))],
-        decoration: InputDecoration(labelText: label, suffixText: unit, isDense: true),
+        onChanged: (_) => setState(() {}),
+        decoration: InputDecoration(
+          labelText: label,
+          suffixText: unit,
+          isDense: true,
+          hintText: hint,
+          helperText: helper,
+          helperMaxLines: 2,
+          floatingLabelBehavior: hint == null ? null : FloatingLabelBehavior.always,
+        ),
       ),
     );
     return Column(
@@ -437,7 +451,20 @@ class _FoodFormState extends ConsumerState<_FoodForm> {
                 style: TextStyle(fontSize: TtText.small, color: tt.textTertiary),
               ),
               const SizedBox(height: 6),
-              Row(children: [number(_kcal, t.dietKcal, 'kcal'), const SizedBox(width: 12), number(_protein, t.dietProtein, 'g')]),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  number(
+                    _kcal,
+                    t.dietKcal,
+                    'kcal',
+                    hint: fromMacros == null ? null : formatKcal(fromMacros),
+                    helper: fromMacros == null ? null : t.dietKcalFromMacros,
+                  ),
+                  const SizedBox(width: 12),
+                  number(_protein, t.dietProtein, 'g'),
+                ],
+              ),
               const SizedBox(height: 8),
               Row(children: [number(_carbs, t.dietCarbs, 'g'), const SizedBox(width: 12), number(_fat, t.dietFat, 'g')]),
               const SizedBox(height: 8),
