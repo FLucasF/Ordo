@@ -55,7 +55,8 @@ bool IsDesktop(HWND hwnd) {
 
 }  // namespace
 
-MiniWindow::MiniWindow(std::function<void(const std::string&)> on_action) : on_action_(std::move(on_action)) {}
+MiniWindow::MiniWindow(std::function<void(const std::string&)> on_action, std::function<void(bool)> on_open_changed)
+    : on_action_(std::move(on_action)), on_open_changed_(std::move(on_open_changed)) {}
 
 MiniWindow::~MiniWindow() { Destroy(); }
 
@@ -142,6 +143,7 @@ void MiniWindow::Open() {
   });
   controller_->ForceRedraw();
   SaveOpen(true);
+  on_open_changed_(true);
 }
 
 void MiniWindow::Close() {
@@ -150,6 +152,7 @@ void MiniWindow::Close() {
   }
   SaveOpen(false);
   Destroy();
+  on_open_changed_(false);
 }
 
 void MiniWindow::Destroy() {

@@ -4591,10 +4591,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get settingsDesktopMiniHint =>
-      'Uma janelinha com o calendário na área de trabalho, como o widget do celular. Também abre pelo ícone perto do relógio.';
-
-  @override
-  String get settingsDesktopMiniOpen => 'Abrir';
+      'Uma janelinha com o calendário na área de trabalho, como o widget do celular. Ligado, ela fica aberta e volta quando o Ordo inicia; também liga e desliga pelo ícone perto do relógio.';
 
   @override
   String get inFeminine => 'na';

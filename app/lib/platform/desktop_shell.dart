@@ -60,15 +60,30 @@ abstract final class DesktopShell {
   /// "Iniciar com o Windows": the app starts hidden in the tray when the user signs in.
   static Future<void> setAutostart(bool enabled) => _call('setAutostart', enabled);
 
-  /// Opens the desktop mini calendar (windows/runner/mini_window.cpp), or brings it forward.
-  static Future<void> openMiniCalendar() => _call('openMini');
+  /// Whether the desktop mini calendar (windows/runner/mini_window.cpp) is open; the runner tells when
+  /// it opens or closes, from the tray or its own ×.
+  static final miniCalendarOpen = ValueNotifier<bool>(false);
 
-  /// Taps on the mini calendar that open the app: "open|2026-10-09|d" or "create|2026-10-09|d" (the
-  /// runner shows the window first).
+  /// Opens or closes the mini calendar; open, it also comes back when the app starts.
+  static Future<void> setMiniCalendar({required bool open}) async {
+    miniCalendarOpen.value = open;
+    await _call(open ? 'openMini' : 'closeMini');
+  }
+
+  /// Taps on the mini calendar that open the app ("open|2026-10-09|d" or "create|2026-10-09|d"; the
+  /// runner shows the window first), and its opening and closing.
   static void listenWidgetActions(void Function(String action) onAction) {
     if (!available) return;
     _channel.setMethodCallHandler((call) async {
-      if (call.method == 'widgetAction' && call.arguments is String) onAction(call.arguments as String);
+      switch (call.method) {
+        case 'widgetAction' when call.arguments is String:
+          onAction(call.arguments as String);
+        case 'miniOpen' when call.arguments is bool:
+          miniCalendarOpen.value = call.arguments as bool;
+      }
     });
+    unawaited(
+      _channel.invokeMethod<bool>('isMiniOpen').then((open) => miniCalendarOpen.value = open ?? false, onError: (Object e) => debugPrint('$e')),
+    );
   }
 }

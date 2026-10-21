@@ -15,8 +15,9 @@
 // them, or on the desktop below them, and remembers where it was and whether it was open.
 class MiniWindow {
  public:
-  // |on_action| gets the taps that open the app ("open|2026-10-09|d", "create|2026-10-09|d").
-  explicit MiniWindow(std::function<void(const std::string&)> on_action);
+  // |on_action| gets the taps that open the app ("open|2026-10-09|d", "create|2026-10-09|d");
+  // |on_open_changed| hears it opened or closed by the user (not the app quitting).
+  MiniWindow(std::function<void(const std::string&)> on_action, std::function<void(bool)> on_open_changed);
   ~MiniWindow();
 
   MiniWindow(const MiniWindow&) = delete;
@@ -52,6 +53,7 @@ class MiniWindow {
   void SavePlacement();
 
   std::function<void(const std::string&)> on_action_;
+  std::function<void(bool)> on_open_changed_;
   HWND hwnd_ = nullptr;
   std::unique_ptr<flutter::FlutterViewController> controller_;
   std::unique_ptr<flutter::MethodChannel<flutter::EncodableValue>> channel_;

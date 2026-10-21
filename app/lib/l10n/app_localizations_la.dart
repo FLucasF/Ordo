@@ -4590,10 +4590,7 @@ class AppLocalizationsLa extends AppLocalizations {
 
   @override
   String get settingsDesktopMiniHint =>
-      'Fenestella cum calendario in mensa operaria, sicut instrumentum telephoni. Etiam ex icone prope horologium aperitur.';
-
-  @override
-  String get settingsDesktopMiniOpen => 'Aperi';
+      'Fenestella cum calendario in mensa operaria, sicut instrumentum telephoni. Accensa aperta manet et redit cum Ordo incipit; etiam ex icone prope horologium accenditur et exstinguitur.';
 
   @override
   String get inFeminine => 'in';

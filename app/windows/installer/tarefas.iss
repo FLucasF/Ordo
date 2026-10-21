@@ -8,7 +8,7 @@
 ; updated or removed.
 
 #define AppName "Ordo"
-#define AppVersion "1.6.0"
+#define AppVersion "1.6.1"
 #define AppExe "task_manager.exe"
 
 [Setup]

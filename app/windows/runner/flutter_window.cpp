@@ -160,7 +160,13 @@ bool FlutterWindow::OnCreate() {
   flutter_controller_->ForceRedraw();
 
   // The mini calendar comes back if it was open when the app quit.
-  mini_ = std::make_unique<MiniWindow>([this](const std::string& action) { OnMiniAction(action); });
+  mini_ = std::make_unique<MiniWindow>([this](const std::string& action) { OnMiniAction(action); },
+                                       [this](bool open) {
+                                         // Settings' switch follows the window.
+                                         if (window_channel_) {
+                                           window_channel_->InvokeMethod("miniOpen", std::make_unique<flutter::EncodableValue>(open));
+                                         }
+                                       });
   if (MiniWindow::WasOpen()) {
     mini_->Open();
   }
@@ -318,6 +324,13 @@ void FlutterWindow::HandleWindowCall(const flutter::MethodCall<flutter::Encodabl
       mini_->Open();
     }
     result->Success();
+  } else if (method == "closeMini") {
+    if (mini_) {
+      mini_->Close();
+    }
+    result->Success();
+  } else if (method == "isMiniOpen") {
+    result->Success(flutter::EncodableValue(mini_ != nullptr && mini_->IsOpen()));
   } else {
     result->NotImplemented();
   }

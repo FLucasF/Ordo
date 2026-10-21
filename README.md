@@ -2,29 +2,25 @@
 
 > Antes chamado **Tarefas**. Só o nome mudou: atualizar instala por cima e mantém todos os dados.
 
-App pessoal de tarefas e produtividade para **Windows** e **Android**, com o jeito de usar do TickTick: listas, calendário, matriz de Eisenhower, Pomodoro, hábitos, contagem regressiva, resumo e estatísticas.
+App pessoal de produtividade para **Windows** e **Android**, com o jeito de usar do TickTick e muito mais: tarefas, calendário, matriz de Eisenhower, Pomodoro, hábitos, contagem regressiva com painel de projeto, finanças, dieta, diário, resumo e estatísticas.
 
-Os dados ficam **só no seu aparelho**: não tem conta, login nem servidor. Para levar os dados de um aparelho para outro, use o backup (veja [Backup](#backup-e-troca-de-aparelho)).
+Os dados ficam **só no seu aparelho**: não tem conta, login nem servidor. Para levar os dados de um aparelho para outro, use a sincronização pelo Wi-Fi ou o backup (veja [Backup e troca de aparelho](#backup-e-troca-de-aparelho)).
 
 > Projeto pessoal e independente, sem ligação com o TickTick nem com a Appest. Nome e código são próprios; só o fluxo de uso foi inspirado no app original.
 
-## O que tem
+## Sumário
 
-- **Tarefas:** listas, **áreas** (pastas com ícone e cor), **sublistas** (até 3 níveis), seções, etiquetas, subtarefas, checklists e notas. Também prioridade, datas com hora, duração, repetição (inclusive "pular fins de semana"), lembretes, anexos, comentários e fuso horário.
-- **Adição rápida:** escreva a data em português ("amanhã às 15h", "sexta", "25/09"), `!alta`, `#etiqueta` e `~Lista` no próprio título.
-- **Smart lists:** Hoje, Amanhã, Próximos 7 dias, Todas, Caixa de Entrada, Resumo, Concluído, Não será feito e Lixeira. Há ainda filtros personalizados.
-- **Visualizações:** Lista, Kanban e Linha do tempo. O Calendário tem dia, semana, vários dias, mês, ano e agenda.
-- **Outras telas:**
-  - Matriz de Eisenhower;
-  - Foco (Pomodoro e cronômetro), com registros e estatísticas;
-  - Hábitos, com metas e histórico;
-  - Contagem regressiva (datas especiais, aniversários, feriados);
-  - Finanças: receitas e despesas, categorias com limite, cartão de crédito com faturas e parcelas, contas fixas, empréstimos e relatórios;
-  - Resumo com modelos e exportação;
-  - Calendários assinados (.ics), com os feriados do Brasil já prontos.
-- **Conteúdo das tarefas:** editor com títulos, listas, checklist, citação, código, links e vínculo entre tarefas (`[[`). Tem menu `/` e escrita imersiva.
-- **Backup:** backup manual (com anexos), backup automático diário e importação do TickTick (CSV) e de arquivos iCal.
-- **Atalhos de teclado no Windows:** aperte `?` no app para ver todos.
+- [Instalar no Windows](#instalar-no-windows)
+- [Instalar no Android](#instalar-no-android)
+- [Primeiros passos](#primeiros-passos)
+- [Todas as funcionalidades](#todas-as-funcionalidades)
+  - [Tarefas e listas](#tarefas-e-listas) · [Adição rápida](#adição-rápida) · [Detalhe da tarefa](#detalhe-da-tarefa) · [Lembretes e repetição](#lembretes-e-repetição) · [Visualizações](#visualizações) · [Smart lists, filtros e etiquetas](#smart-lists-filtros-e-etiquetas) · [Seleção em lote](#seleção-em-lote)
+  - [Calendário](#calendário) · [Matriz de Eisenhower](#matriz-de-eisenhower) · [Foco (Pomodoro)](#foco-pomodoro) · [Hábitos](#hábitos) · [Contagem regressiva e painel do projeto](#contagem-regressiva-e-painel-do-projeto)
+  - [Finanças](#finanças) · [Dieta](#dieta) · [Diário](#diário) · [Resumo](#resumo) · [Estatísticas](#estatísticas)
+  - [Busca, paleta e atalhos](#busca-paleta-e-atalhos) · [Ícones (emojis)](#ícones-emojis) · [Aparência e idioma](#aparência-e-idioma)
+  - [Widget do celular](#widget-de-calendário-android) · [Mini calendário do PC](#mini-calendário-windows) · [Segundo plano, notificações e sons](#segundo-plano-notificações-e-sons) · [Configurações](#configurações)
+- [Backup e troca de aparelho](#backup-e-troca-de-aparelho)
+- [Para desenvolver](#para-desenvolver)
 
 ---
 
@@ -32,21 +28,21 @@ Os dados ficam **só no seu aparelho**: não tem conta, login nem servidor. Para
 
 ### Baixar e instalar (jeito fácil)
 
-1. Abra a página de [**Releases**](https://github.com/FLucasF/toDO-manager/releases/latest) e baixe o **`OrdoSetup-1.6.0.exe`**.
+1. Abra a página de [**Releases**](https://github.com/FLucasF/toDO-manager/releases/latest) e baixe o **`OrdoSetup-1.6.1.exe`**.
 2. Dê dois cliques no arquivo baixado.
 3. O Windows pode mostrar o aviso azul do **SmartScreen** ("O Windows protegeu o computador"), porque o instalador não tem assinatura digital paga. Clique em **Mais informações → Executar assim mesmo**.
 4. Siga o instalador: **Avançar → Instalar → Concluir**. Ele não pede senha de administrador e cria o atalho **Ordo** no menu Iniciar. Se você marcar a opção, cria também na área de trabalho.
 
 Funciona no Windows 10 e 11 (64 bits). Não precisa instalar mais nada, porque o instalador já leva tudo o que o app usa.
 
-> **Erro "desktop_drop_plugin.dll não foi projetado para ser executado no Windows" (0xc0e90002):** é o **Controle Inteligente de Aplicativos** do Windows 11 bloqueando o app, porque os arquivos dele não têm assinatura digital paga (o arquivo não está estragado). Para usar, desligue essa proteção em *Segurança do Windows → Controle de aplicativos e navegador → Configurações do Controle Inteligente de Aplicativos*. Atenção: em muitas versões do Windows 11, depois de desligada ela só volta reinstalando o Windows.
+> **Bloqueio do Controle Inteligente de Aplicativos (Windows 11):** se aparecer "Uma política de Controle de Aplicativo bloqueou este arquivo" ou o erro "desktop_drop_plugin.dll não foi projetado para ser executado no Windows" (0xc0e90002), é essa proteção do Windows bloqueando o app porque os arquivos dele não têm assinatura digital paga (o arquivo não está estragado). Para usar, desligue-a em *Segurança do Windows → Controle de aplicativos e navegador → Configurações do Controle Inteligente de Aplicativos*. Em versões mais antigas do Windows 11, depois de desligada ela só volta reinstalando o Windows; nas recentes dá para religar.
 
-- **Atualizar:** baixe o instalador da versão nova e rode por cima, mesmo com o app aberto na bandeja (o instalador fecha o app sozinho). Suas tarefas continuam.
+- **Atualizar:** baixe o instalador da versão nova e rode por cima, mesmo com o app aberto na bandeja (o instalador fecha o app sozinho). Seus dados continuam. Quem tinha a versão "Tarefas" ganha os atalhos novos "Ordo".
 - **Desinstalar:** use *Configurações do Windows → Aplicativos → Ordo → Desinstalar*. Seus dados **não** são apagados; se instalar de novo, eles voltam.
 
 ### Onde ficam os dados
 
-Os dados ficam em `%APPDATA%\dev.lucasfelipe\Tarefas`: o banco de dados, os anexos e os backups automáticos. Para apagar tudo de vez, apague essa pasta depois de desinstalar.
+Em `%APPDATA%\dev.lucasfelipe\Tarefas` (a pasta mantém o nome antigo para nada se perder): o banco de dados, os anexos, as imagens de fundo e os backups automáticos. Para apagar tudo de vez, apague essa pasta depois de desinstalar.
 
 ### Gerar a partir do código (para quem quer mexer no app)
 
@@ -74,7 +70,7 @@ Funciona no Android 7.0 ou mais novo.
 
 ### Baixar e instalar (jeito fácil)
 
-1. **No celular**, abra a página de [**Releases**](https://github.com/FLucasF/toDO-manager/releases/latest) e toque em **`Ordo-1.6.0.apk`** para baixar.
+1. **No celular**, abra a página de [**Releases**](https://github.com/FLucasF/toDO-manager/releases/latest) e toque em **`Ordo-1.6.1.apk`** para baixar.
 2. Quando terminar, toque na notificação do download, ou abra o app **Arquivos → Downloads** e toque no arquivo.
 3. O Android avisa que, por segurança, o app de onde você está instalando (Chrome ou Arquivos) não pode instalar apps. Toque em **Configurações**, ligue **Permitir desta fonte** e volte.
 4. Toque em **Instalar** e depois em **Abrir**.
@@ -82,11 +78,8 @@ Funciona no Android 7.0 ou mais novo.
 
 Se aparecer um aviso do **Play Protect** ("app desconhecido"), toque em **Mais detalhes → Instalar mesmo assim**. O aviso aparece porque o app não vem da Play Store.
 
-- **Atualizar:** baixe o APK da versão nova e instale por cima. Suas tarefas continuam.
+- **Atualizar:** baixe o APK da versão nova e instale por cima. Seus dados continuam.
 - **Desinstalar:** no Android, desinstalar **apaga os dados** do app. Antes, faça um backup (veja [Backup](#backup-e-troca-de-aparelho)).
-
-- **Widget de calendário:** segure um espaço vazio da tela inicial → **Widgets** → **Ordo → Calendário**. No próprio widget escolha **Dia**, **Semana** ou **Mês** (cada widget guarda a sua escolha); **‹ ›** avançam e voltam, o título volta para hoje, o **+** cria uma tarefa, e tocar num dia abre o app nele. No modo **Dia**, cada compromisso fica tão alto quanto dura (um das 8h às 12h vira um bloco com início e fim): pequeno, o widget é uma lista; aumentando, os blocos crescem e ocupam o espaço todo. Quando o dia não cabe, a lista rola com o dedo (Android 12 ou mais novo; antes disso, o que não cabe vira "+N").
-- **Mini calendário (Windows):** clique com o botão direito no ícone do Ordo perto do relógio → **Mini calendário** (ou **Configurações → Notificações → Mini calendário → Abrir**). É uma janelinha com o calendário na área de trabalho, igual ao widget do celular: **Dia**, **Semana** ou **Mês**, **‹ ›**, **+** e clique num compromisso para abrir o app nele. Arraste pelo título e redimensione pelas bordas. O 📌 escolhe se ela fica **por cima das janelas**, **normal** ou **na área de trabalho** (atrás das janelas; aparece com Win + D). Ela lembra o lugar, o tamanho e o modo, e volta aberta quando o Ordo inicia; o **×** fecha.
 
 > **Aparelhos autorizados (Android):** este app está registrado no Google numa conta de *distribuição limitada*. A partir de 30/09/2026, no Brasil, **só os celulares autorizados pelo dono do app** (até 20) conseguem instalar e atualizar. Para autorizar um celular, o dono gera um QR code ou um link no Android Developer Console. A pessoa abre no celular, aceita e manda de volta o código que aparece. Se quiser usar o app, peça esse link.
 
@@ -112,111 +105,253 @@ adb install -r app/build/app/outputs/flutter-apk/app-release.apk
 
 ---
 
-## Como usar
+## Primeiros passos
 
-### Primeiros passos
+- A tela inicial é **Hoje**. No Windows, a **barra de ícones** à esquerda leva aos módulos (Tarefas, Calendário, Matriz, Hábitos, Contagem, Foco, Finanças, Dieta, Diário, Estatísticas) e a **barra lateral** mostra smart lists, listas, áreas, filtros e etiquetas. No celular, tudo fica na gaveta **☰**.
+- **Criar:** em cada tela, o botão azul no canto de cima diz o que cria (**+ Nova tarefa**, **+ Novo lançamento**, **+ Novo hábito**…). No celular é o **+** redondo embaixo.
+- **Editar e apagar qualquer coisa:** tudo o que você adiciona tem o **⋯** na própria linha (ou botão direito), com Editar e Deletar. Ao abrir para editar, o formulário tem a **lixeira** vermelha. Apagar mostra **Desfazer** por alguns segundos; o que não dá para desfazer pede confirmação.
+- **Desfazer e refazer:** `Ctrl+Z` e `Ctrl+Shift+Z` (ou `Ctrl+Y`) desfazem e refazem as últimas ações.
+- **Ligar e desligar módulos:** *Configurações → Funcionalidades* esconde os módulos que você não usa.
 
-- A tela inicial é **Hoje**. No Windows, a barra lateral mostra smart lists, listas, filtros e etiquetas. No celular elas ficam na gaveta **☰**, junto com Calendário, Matriz, Hábitos, Contagem Regressiva, Foco e Finanças. No celular também há Kanban, e segurar uma tarefa mostra **Selecionar** para editar várias de uma vez.
-- Para **criar uma lista**, use o **+** ao lado de "Listas". Nela você escolhe a cor, o ícone, a pasta e se é lista de tarefas ou de notas.
-- Para **adicionar uma tarefa**, escreva no campo do topo da lista e aperte Enter. No Windows, a tecla `N` abre a adição rápida de qualquer lugar.
-- **Abrir, concluir e organizar:** clique numa tarefa para abrir o detalhe; a caixinha conclui. O botão direito (ou o **…**) abre o menu: data, prioridade, mover, etiquetas, foco, duplicar, converter em nota…
-- **Mudar a ordem:** arraste a tarefa para cima ou para baixo (no celular, segure e arraste; segurar e soltar sem mover abre o menu). Para virar subtarefa de outra, arraste bem para a direita (ou segure **Shift**) ao soltar sobre ela. Numa lista ordenada por data ou prioridade, como Hoje, arrastar passa a lista para a ordem **Personalizado**.
-- **Editar e apagar qualquer coisa:** tudo o que você adiciona (lançamentos, contas, hábitos, contagens, listas, etiquetas, filtros…) tem o **⋯** na própria linha, com Editar e Deletar. Ao abrir para editar, o formulário tem a **lixeira** vermelha. O que não dá para desfazer pede confirmação antes.
-- **Criar:** em cada tela, o botão azul no canto de cima diz o que cria (**+ Novo lançamento**, **+ Novo hábito**, **+ Nova tarefa**…). No celular é o **+** redondo embaixo.
+---
+
+## Todas as funcionalidades
+
+### Tarefas e listas
+
+- **Listas** com nome, **ícone** (emoji), **cor**, tipo (**tarefas** ou **notas**), modo de visualização e opção de aparecer ou não nas smart lists. Podem ser **fixadas**, **arquivadas** (vão para "Listas Arquivadas") e **duplicadas**.
+- **Áreas** (pastas): agrupam listas na barra lateral, com ícone, cor e fundo próprios. Crie com o botão de área ao lado do **+** de "Listas"; arraste listas para dentro e para fora. Apagar uma área não apaga as listas, só as tira dela. Abrir a área mostra as tarefas de todas as listas dela.
+- **Sublistas** (até 3 níveis, ex.: Faculdade → Cálculo → Lista 3): crie pelo **⋯ → Adicionar sublista**, pelo campo **Dentro de** do formulário ou arrastando uma lista para o meio de outra. Ficam recuadas sob a lista-mãe, com setinha para recolher. Na lista-mãe, **⋯ → Incluir sublistas** mostra também as tarefas delas, agrupadas por sublista. Ao apagar ou arquivar uma lista com sublistas, você escolhe se elas sobem um nível ou vão junto.
+- **Seções** dentro da lista (adicionar, renomear, mover, inserir acima/abaixo, à esquerda/direita no Kanban), com "Não Classificado" para o resto.
+- **Tarefas**, **subtarefas** (até 5 níveis), **checklists** (itens com caixinha, cada um com data/lembrete próprios) e **notas** (que não têm caixinha; tarefa ↔ nota converte num clique).
+- **Prioridade** (alta, média, baixa, nenhuma), **datas** com ou sem hora, **duração** (início e fim), **fuso horário** fixo ou flutuante, **fixar** no topo, **Não farei** (vai para "Não será feito"), **duplicar**, **copiar link**, **mover para** outra lista (inclusive sublistas e seções), **vincular tarefa-pai**, **cor da tarefa** (usada no Calendário).
+- **Ordem:** arraste para cima ou para baixo: a metade de cima de uma linha põe antes dela, a de baixo põe depois. Para virar **subtarefa**, arraste bem para a direita ou segure **Shift** ao soltar (aparece "Soltar como subtarefa"). No celular, segure e arraste; segurar e soltar sem mover abre o menu. Numa lista ordenada por data ou prioridade (como Hoje), arrastar passa a ordem para **Personalizado**, e isso fica salvo.
+- **Ordenar e agrupar** (botão ⇅): agrupar por lista, data, prioridade, etiqueta ou sem grupo; ordenar por data, prioridade, título, criação, modificação ou personalizado; mostrar ou esconder concluídas e detalhes.
+- **Lixeira:** apagadas ficam lá até você restaurar ou excluir de vez; **Esvaziar lixeira** apaga todas.
+- **Atividades:** o histórico de cada tarefa e de cada lista (criada, concluída, data mudada, movida…).
+- **Modelos de tarefa:** salve uma tarefa como modelo (conteúdo, checklist, etiquetas) e crie novas a partir dele. Já vêm prontos "Tarefas antes do trabalho", "Daily record", "Coisas para embalar para viajar", "Revisão Semanal", "Nota de leitura" e "Nota de Reunião".
+- **Tarefas sugeridas** em Hoje (💡): atrasadas, próximas e sem data, com **+** para trazer para hoje.
 
 ### Adição rápida
 
-Escreva tudo no título, e o app entende:
+Escreva tudo no título e o app entende:
 
 | Você escreve | O que acontece |
 |---|---|
 | `Ligar para o dentista amanhã às 9h` | data amanhã, 9:00 |
-| `Relatório sexta` · `Pagar luz 25/09` · `em 3 dias` | datas |
+| `Relatório sexta` · `Pagar luz 25/09` · `em 3 dias` · `próxima segunda` | datas |
 | `Comprar pão !alta` | prioridade alta (`!média`, `!baixa`, `!nenhuma`) |
 | `Estudar #faculdade` | etiqueta "faculdade" (cria se não existir) |
 | `Reunião ~Trabalho` | vai para a lista "Trabalho" |
 
-### No detalhe da tarefa
+- O que foi reconhecido aparece destacado e pode ser **removido do título** (opção em *Configurações → Mais configurações → Reconhecimento Inteligente*).
+- Um título que é só um **link** vira o título da página (opção "Análise de URL").
+- **Shift+Enter** adiciona uma descrição. No Windows, a tecla **N** abre a adição rápida de qualquer tela; o botão de estilo alterna entre **Simples** e **Detalhado** (com data, prioridade, lista e etiquetas à mostra).
 
-- **Conteúdo:**
-  - digite `/` para o menu: título, lista, checklist, anexo, modelo, subtarefa…;
-  - digite `[[` para vincular outra tarefa;
-  - o botão **A** no rodapé mostra a barra de formatação.
-- **Anexos:** use **… → Carregar anexo**. No Windows, dá para **arrastar arquivos** do Explorador para o detalhe.
-- **Outros recursos:** data, lembretes e repetição ficam no topo; subtarefas e comentários, embaixo.
+### Detalhe da tarefa
 
-### Telas principais
+- No computador, abre no **painel lateral** ou numa **janela pop-up** (escolha no **…** da lista → Layout de detalhes). No celular, em tela cheia: concluir pela caixinha **fecha a tela**, com **Desfazer**.
+- **Conteúdo** com editor completo:
+  - `/` abre o menu: títulos 1 a 3, lista com marcadores, lista numerada, item de verificação, citação, linha horizontal, anexo, tarefa vinculada, subtarefa, etiqueta e modelo;
+  - `[[` vincula outra tarefa ou nota (o vínculo abre num pop-up);
+  - o botão **A** mostra a **barra de formatação** (título, negrito, itálico, sublinhado, tachado, hora, link, código);
+  - **Escrita imersiva** esconde o resto da tela para escrever.
+- **Anexos:** **… → Carregar anexo**, ou **arraste arquivos** do Explorador (Windows). **Imagens aparecem na própria tarefa** como prévia; clicar abre em tela cheia, com zoom (Esc fecha). O **⋯** do anexo tem abrir no app do sistema, baixar e deletar.
+- **Comentários** com texto, emojis e imagens.
+- **Informações** de uma nota: palavras, caracteres, criada e modificada.
+- **Exportar** em Markdown ou texto puro, **copiar** e **imprimir**.
 
-- **Calendário:**
-  - arraste para criar ou mover;
-  - use Ctrl/Alt ao arrastar para copiar;
-  - Shift + roda do mouse muda as datas, e Ctrl + roda dá zoom nas horas.
-  - no estilo do Google Agenda: clique num horário para abrir o cartão de criar, e use **Mais opções** para a página completa (repetições como "Mensal na última sexta", lembretes, prioridade);
-  - o painel da esquerda (☰) tem o mini calendário e as listas como calendários, com caixa de seleção para mostrar ou esconder cada uma;
-  - clique numa tarefa para ver o **popup de detalhes** (editar, apagar, concluir e mais opções no ⋮); o botão direito tem abrir, concluir, duplicar, deletar e as cores;
-  - ao mover ou esticar uma tarefa aparece **Salvo** com **Desfazer** (a tecla `Z` também desfaz);
-  - numa tarefa que se repete, editar, apagar ou mover pergunta: **Somente esta**, **Esta e as seguintes** ou **Todas**;
-  - **cores e rótulos:** clique com o botão direito numa tarefa do calendário (ou use **Cor da tarefa** no ⋯ da tarefa) para escolher a cor. O arco-íris **+** abre a paleta para qualquer cor. No ✎ você dá nome às cores, como "Faculdade" ou "Academia";
-  - **Insights de tempo:** a barra mostra as horas do período por rótulo (passe o mouse para ver cada um); **Mais insights** abre a rosca por rótulo, lista, etiqueta ou tipo, e as horas de cada dia. No celular, fica no **⋯** do topo;
-  - **Repetição personalizada:** em **Mais opções**, escolha "Personalizado…" para repetir a cada N dias, semanas, meses ou anos, e terminar numa data ou depois de N vezes;
-  - teclas do Google: `D` `W` `M` `X` `A` `Y` mudam a visualização, `J`/`K` avançam e voltam, `T` vai para hoje, `C` cria e `G` vai para uma data.
-- **Matriz:** as tarefas se dividem por urgência e importância. Arraste entre os quadrantes, e use o **…** do topo para editar as regras.
-- **Foco:** Pomodoro ou cronômetro, com ou sem tarefa vinculada. Os registros aparecem na própria tela e nas Estatísticas. O aviso de fim do Pomo e da pausa chega mesmo com o app fechado, com som de **despertador** (troque em **… → Configurações de foco → Som do Pomo**). Fechar o app não perde o Pomo em andamento.
-- **Hábitos:** marque o dia no círculo; clicar num dia já marcado abre o menu para desfazer ou registrar como foi. Ao criar, escolha na galeria ou crie o seu, com meta, frequência, lembrete e **cor** (o botão ao lado do nome abre as mesmas cores do Calendário, com o arco-íris para qualquer cor; o botão direito → **Cor** troca na hora).
-- **Contagem regressiva:** para contagens, datas especiais, aniversários e feriados, agrupadas por tipo. Os **Tipos** do painel da esquerda mostram ou escondem cada um. Uma contagem **vinculada a uma lista ou área** vira o painel do projeto: progresso, **taxa de exatidão** (no prazo 100%, atrasada 50%, não feita 0%), **ritmo** ("faça 2,3 tarefas por dia"), evolução e, ao encerrar, o **relatório final** com troféus.
-- **Finanças** (valores em reais). As partes ficam nas **abas** do topo:
-  - **Lançamentos:** receitas e despesas com valor, data, descrição, categoria e cartão. Veja por mês, ano ou período, filtre por categoria, tipo ou palavra;
-  - **Categorias:** as prontas e as suas, com **limite por mês**; o app avisa a partir de 80% do limite;
-  - **Cartões:** dia de fechamento e de vencimento, fatura de cada mês (aberta, fechada, paga ou vencida), compras **parceladas** distribuídas nas faturas seguintes e **Pagar fatura** (o pagamento não conta como gasto de novo). A compra conta no mês da fatura;
-  - **Contas fixas:** aluguel, assinaturas, salário, mensais ou anuais, com lembrete. Ao **Pagar** (ou **Receber**), vira lançamento;
-  - **Empréstimos:** quem pegou, valor, data, vencimento e juros (em % ou pelo total a receber), **à vista ou parcelado** (cada parcela com vencimento, lembrete e **Receber parcela** com 1 toque); o app mostra o lucro, os pagamentos (inclusive parciais), o saldo e se está em dia, atrasado ou quitado;
-  - **Caixinhas:** metas de dinheiro guardado (ex.: viagem, reserva) com valor e data-alvo; **Guardar** e **Retirar** não contam como gasto, e o app mostra quanto guardar por mês;
-  - Em Lançamentos, o **+** ao lado de cada dia cria um lançamento naquela data;
-  - **Relatórios:** gastos por categoria; receitas × despesas dos últimos meses, em **Geral** ou **Detalhado** (o que entrou e o que saiu por categoria), com os juros recebidos dos empréstimos como uma parte separada das receitas; comparação entre dois meses e o resumo dos empréstimos. Contas fixas entram quando você marca **Pagar**.
-- **Dieta:** diário do que você comeu, com a **Tabela TACO** (NEPA/Unicamp, 4ª edição: 597 alimentos, valores por 100 g).
-  - **+ Adicionar alimento:** escolha a refeição, busque (sem precisar de acento: "feijao" acha "Feijão") e diga a quantidade em gramas ou numa medida caseira ("colher de sopa cheia", "unidade"…). A conta aparece na hora;
-  - **Não achei:** cadastre um alimento seu (calorias, proteínas, carboidratos, gorduras e fibras por 100 g, e uma medida caseira) e ele já entra na refeição;
-  - **Totais do dia:** a rosca de proteínas, carboidratos e gorduras com as calorias no centro, e o total de cada refeição. Tudo se edita e se apaga (⋯ na linha ou a lixeira no formulário);
-  - na aba **Alimentos** ficam os seus alimentos e a busca na TACO.
-  - **Refeições suas:** além das 6 de sempre, crie as suas com nome e **horário** (o horário escolhe a refeição sugerida);
-  - **Medidas caseiras:** quantas quiser, nos seus alimentos e também nos da TACO;
-  - **Metas** (⚙): calorias e macros do dia, com barras de progresso em "Totais do dia";
-  - **Plano:** o cardápio base, por dia da semana; no Diário, **Importar plano do dia** preenche tudo com 1 toque;
-  - **Adesão:** quanto do plano e da meta você cumpriu, dia a dia, num calendário de calor.
-- **Diário:** humor, energia, notas do dia (com o mesmo editor das tarefas) e destaque/gratidão, salvos sozinhos; no fim, o **resumo automático do dia** (tarefas, hábitos, dieta, foco e finanças). Linha do tempo e calendário colorido pelo humor, com busca e filtros por humor e energia.
-- **Resumo:** um relatório do período que pode ser editado. Dá para copiar, salvar em PDF ou imagem, mandar por e-mail ou inserir numa nota.
-- **Busca:** tecla `/`. A paleta de comandos é `Ctrl+K`, e `?` mostra todos os atalhos. As teclas podem ser mudadas em Configurações → Atalhos.
+### Lembretes e repetição
 
-### Segundo plano e sons
+- **Lembretes:** na hora, 5 ou 30 minutos antes, 1 hora antes, 1 dia antes, no dia às 9h, 1/2/3 dias ou 1 semana antes às 9h, no fim, ou personalizado. Vários por tarefa.
+- Os avisos chegam **com o app fechado**, com os botões **Concluído** e **Adiar 15 min**. Com o app aberto, aparece um pop-up com **Adiar** (15 min, 30 min, 1h, 3h, hoje à noite, amanhã, personalizado), **Concluído** e **Dispensar**.
+- **Lembrete constante:** a notificação fica até você agir. **Notificações diárias:** um resumo por dia, no horário que você escolher, com as tarefas de hoje.
+- **Repetição:** diária, semanal, mensal, anual, dias úteis ou **Personalizado**: a cada N dias/semanas/meses/anos, com os **dias da semana em botões** (e atalhos "Dias úteis", "Fim de semana", "Todos"), "no dia N", "na primeira/última sexta", "primeiro/último dia útil", **datas específicas** escolhidas no calendário, e **pular fins de semana**. Repete **pela data de vencimento** ou **pela data de conclusão**. Termina nunca, numa data ou depois de N vezes.
 
-- **Windows:** fechar a janela deixa o Ordo na **bandeja**, perto do relógio. Os lembretes e o Pomodoro continuam; clique no ícone para abrir, ou use o botão direito → **Sair** para fechar de vez. Em Configurações → Notificações dá para desligar isso e ligar **Iniciar com o Windows**.
-- **Som:** lembretes e fim do Pomo tocam um **despertador**. Em Configurações → Notificações → **Som do lembrete** (e em Foco → Configurações de foco → **Som do Pomo**) dá para trocar por Padrão ou Silencioso. No Windows, o despertador do Pomo toca até você tocar no app ou clicar em **Parar** no aviso.
+### Visualizações
+
+- **Lista** (com seções e grupos), **Kanban** (colunas por seção, arraste os cartões entre elas) e **Linha do tempo** (barras na régua de datas; o painel "Organizar tarefas" traz as sem data para arrastar). Teclas `V` → `L`/`K`/`T`.
+- **Mostrar data por:** a data ou uma contagem ("em 3 dias").
+
+### Smart lists, filtros e etiquetas
+
+- **Smart lists:** Todas, Hoje, Amanhã, Próximos 7 dias, Caixa de Entrada, Resumo, Concluído, Não será feito e Lixeira. Em *Configurações → Lista inteligente* cada uma pode ser mostrada, escondida ou mostrada só quando tem tarefas.
+- **Filtros personalizados:** modo **Normal** (listas, etiquetas, data, prioridade, tipo, palavra-chave) ou **Avançado** (condições com E/OU, "é"/"não é"), com **prévia** da quantidade. Na Busca, **Salvar como filtro**.
+- **Etiquetas** com cor e **subetiquetas**; **mesclar** etiquetas (as tarefas de uma passam para a outra). Também aparecem como filtro na barra lateral.
+
+### Seleção em lote
+
+Selecione várias tarefas (Ctrl/Shift + clique no PC; no celular, segure → **Selecionar**) e aplique de uma vez: data, **atrasar** (1 dia, 1 semana ou N dias), prioridade, lista, etiquetas, concluir, fixar, Não farei, vincular tarefa-pai, **mesclar** (viram subtarefas de uma nova), duplicar, converter em nota, **copiar texto** e deletar.
+
+### Calendário
+
+- Visualizações **Dia**, **Semana**, **Vários dias**, **Várias semanas**, **Mês**, **Ano** e **Agenda**, nos estilos **Moderno** ou **Clássico**.
+- **Criar e mover:** clique num horário para o cartão de criar (com **Mais opções** para a página completa); arraste para criar com duração, mover ou esticar; **Ctrl/Alt** ao arrastar copia. Ao mover aparece **Salvo** com **Desfazer** (tecla `Z`). Em tarefas que se repetem, editar, mover ou apagar pergunta: **Somente esta**, **Esta e as seguintes** ou **Todas**.
+- **Popup de detalhes** ao clicar; o botão direito tem abrir, concluir, duplicar, deletar e cores.
+- **Cores e rótulos:** escolha a cor da tarefa (arco-íris **+** para qualquer cor) e dê nome às cores no ✎ ("Faculdade", "Academia").
+- **Insights de tempo:** horas do período por rótulo, lista, etiqueta ou tipo, e horas por dia.
+- **Painel da esquerda:** mini calendário, **listas como calendários** (caixa para mostrar/esconder), outros calendários e "Organizar tarefas" para arrastar as sem data.
+- **Mostrar ou esconder:** concluídas, itens de checklist, ciclos futuros das repetições, **hábitos**, **registros de foco**, **contagens regressivas**, **finanças** (contas, faturas e cobranças; clicar num item de Finanças oferece "Abrir em Finanças" ou "Novo lançamento neste dia"), fins de semana, ícones; escurecer eventos passados; esconder horas antes/depois de um horário; eventos curtos com tamanho de 30 minutos; **fusos adicionais** ao lado das horas; números da semana.
+- **Calendários assinados:** **Feriados do Brasil** (calculados no aparelho) e qualquer calendário **.ics** por URL, atualizados sozinhos.
+- **Atalhos do Google Agenda:** `D` `W` `M` `X` `A` `Y` mudam a visualização, `J`/`K` avançam e voltam, `T` vai para hoje, `C` cria, `G` vai para uma data; Shift + roda muda as datas e Ctrl + roda dá zoom nas horas.
+
+### Matriz de Eisenhower
+
+- Quatro quadrantes (urgente/importante). Arraste tarefas entre eles.
+- **Editar Matriz:** nome, **emoji** e regras de cada quadrante (prioridades, datas, listas, etiquetas), com exemplos prontos ("Só prioridade", "Tempo + prioridade"); trocar quadrantes de lugar.
+- Agrupar e ordenar dentro de cada quadrante; esconder concluídas.
+
+### Foco (Pomodoro)
+
+- **Pomo** (Pomodoro) ou **Cronômetro**, com ou sem tarefa ou hábito vinculado. Pausar, continuar, ±5 minutos, **tempo extra**, terminar.
+- **Configurações de foco:** duração do Pomo, das pausas curta e longa, Pomos até a pausa longa, início automático do próximo Pomo ou da pausa, **som** (despertador, padrão, lembrete, mensagem, silencioso) e **tempo de execução no título da janela**.
+- **Temporizadores** salvos (nome, modo e duração) como atalhos, com estatísticas próprias.
+- **Estimativa** de Pomos ou duração por tarefa, e quanto já foi focado nela.
+- **Registros:** visão geral (hoje e total), registros com notas, adicionar à mão, editar, **gestão em lote** (filtros por data, duração e vínculo; apagar vários) e **exportar**.
+- O aviso de fim chega com o app fechado; no Android, a contagem fica numa notificação. Fechar o app não perde o Pomo em andamento.
+
+### Hábitos
+
+- Crie da **galeria** (Vida, Saúde, Exercício, Mente: 60 prontos) ou do zero, com **ícone** (emoji), **cor**, frase motivacional, frequência (diária, X vezes por semana, a cada N dias), meta (**conquistar tudo** ou **uma quantidade**, com unidade e passo), modo de marcar (automático, manual, completar tudo), data de início, dias de meta, **seção** (manhã, tarde, noite, outros) e lembretes.
+- Marque o dia no círculo; um dia já marcado abre o menu (desfazer, pular, não alcançado, registrar como foi, com humor e nota).
+- **Detalhe:** registros do mês, total de check-ins, taxa mensal, sequência atual, **mapa do ano**, log com os pensamentos de cada check-in.
+- Mostrar em "Hoje" e "Próximos 7 dias", ordenar por status, visão em cartão ou lista, arquivar, **exportar** (CSV).
+
+### Contagem regressiva e painel do projeto
+
+- Tipos: **Contagem regressiva**, **Data especial**, **Aniversário** (com idade) e **Feriado**. Contagem para baixo ou para cima (cronômetro), modo de cálculo (o dia 1 começa no dia seguinte ou no próprio dia), ignorar o ano, repetir, lembretes.
+- **Cartões** em 6 estilos, com cor, **ícone** (emoji, texto ou ícone pronto) e **imagem de fundo**. Aparecem nas smart lists no dia, 3 ou 7 dias antes, sempre ou nunca. Fixar, arquivar, agrupar por tipo.
+- **Vincular a uma lista ou área** transforma a contagem num **painel do projeto**:
+  - dias restantes, **progresso** (feitas/total) e barra no cartão;
+  - tarefas por seção, próximos prazos e as atrasadas;
+  - gráfico de **evolução** (concluídas por dia);
+  - **taxa de exatidão**: concluída no prazo = 100%, depois do prazo = 50%, vencida sem concluir = 0% (tarefas sem prazo ou com prazo futuro não contam);
+  - **ritmo**: "faça 2,3 tarefas por dia", comparado com a média dos últimos 7 dias (verde, amarelo ou vermelho);
+  - **Encerrar projeto** (ou automaticamente no dia seguinte à data) congela o **relatório final** com **troféus** ("Tudo concluído", "Tudo no prazo", "Reta final forte", "Sem atrasos 7 dias"), resumo de prazos, exatidão, evolução e melhor dia. Dá para rever depois e reabrir o projeto.
+
+### Finanças
+
+Valores em reais. As partes ficam nas **abas** do topo; o painel da esquerda escolhe o mês e mostra os gastos do mês.
+
+- **Lançamentos:** receitas e despesas com valor, data, descrição, categoria, cartão e observação. Veja por mês, ano ou período; filtre por categoria, tipo ou palavra. O **+** ao lado de cada dia cria um lançamento naquela data. As caixinhas aparecem como "Guardado"/"Retirado", sem contar como gasto.
+- **Categorias:** as prontas (Alimentação, Mercado, Transporte, Moradia, Contas da casa, Saúde, Educação, Lazer, Compras, Assinaturas, Salário, Renda extra, Outros) e as suas, com **ícone**, cor e **limite por mês** (aviso a partir de 80%).
+- **Cartões:** fechamento e vencimento, limite e quanto está disponível, **fatura de cada mês** (aberta, fechada, paga ou vencida), compras **parceladas** distribuídas nas faturas seguintes, **Pagar fatura** (em partes também; o pagamento não conta como gasto de novo). A compra conta no mês da fatura. Arquivar cartões.
+- **Contas fixas:** aluguel, internet, assinaturas, salário, mensais ou anuais, com início, fim e lembrete. Atrasadas e vencimentos do mês aparecem em destaque; **Pagar** (ou **Receber**) vira lançamento, e dá para desfazer.
+- **Empréstimos:** quem pegou, valor emprestado, data, vencimento e juros (em % ou pelo total a receber). **À vista ou parcelado** (2 a 60 parcelas mensais, valor calculado ou digitado). Cada parcela tem status (paga, em aberto, atrasada), lembrete e **Receber parcela** com 1 toque; pagamentos a mais ou adiantados abatem as próximas. O app mostra lucro, recebido, saldo e se está **em dia, atrasado ou quitado**; filtre por situação e agrupe por mês do vencimento ou do empréstimo.
+- **Caixinhas:** metas de dinheiro guardado (viagem, reserva…) com nome, **ícone**, cor, meta e data-alvo. Barra de progresso, quanto falta e **quanto guardar por mês** para chegar na data. **Guardar** e **Retirar** não contam como receita nem despesa. Arquivar e restaurar.
+- **Relatórios:** gastos por categoria (rosca); **receitas × despesas** dos últimos 6 meses em **Geral** ou **Detalhado** (por categoria), com os **juros dos empréstimos** como parte separada; saldo dos meses; **comparação entre dois meses** por categoria; resumo dos empréstimos; total guardado nas caixinhas.
+- Contas, faturas, cobranças de empréstimo e parcelas aparecem no **Calendário**, no **widget** e nos **lembretes**.
+
+### Dieta
+
+Diário do que você comeu, com a **Tabela TACO** (NEPA/Unicamp, 4ª edição: 597 alimentos, valores por 100 g).
+
+- **Diário** do dia (‹ › e "Hoje" mudam o dia):
+  - **+ Adicionar alimento:** escolha a refeição, busque sem precisar de acento ("feijao" acha "Feijão") e diga a quantidade em **gramas** ou numa **medida caseira** ("colher de sopa cheia", "unidade"…); a conta aparece na hora;
+  - **Não achei:** cadastre um alimento seu ali mesmo e ele já entra na refeição;
+  - **Totais do dia:** rosca de proteínas, carboidratos e gorduras com as calorias no centro, e o total de cada refeição; com **metas**, cada valor ganha **barra** "consumido / meta" (verde perto da meta, vermelha acima de 110%);
+  - **Importar plano do dia** preenche o dia com o cardápio, com 1 toque (sem duplicar);
+  - **Adesão do dia** em %.
+- **Refeições:** as 6 de sempre (Café da manhã, Lanche da manhã, Almoço, Lanche da tarde, Jantar, Ceia) e **as suas**, com **nome e horário**. O horário define a refeição sugerida. **+ Refeição**; ⋯ para editar, mover, arquivar ou deletar.
+- **Alimentos:** os seus (calorias, proteínas, carboidratos, gorduras e fibras por 100 g; **calorias em branco são calculadas pelos macros**: P×4 + C×4 + G×9) e a busca na TACO. **Medidas caseiras**: quantas quiser, nos seus alimentos e também nos da TACO.
+- **Metas** (⚙): calorias, proteínas, carboidratos e gorduras, com opção de calcular as calorias pelos macros.
+- **Plano** (aba): o cardápio base refeição por refeição, com variações por **dia da semana**, total do plano do dia.
+- **Adesão:** por item do plano (como planejado = 100%, quantidade ou alimento trocado = 50%, pulado = 0%) combinada com a meta de calorias; média da semana e do mês e **calendário de calor**.
+
+### Diário
+
+- **Dia:** **humor** (5 rostos), **energia** (1 a 5), **destaque / gratidão** e **notas do dia** com o mesmo editor das tarefas (formatação, imagens, anexos, vínculos `[[`). Tudo salva sozinho. ‹ ›, "Hoje" e calendário para trocar de dia; a lixeira apaga a entrada (com Desfazer).
+- **Resumo do dia** automático: tarefas concluídas, hábitos feitos, calorias (contra a meta, se houver), minutos de foco e entradas e saídas das finanças. Cada linha abre o módulo dela.
+- **Linha do tempo:** as entradas com humor, energia e trecho; **busca** por palavra (sem acento) e **filtros** por humor e energia.
+- **Calendário:** cada dia colorido pelo humor, com **gráficos** de humor e energia no mês.
+
+### Resumo
+
+- Relatório editável do período (hoje, semana, mês, personalizado), filtrado por listas, status, etiquetas e prioridades.
+- Agrupe por status, lista, data de conclusão, data da tarefa, etiqueta ou prioridade; escolha os campos (status, progresso, tempo de conclusão e da tarefa, tarefa-pai, etiqueta, lista, detalhes, dados de foco) e se mostra as tarefas do próximo período.
+- **Modelos** de resumo; **copiar**, **salvar como PDF** ou **imagem**, **enviar por e-mail** ou **inserir numa nota**.
+
+### Estatísticas
+
+- **Visão geral:** tarefas, concluídas, listas e dias de uso; conclusão de hoje e total; **pontuação de conquista** com níveis; **medalhas** (Perseverança, Res perfice, Atenção plena, Autodisciplina).
+- **Tarefas:** concluídas por dia, semana ou mês; taxa de conclusão; no prazo, atrasadas e não concluídas; por lista, etiqueta, prioridade e tarefa.
+- **Foco:** curvas de Pomos e duração, detalhes, tendências, linha do tempo da semana, horários mais concentrados e grade anual.
+- **Hábitos:** status semanal.
+
+### Busca, paleta e atalhos
+
+- **Busca** (`/`): tarefas, notas, etiquetas e listas, com filtros (listas, etiqueta, data, prioridade, tipo, status), busca nas listas arquivadas e **Salvar como filtro**.
+- **Paleta de comandos** (`Ctrl+K`): ir para qualquer lista, área, módulo ou ação.
+- **Atalhos de teclado** (Windows): `?` mostra todos; em *Configurações → Atalhos* dá para **trocar as teclas** (inclusive sequências como `G` → `T`).
+
+### Ícones (emojis)
+
+- O seletor tem **todos os 3.773 emojis do Unicode** (até a versão 15.1, com todos os tons de pele), em 8 abas (Pessoas e Corpo, Natureza, Comida, Atividades, Viagem, Objetos, Símbolos, Bandeiras), com **busca em português** ("joinha", "cachorro", "cafe", "envergonhado"…) e aceita **colar um emoji**. **Aleatório** escolhe um; **Redefinir** tira o ícone.
+- Onde escolher: **listas**, **áreas**, **hábitos**, **contagens**, **categorias** e **caixinhas** das Finanças, quadrantes da **Matriz** e **comentários**.
+- O desenho é o do sistema (Windows ou Android). No Windows, as **bandeiras** aparecem como letras do país, porque a fonte do Windows não tem o desenho delas.
+
+### Aparência e idioma
+
+- **Idioma:** Português ou Latina (*Configurações → Aparência → Idioma*). Os textos do próprio sistema (copiar, colar, seletores) ficam em português.
+- **Tema** claro, escuro ou seguindo o sistema; **11 séries de cores** e **cor personalizada**; estilo da interface **Plano** ou **Cartão**.
+- **Temas prontos:** Padrão, Estudos, Trabalho, Noite, Natureza, Praia e Aconchego (cores, fundo e estilo de uma vez; tudo continua editável).
+- **Papel de parede:** 8 degradês (Amanhecer, Pôr do sol, Oceano, Floresta, Lavanda, Noite, Pêssego, Menta) ou uma **imagem sua**, com controle para **escurecer/clarear** e prévia ao vivo. Aparece atrás das listas, do Calendário e dos módulos.
+- **Fundo por lista e por área:** a lista usa o dela, senão o da lista-mãe, senão o da área, senão o do app ("Nenhum" deixa a lista lisa).
+- **Exibição:** contagem na barra lateral, **cor da lista** como faixa nas tarefas, estilo das concluídas (padrão ou riscado), mini calendário na barra lateral.
+
+### Widget de calendário (Android)
+
+Segure um espaço vazio da tela inicial → **Widgets** → **Ordo → Calendário**.
+
+- Escolha **Dia**, **Semana** ou **Mês** no próprio widget (cada widget guarda a sua escolha); **‹ ›** avançam e voltam, o título volta para hoje, o **+** cria uma tarefa e tocar num dia abre o app nele.
+- No modo **Dia**, cada compromisso fica tão alto quanto dura (um das 8h às 12h vira um bloco com início e fim): pequeno, o widget é uma lista; aumentando, os blocos crescem e ocupam o espaço todo. Quando o dia não cabe, a lista **rola** (Android 12 ou mais novo; antes disso, o que não cabe vira "+N").
+- Mostra também contas, faturas e parcelas das Finanças, conforme as opções do Calendário.
+
+### Mini calendário (Windows)
+
+Ligue em *Configurações → Notificações → **Mini calendário*** (interruptor), ou clique com o botão direito no ícone do Ordo perto do relógio → **Mini calendário**.
+
+- Uma janelinha com o calendário na área de trabalho, igual ao widget do celular: **Dia**, **Semana** ou **Mês**, **‹ ›**, **+**, e clique num compromisso para abrir o app nele.
+- Arraste pelo título e redimensione pelas bordas.
+- O **📌** escolhe se ela fica **por cima das janelas**, **normal** ou **na área de trabalho** (atrás das janelas; aparece com Win + D).
+- Ela lembra o lugar, o tamanho e o modo. Ligada, volta aberta toda vez que o Ordo inicia; o **×** (ou desligar o interruptor) fecha e ela não volta.
+
+### Segundo plano, notificações e sons
+
+- **Windows:** fechar a janela deixa o Ordo na **bandeja**, perto do relógio. Lembretes, Pomodoro e mini calendário continuam; clique no ícone para abrir, ou botão direito → **Sair** para fechar de vez. Em *Configurações → Notificações*: **Manter na bandeja ao fechar** e **Iniciar com o Windows** (abre escondido na bandeja).
+- **Som:** lembretes e fim do Pomo tocam um **despertador**. Em *Configurações → Notificações → Som do lembrete* (e em *Foco → Configurações de foco → Som do Pomo*) troque por Padrão ou Silencioso. No Windows, o despertador do Pomo toca até você tocar no app ou clicar em **Parar** no aviso.
+- **Android:** para lembretes na hora exata, ative *Alarmes e lembretes* nas configurações do Android para o Ordo.
 
 ### Configurações
 
 Abra pelo avatar (canto superior esquerdo) → **Configurações**. As abas:
 
-- **Conta:** backup.
-- **Funcionalidades:** módulos e smart lists visíveis.
-- **Aparência:** idioma (**Português** ou **Latina**), tema, cores, **temas prontos** e **papel de parede** (degradês ou imagem sua, com escurecer/clarear). Cada lista e área pode ter o seu fundo.
-- **Mais configurações:** início da semana, formato de data, fuso horário, lembretes padrão etc.
-- **Modelos de tarefa**, **Atalhos** e **Integrações e Importação**.
+- **Conta:** conta local; **Sincronizar aparelhos**; **Gerar Backup** e **Importar backups locais**; **Backups automáticos** com **Restaurar**; **Exportar para Excel** e **Importar do Excel**.
+- **Funcionalidades:** ligar e desligar Calendário, Matriz, Hábitos (e suas configurações), Foco, Contagem regressiva, Finanças, Dieta e Diário.
+- **Lista inteligente:** mostrar, esconder ou mostrar só se não estiver vazia, para cada smart list, Etiquetas e Filtros.
+- **Notificações:** notificações diárias e horário, lembrete constante, som do lembrete, bandeja, iniciar com o Windows e o interruptor do mini calendário.
+- **Data e hora:** formato de data (31/12/2026, 12/31/2026 ou 2026/12/31), 24 ou 12 horas, início da semana, números da semana, escolher fuso ao definir a hora.
+- **Aparência:** idioma, estilo da interface, tema, cores, temas prontos, papel de parede, contagem na barra lateral, cor da lista, estilo das concluídas.
+- **Mais configurações:** reconhecimento inteligente (datas, remover o texto reconhecido, etiquetas, links); padrões de tarefa (data, lembretes com hora e de dia inteiro, duração, prioridade, etiqueta, lista, posição de novas tarefas e da seção "Atrasadas"); mini calendário na barra lateral; modelos de tarefa.
+- **Integrações e Importação:** backup do TickTick (.csv), arquivos iCal (.ics) e calendários assinados (Feriados do Brasil e por URL).
+- **Atalhos:** a lista completa, com as teclas editáveis.
+- **Sobre:** versão do app.
 
-A duração e o som do Pomodoro ficam no **…** da tela Foco.
+---
 
-### Backup e troca de aparelho
+## Backup e troca de aparelho
 
-- **Configurações → Conta → Gerar Backup** salva um `.zip` com tudo, inclusive anexos. Em **Importar backups locais**, esse arquivo substitui os dados do aparelho (o app pede confirmação).
-- **Excel:** *Configurações → Conta → Exportar para Excel* gera uma planilha com uma aba por módulo. **Importar do Excel** traz tarefas e lançamentos, mostra uma prévia antes e só acrescenta (faz uma cópia de segurança antes).
-- **Backups automáticos:** o app faz sozinho uma cópia por dia, sem os anexos, e guarda as 7 mais recentes. Elas ficam listadas em Configurações → Conta → Backups automáticos, com o botão **Restaurar**.
+- **Configurações → Conta → Gerar Backup** salva um `.zip` com tudo, inclusive anexos e imagens. Em **Importar backups locais**, esse arquivo substitui os dados do aparelho (o app pede confirmação).
+- **Backups automáticos:** o app faz sozinho uma cópia por dia, sem os anexos, e guarda as 7 mais recentes. Elas ficam listadas em *Configurações → Conta → Backups automáticos*, com o botão **Restaurar**.
+- **Excel:** *Configurações → Conta → Exportar para Excel* gera uma planilha com uma aba por módulo (Tarefas, Hábitos, Lançamentos, Cartões, Faturas pagas, Empréstimos, Recebimentos, Caixinhas, Movimentações, Dieta, Diário), com datas e valores em reais formatados. **Importar do Excel** traz **tarefas e lançamentos** (da planilha exportada ou de uma sua com as mesmas colunas), mostra uma **prévia** com os erros antes, **só acrescenta** e faz uma cópia de segurança antes.
 - **Deixar o celular e o PC iguais (pelo Wi-Fi):** toque no avatar → **Sincronizar aparelhos** (ou *Configurações → Conta*).
   1. No aparelho que vai **ficar igual ao outro**, toque em **Receber neste aparelho**. Aparece um código de 6 números.
   2. No aparelho que **tem os dados certos**, toque em **Enviar deste aparelho**, escolha o outro na lista e digite o código.
-  3. Pronto: tudo (tarefas, hábitos, finanças, anexos, configurações) vai de um para o outro. Antes de trocar, quem recebe guarda uma cópia dos próprios dados, que aparece com a hora em *Backups automáticos*, para desfazer.
+  3. Pronto: tudo (tarefas, hábitos, finanças, dieta, diário, anexos, configurações) vai de um para o outro. Antes de trocar, quem recebe guarda uma cópia dos próprios dados, que aparece com a hora em *Backups automáticos*, para desfazer.
 
   Os dois precisam estar no **mesmo Wi-Fi**, com o app aberto e **na mesma versão**. Não usa internet nem conta: os dados vão direto de um aparelho para o outro pela rede de casa, sem criptografia, então use em redes de confiança (não em Wi-Fi público). É uma cópia completa, não uma junção: use como fonte o aparelho onde você mexeu por último. No Windows, na primeira vez que receber, o Firewall pergunta; clique em **Permitir acesso**. Se um não achar o outro, use **Digitar endereço** com o endereço que aparece na tela de quem recebe.
 - **Por arquivo:** gere o backup num aparelho, copie o `.zip` e importe no outro.
-- **Vindo do TickTick:** lá, gere o backup em *Configurações → Conta → Backup & Recuperação*. Aqui, importe em *Configurações → Integrações e Importação → Backup do TickTick (.csv)*.
+- **Vindo do TickTick:** lá, gere o backup em *Configurações → Conta → Backup & Recuperação*. Aqui, importe em *Configurações → Integrações e Importação → Backup do TickTick (.csv)*. Traz pastas, listas, seções, etiquetas, subtarefas, checklists e concluídas.
 
 ---
 
@@ -230,9 +365,12 @@ flutter pub get
 flutter test                                              # todos os testes
 flutter run -d windows                                    # rodar no Windows
 dart run build_runner build --delete-conflicting-outputs  # depois de mudar o banco
-flutter gen-l10n                                          # depois de mudar os textos (lib/l10n/app_pt.arb)
+flutter gen-l10n                                          # depois de mudar os textos (lib/l10n/app_pt.arb e app_la.arb)
 ```
 
-- **Idiomas:** o código, os comentários e o banco são em inglês. Só o texto da tela é em português, via `lib/l10n/app_pt.arb`.
+- **Idiomas:** o código, os comentários e o banco são em inglês. O texto da tela fica em `lib/l10n/app_pt.arb` (português) e `lib/l10n/app_la.arb` (latim); um teste confere que os dois têm as mesmas chaves.
+- **Rodar ao lado do app instalado:** uma versão de desenvolvimento com a variável `TAREFAS_DATA_DIR` usa outra pasta de dados, outra chave de registro e não mexe nas notificações nem no "Iniciar com o Windows" do app instalado.
+- **Emojis:** `tool/make_emoji_asset.py` gera `lib/features/common/emoji_data.dart` a partir dos dados oficiais do Unicode (emoji-test.txt e as anotações em português do CLDR).
+- **Tabela TACO:** `tool/make_taco_asset.py` gera `assets/taco.json`.
 - **Versões novas:** [docs/distribuicao.md](docs/distribuicao.md) explica como gerar o instalador e o APK.
 - **Ícone:** a imagem fica em `app/tool/icon_source.png` e os tamanhos de Windows e Android saem de `app/tool/make_icons.py`. Para trocar, rode `python tool/make_icons.py caminho/da/imagem.png` com o ícone pronto em fundo branco: o branco em volta é recortado.

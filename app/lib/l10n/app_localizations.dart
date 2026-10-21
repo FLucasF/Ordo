@@ -8675,14 +8675,8 @@ abstract class AppLocalizations {
   /// No description provided for @settingsDesktopMiniHint.
   ///
   /// In pt, this message translates to:
-  /// **'Uma janelinha com o calendário na área de trabalho, como o widget do celular. Também abre pelo ícone perto do relógio.'**
+  /// **'Uma janelinha com o calendário na área de trabalho, como o widget do celular. Ligado, ela fica aberta e volta quando o Ordo inicia; também liga e desliga pelo ícone perto do relógio.'**
   String get settingsDesktopMiniHint;
-
-  /// No description provided for @settingsDesktopMiniOpen.
-  ///
-  /// In pt, this message translates to:
-  /// **'Abrir'**
-  String get settingsDesktopMiniOpen;
 
   /// No description provided for @inFeminine.
   ///
