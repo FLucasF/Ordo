@@ -13,7 +13,9 @@
  ],
  "😊": [
   "feliz",
-  "contente"
+  "contente",
+  "corado",
+  "timido"
  ],
  "😍": [
   "amor",
@@ -1013,5 +1015,39 @@
  ],
  "🇮🇳": [
   "india"
+ ],
+ "😳": [
+  "envergonhado",
+  "envergonhada",
+  "corado",
+  "corada",
+  "vermelho",
+  "timido",
+  "olhos",
+  "arregalados",
+  "surpreso"
+ ],
+ "🫣": [
+  "envergonhado",
+  "espiando"
+ ],
+ "🥺": [
+  "carente",
+  "pidao",
+  "fofo",
+  "emocionado"
+ ],
+ "😲": [
+  "surpreso",
+  "surpresa",
+  "espanto"
+ ],
+ "😮": [
+  "surpreso",
+  "surpresa"
+ ],
+ "🥵": [
+  "calor",
+  "vermelho"
  ]
 }

@@ -52,14 +52,16 @@ class _EmojiPickerState extends State<_EmojiPicker> {
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
     final tt = context.tt;
-    final query = foldForSearch(_search.text.trim());
+    final raw = _search.text.trim();
+    final query = foldForSearch(raw);
     final names = [t.emojiPeople, t.emojiNature, t.emojiFood, t.emojiActivities, t.emojiTravel, t.emojiObjects, t.emojiSymbols, t.emojiFlags];
     final shown = query.isEmpty
         ? [for (final e in _searchable[_category]) e.emoji]
         : [
             for (final entries in _searchable)
               for (final e in entries)
-                if (e.words.contains(query)) e.emoji,
+                // A pasted emoji finds itself (and its skin tones) too.
+                if (e.words.contains(query) || e.emoji.startsWith(raw)) e.emoji,
           ];
     return Dialog(
       child: SizedBox(

@@ -735,7 +735,7 @@ void main() {
     expect(find.text('Arrumar a cama'), findsOneWidget);
     await tester.tap(find.text('Criar novo'));
     await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextField).at(1), 'Beber água');
+    await tester.enterText(find.widgetWithText(TextField, 'Check-in diário'), 'Beber água');
     // The color beside the name opens the Calendar's color menu, without the tasks' labels.
     await tester.tap(find.byType(HabitColorButton));
     await tester.pumpAndSettle();

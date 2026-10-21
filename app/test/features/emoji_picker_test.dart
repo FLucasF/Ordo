@@ -47,6 +47,13 @@ void main() {
     await tester.enterText(find.byType(TextField), 'polegar para cima');
     await tester.pumpAndSettle();
     expect(find.text('👍🏽'), findsOneWidget);
+    // Everyday words too, and an emoji pasted from elsewhere finds itself.
+    await tester.enterText(find.byType(TextField), 'envergonhado');
+    await tester.pumpAndSettle();
+    expect(find.text('😳'), findsOneWidget);
+    await tester.enterText(find.byType(TextField), '😳');
+    await tester.pumpAndSettle();
+    expect(find.descendant(of: find.byType(GridView), matching: find.text('😳')), findsOneWidget);
     await tester.enterText(find.byType(TextField), 'Cafe');
     await tester.pumpAndSettle();
     await tester.tap(find.text('☕'));
