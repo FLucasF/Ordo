@@ -297,15 +297,21 @@ class _ListDialogState extends ConsumerState<_ListDialog> {
                 children: [
                   Row(
                     children: [
-                      InkWell(
-                        onTap: _pickEmoji,
-                        borderRadius: BorderRadius.circular(6),
-                        child: Container(
-                          width: 36,
-                          height: 36,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(color: tt.fieldFill, borderRadius: BorderRadius.circular(6)),
-                          child: _emoji == null ? Icon(Icons.list, color: tt.textSecondary) : Text(_emoji!, style: const TextStyle(fontSize: 18)),
+                      // The list's icon: without one, a face with a "+" says an emoji can be picked here.
+                      Tooltip(
+                        message: t.countdownIcon,
+                        child: InkWell(
+                          onTap: _pickEmoji,
+                          borderRadius: BorderRadius.circular(6),
+                          child: Container(
+                            width: 36,
+                            height: 36,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(color: tt.fieldFill, borderRadius: BorderRadius.circular(6)),
+                            child: _emoji == null
+                                ? Icon(Icons.add_reaction_outlined, size: 20, color: tt.textSecondary)
+                                : Text(_emoji!, style: const TextStyle(fontSize: 18)),
+                          ),
                         ),
                       ),
                       const SizedBox(width: 8),
