@@ -454,6 +454,12 @@ class AppLocalizationsLa extends AppLocalizations {
   String get detailAddTag => 'Pittacium adde';
 
   @override
+  String get detailFooterTag => 'Pittacium';
+
+  @override
+  String get detailFooterSubtask => 'Subpensum';
+
+  @override
   String get untitled => 'Sine titulo';
 
   @override

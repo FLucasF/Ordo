@@ -968,6 +968,18 @@ abstract class AppLocalizations {
   /// **'Adicionar etiqueta'**
   String get detailAddTag;
 
+  /// No description provided for @detailFooterTag.
+  ///
+  /// In pt, this message translates to:
+  /// **'Etiqueta'**
+  String get detailFooterTag;
+
+  /// No description provided for @detailFooterSubtask.
+  ///
+  /// In pt, this message translates to:
+  /// **'Subtarefa'**
+  String get detailFooterSubtask;
+
   /// No description provided for @untitled.
   ///
   /// In pt, this message translates to:

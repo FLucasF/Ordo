@@ -32,6 +32,7 @@ class ContentEditor extends StatefulWidget {
     this.showFormatBar = false,
     this.now = DateTime.now,
     this.onImmersive,
+    this.minHeight = 32,
   });
 
   final String markdown;
@@ -64,12 +65,21 @@ class ContentEditor extends StatefulWidget {
   /// "Escrita Imersiva" (the bar's button and Ctrl+Alt+U).
   final VoidCallback? onImmersive;
 
+  /// The box's least height: room to click into before there is text (the task's notes have more).
+  final double minHeight;
+
   @override
   State<ContentEditor> createState() => _ContentEditorState();
 }
 
 class _ContentEditorState extends State<ContentEditor> {
   late EditorState _editor;
+
+  /// appflowy lays the document out as a plain column ("shrinkWrap"): where the text ends does not
+  /// depend on the box's height, so fitting the box to it settles at once. (Its default lazy list
+  /// scrolled itself while the box was fitted, and typing past the end of a line fought it until
+  /// the app froze.)
+  late EditorScrollController _scroll;
   StreamSubscription<EditorTransactionValue>? _subscription;
   Timer? _debounce;
 
@@ -89,16 +99,16 @@ class _ContentEditorState extends State<ContentEditor> {
   /// Height given to the editor. appflowy's overlay always fills its box, so the box follows the content:
   /// after each edit it is measured to where the text ends (a mark after the last block), and it grows
   /// from the scroll metrics when that mark is out of sight. It never drops small and grows back on
-  /// each key: on a phone that jumped at every letter and appflowy, keeping the caret in sight in a box
-  /// shorter than its line, froze.
-  static const _minHeight = 32.0;
-
+  /// each key: on a phone that jumped at every letter.
   /// appflowy loops forever when the caret's line is taller than the box, so with a heading (or an
   /// attachment card) the box never goes below a Título 1 line.
   static const _headingMinHeight = 72.0;
   late double _height = _floor();
 
   final _box = GlobalKey();
+
+  /// Whether the document has no text, for the placeholder.
+  bool _empty = true;
 
   /// After the last block; a new one for each document (the old editor's may still be in the tree).
   GlobalKey _end = GlobalKey();
@@ -116,22 +126,66 @@ class _ContentEditorState extends State<ContentEditor> {
     if ((height - _height).abs() > 0.5) setState(() => _height = height);
   }
 
-  double _floor() => _editor.document.root.children.any((n) => n.type == HeadingBlockKeys.type || n.type == AttachmentBlockKeys.type)
-      ? _headingMinHeight
-      : _minHeight;
+  double _floor() {
+    final heading = _editor.document.root.children.any((n) => n.type == HeadingBlockKeys.type || n.type == AttachmentBlockKeys.type);
+    return heading && widget.minHeight < _headingMinHeight ? _headingMinHeight : widget.minHeight;
+  }
+
+  /// Keeps the caret in sight in the page around the editor (the detail scrolls, not the editor), as
+  /// the text grows below the screen's edge.
+  void _keepCaretInView() {
+    if (!mounted || _editor.selection == null) return;
+    final rects = _editor.selectionRects();
+    final outer = Scrollable.maybeOf(context);
+    final view = outer?.context.findRenderObject();
+    if (rects.isEmpty || outer == null || view is! RenderBox || !view.hasSize) return;
+    final caret = rects.last;
+    final top = view.localToGlobal(Offset.zero).dy;
+    final bottom = top + view.size.height;
+    const margin = 24.0;
+    final position = outer.position;
+    double? to;
+    if (caret.bottom > bottom - margin) to = position.pixels + caret.bottom - bottom + margin;
+    if (caret.top < top + margin) to = position.pixels - (top + margin - caret.top);
+    if (to != null) position.jumpTo(to.clamp(position.minScrollExtent, position.maxScrollExtent));
+  }
+
+  /// A click below the text puts the caret at its end, so the whole box is a place to write.
+  void _caretToEndIfBelow(PointerUpEvent event) {
+    final end = _end.currentContext?.findRenderObject();
+    final box = _box.currentContext?.findRenderObject();
+    if (end is! RenderBox || box is! RenderBox || !end.attached) return;
+    final textEnd = end.localToGlobal(Offset.zero, ancestor: box).dy;
+    if (box.globalToLocal(event.position).dy <= textEnd) return;
+    // After appflowy's own handling of the click.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final last = _editor.document.root.children.lastOrNull;
+      if (last == null) return;
+      _editor.selection = Selection.collapsed(Position(path: last.path, offset: last.delta?.length ?? 0));
+    });
+  }
 
   EditorState _build(String markdown) {
     final state = EditorState(document: markdown.trim().isEmpty ? Document.blank(withInitialText: true) : markdownToEditorDocument(markdown));
     _end = GlobalKey();
+    _scroll = EditorScrollController(editorState: state, shrinkWrap: true);
     _subscription?.cancel();
+    _empty = state.document.isEmpty;
     _subscription = state.transactionStream.listen((_) {
       _scheduleSave();
+      // The placeholder goes with the first letter and comes back when it is all erased: the editor
+      // itself does not rebuild this widget.
+      if (mounted && state.document.isEmpty != _empty) setState(() => _empty = state.document.isEmpty);
       // A heading (or attachment) just added needs its taller floor at once: appflowy loops when the
       // caret's line is taller than the box. It never goes down here, only in [_fit].
       final floor = _floor();
       if (mounted && _height < floor) setState(() => _height = floor);
       // Once the edit is laid out.
-      WidgetsBinding.instance.addPostFrameCallback((_) => _fit());
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _fit();
+        WidgetsBinding.instance.addPostFrameCallback((_) => _keepCaretInView());
+      });
     });
     return state;
   }
@@ -154,8 +208,13 @@ class _ContentEditorState extends State<ContentEditor> {
     // Another task opened, or the content changed elsewhere: rebuild the document.
     if (widget.markdown != _lastSaved) {
       _debounce?.cancel();
-      _editor.dispose();
+      final (oldEditor, oldScroll) = (_editor, _scroll);
       _editor = _build(widget.markdown);
+      // After the frame: the old editor may still be in the tree for it.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        oldScroll.dispose();
+        oldEditor.dispose();
+      });
       _lastSaved = widget.markdown;
       WidgetsBinding.instance.addPostFrameCallback((_) => _fit());
     }
@@ -168,6 +227,7 @@ class _ContentEditorState extends State<ContentEditor> {
       _save();
     }
     unawaited(_subscription?.cancel());
+    _scroll.dispose();
     _editor.dispose();
     super.dispose();
   }
@@ -297,7 +357,6 @@ class _ContentEditorState extends State<ContentEditor> {
             selectionColor: tt.primary.withValues(alpha: 0.3),
             textSpanDecorator: _decorateLinks,
           );
-    final isEmpty = _editor.document.isEmpty;
     final editor = NotificationListener<ScrollMetricsNotification>(
       onNotification: (n) {
         final content = n.metrics.maxScrollExtent + n.metrics.viewportDimension;
@@ -308,54 +367,59 @@ class _ContentEditorState extends State<ContentEditor> {
         }
         return false;
       },
-      child: SizedBox(
-        key: _box,
-        height: _height,
-        child: Stack(
-          children: [
-            if (isEmpty)
-              IgnorePointer(
-                child: Text(
-                  widget.placeholder,
-                  style: TextStyle(color: tt.textFaint, fontSize: TtText.body, height: 21 / 14),
-                ),
-              ),
-            AppFlowyEditor(
-              editorState: _editor,
-              editorStyle: style,
-              footer: SizedBox(key: _end, height: 0),
-              blockComponentBuilders: {
-                ...standardBlockComponentBuilderMap,
-                AttachmentBlockKeys.type: AttachmentBlockBuilder(
-                  describeSize: widget.attachments?.describeSize ?? (_) => '',
-                  onOpen: (r) => unawaited(_openAttachment(r)),
-                  onDownload: (r) => unawaited(_downloadAttachment(r)),
-                  fileOf: widget.attachments?.fileOf,
-                  openLabel: t.attachmentOpenExternal,
-                  downloadLabel: t.exportDownload,
-                  deleteLabel: t.actionDelete,
-                ),
-              },
-              characterShortcutEvents: [
-                _linkShortcut,
-                if (mobile) mobileSlashMenu(items, () => context) else desktopSlashMenu(items),
-                ...standardCharacterShortcutEvents.where((e) => e != slashCommand),
-              ],
-              commandShortcutEvents: [
-                if (widget.onImmersive case final open?)
-                  CommandShortcutEvent(
-                    key: 'immersive writing',
-                    getDescription: () => 'Escrita Imersiva',
-                    command: 'ctrl+alt+u',
-                    handler: (_) {
-                      open();
-                      return KeyEventResult.handled;
-                    },
+      child: Listener(
+        onPointerUp: _caretToEndIfBelow,
+        child: SizedBox(
+          key: _box,
+          height: _height,
+          child: Stack(
+            children: [
+              if (_empty)
+                IgnorePointer(
+                  child: Text(
+                    widget.placeholder,
+                    style: TextStyle(color: tt.textFaint, fontSize: TtText.body, height: 21 / 14),
                   ),
-                ...standardCommandShortcutEvents,
-              ],
-            ),
-          ],
+                ),
+              AppFlowyEditor(
+                editorState: _editor,
+                editorScrollController: _scroll,
+                shrinkWrap: true,
+                editorStyle: style,
+                footer: SizedBox(key: _end, height: 0),
+                blockComponentBuilders: {
+                  ...standardBlockComponentBuilderMap,
+                  AttachmentBlockKeys.type: AttachmentBlockBuilder(
+                    describeSize: widget.attachments?.describeSize ?? (_) => '',
+                    onOpen: (r) => unawaited(_openAttachment(r)),
+                    onDownload: (r) => unawaited(_downloadAttachment(r)),
+                    fileOf: widget.attachments?.fileOf,
+                    openLabel: t.attachmentOpenExternal,
+                    downloadLabel: t.exportDownload,
+                    deleteLabel: t.actionDelete,
+                  ),
+                },
+                characterShortcutEvents: [
+                  _linkShortcut,
+                  if (mobile) mobileSlashMenu(items, () => context) else desktopSlashMenu(items),
+                  ...standardCharacterShortcutEvents.where((e) => e != slashCommand),
+                ],
+                commandShortcutEvents: [
+                  if (widget.onImmersive case final open?)
+                    CommandShortcutEvent(
+                      key: 'immersive writing',
+                      getDescription: () => 'Escrita Imersiva',
+                      command: 'ctrl+alt+u',
+                      handler: (_) {
+                        open();
+                        return KeyEventResult.handled;
+                      },
+                    ),
+                  ...standardCommandShortcutEvents,
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

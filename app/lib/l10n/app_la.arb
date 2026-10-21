@@ -146,6 +146,8 @@
   "detailChecklistHint": "Preme 'Enter' ut rem in indicem addas",
   "detailAddSubtask": "Subpensum adde",
   "detailAddTag": "Pittacium adde",
+  "detailFooterTag": "Pittacium",
+  "detailFooterSubtask": "Subpensum",
   "untitled": "Sine titulo",
   "listAddTitle": "Indicem adde",
   "listEditTitle": "Indicem muta",

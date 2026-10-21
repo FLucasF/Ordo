@@ -28,7 +28,7 @@ Os dados ficam **só no seu aparelho**: não tem conta, login nem servidor. Para
 
 ### Baixar e instalar (jeito fácil)
 
-1. Abra a página de [**Releases**](https://github.com/FLucasF/Ordo/releases/latest) e baixe o **`OrdoSetup-1.6.1.exe`**.
+1. Abra a página de [**Releases**](https://github.com/FLucasF/Ordo/releases/latest) e baixe o **`OrdoSetup-1.6.2.exe`**.
 2. Dê dois cliques no arquivo baixado.
 3. O Windows pode mostrar o aviso azul do **SmartScreen** ("O Windows protegeu o computador"), porque o instalador não tem assinatura digital paga. Clique em **Mais informações → Executar assim mesmo**.
 4. Siga o instalador: **Avançar → Instalar → Concluir**. Ele não pede senha de administrador e cria o atalho **Ordo** no menu Iniciar. Se você marcar a opção, cria também na área de trabalho.
@@ -70,7 +70,7 @@ Funciona no Android 7.0 ou mais novo.
 
 ### Baixar e instalar (jeito fácil)
 
-1. **No celular**, abra a página de [**Releases**](https://github.com/FLucasF/Ordo/releases/latest) e toque em **`Ordo-1.6.1.apk`** para baixar.
+1. **No celular**, abra a página de [**Releases**](https://github.com/FLucasF/Ordo/releases/latest) e toque em **`Ordo-1.6.2.apk`** para baixar.
 2. Quando terminar, toque na notificação do download, ou abra o app **Arquivos → Downloads** e toque no arquivo.
 3. O Android avisa que, por segurança, o app de onde você está instalando (Chrome ou Arquivos) não pode instalar apps. Toque em **Configurações**, ligue **Permitir desta fonte** e volte.
 4. Toque em **Instalar** e depois em **Abrir**.
@@ -157,6 +157,8 @@ Escreva tudo no título e o app entende:
   - o botão **A** mostra a **barra de formatação** (título, negrito, itálico, sublinhado, tachado, hora, link, código);
   - **Escrita imersiva** esconde o resto da tela para escrever.
 - **Anexos:** **… → Carregar anexo**, ou **arraste arquivos** do Explorador (Windows). **Imagens aparecem na própria tarefa** como prévia; clicar abre em tela cheia, com zoom (Esc fecha). O **⋯** do anexo tem abrir no app do sistema, baixar e deletar.
+- **Rodapé:** o nome da lista (clique para mover), **+ Etiqueta**, **+ Subtarefa**, a barra de formatação (**A**), comentários e o **⋯**. As etiquetas da tarefa aparecem embaixo do texto (clique para editar) e as subtarefas logo abaixo.
+- A **caixa de texto** é grande desde o começo e cresce com o que você escreve; clicar no espaço vazio leva o cursor para o fim do texto, e a tela acompanha enquanto você digita.
 - **Comentários** com texto, emojis e imagens.
 - **Informações** de uma nota: palavras, caracteres, criada e modificada.
 - **Exportar** em Markdown ou texto puro, **copiar** e **imprimir**.

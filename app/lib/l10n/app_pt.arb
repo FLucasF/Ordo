@@ -161,6 +161,8 @@
   "detailChecklistHint": "Pressione 'Entrar' para adicionar item na lista",
   "detailAddSubtask": "Adicionar subtarefa",
   "detailAddTag": "Adicionar etiqueta",
+  "detailFooterTag": "Etiqueta",
+  "detailFooterSubtask": "Subtarefa",
   "untitled": "Sem título",
 
   "listAddTitle": "Adicionar lista",

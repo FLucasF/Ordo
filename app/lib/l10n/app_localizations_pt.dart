@@ -454,6 +454,12 @@ class AppLocalizationsPt extends AppLocalizations {
   String get detailAddTag => 'Adicionar etiqueta';
 
   @override
+  String get detailFooterTag => 'Etiqueta';
+
+  @override
+  String get detailFooterSubtask => 'Subtarefa';
+
+  @override
   String get untitled => 'Sem título';
 
   @override

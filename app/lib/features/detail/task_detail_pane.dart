@@ -10,6 +10,7 @@ import 'package:go_router/go_router.dart';
 import '../../app/format/date_labels.dart';
 import '../focus/focus_estimate.dart';
 import '../../app/providers.dart';
+import '../../data/repository.dart';
 import '../../app/routes.dart';
 import '../../app/theme/app_theme.dart';
 import '../../core/clock.dart';
@@ -72,6 +73,9 @@ class _Detail extends ConsumerStatefulWidget {
 
 class _DetailState extends ConsumerState<_Detail> {
   late final TextEditingController _title = TextEditingController(text: widget.task.title);
+
+  /// Read when the detail opens: the notes editor saves what is left when it closes.
+  late final Repository _repository;
   final _titleFocus = FocusNode();
 
   /// The comment field is open above the footer.
@@ -84,6 +88,7 @@ class _DetailState extends ConsumerState<_Detail> {
   @override
   void initState() {
     super.initState();
+    _repository = ref.read(repositoryProvider);
     if (widget.task.title.isEmpty) WidgetsBinding.instance.addPostFrameCallback((_) => _titleFocus.requestFocus());
   }
 
@@ -323,10 +328,13 @@ class _DetailState extends ConsumerState<_Detail> {
                   ContentEditor(
                     markdown: task.content,
                     placeholder: task.kind == TaskKind.note ? t.detailNotePlaceholder : t.detailContentPlaceholder,
-                    onChanged: (md) => fireAndForget(ref.read(repositoryProvider).setContent(task.id, md)),
+                    // Through [_repository]: the editor also saves while it is closing, when [ref] can no longer be read.
+                    onChanged: (md) => fireAndForget(_repository.setContent(task.id, md)),
                     taskId: task.id,
                     attachments: ref.read(attachmentStoreProvider),
                     showFormatBar: _formatting,
+                    // Room to write before there is text; it grows with it.
+                    minHeight: 160,
                     onImmersive: () => unawaited(showImmersiveWriting(context, ref, task)),
                     now: ref.read(clockProvider).now,
                     onAddSubtask: task.status == TaskStatus.open ? () => unawaited(_addSubtask(task)) : null,
@@ -341,31 +349,26 @@ class _DetailState extends ConsumerState<_Detail> {
                       if (linked != null && linked.deletedAt == null) unawaited(showTaskPopup(context, linked));
                     },
                   ),
-                const SizedBox(height: 12),
-                Wrap(
-                  spacing: 6,
-                  runSpacing: 6,
-                  children: [
-                    for (final tag in tags)
-                      Chip(
-                        label: Text(tag.name, style: const TextStyle(fontSize: TtText.small)),
-                        visualDensity: VisualDensity.compact,
-                        backgroundColor: (parseHexColor(tag.color) ?? tt.textTertiary).withValues(alpha: 0.2),
-                        side: BorderSide.none,
-                      ),
-                    ActionChip(
-                      avatar: Icon(Icons.add, size: 14, color: tt.textTertiary),
-                      label: Text(
-                        t.detailAddTag,
-                        style: TextStyle(fontSize: TtText.small, color: tt.textTertiary),
-                      ),
-                      visualDensity: VisualDensity.compact,
-                      side: BorderSide(color: tt.divider),
-                      onPressed: () => fireAndForget(editTaskTags(context, ref, task)),
-                    ),
-                  ],
-                ),
-                if (task.kind != TaskKind.note) ...[
+                // The task's tags (a click edits them); adding one is in the footer.
+                if (tags.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 6,
+                    children: [
+                      for (final tag in tags)
+                        ActionChip(
+                          label: Text(tag.name, style: const TextStyle(fontSize: TtText.small)),
+                          visualDensity: VisualDensity.compact,
+                          backgroundColor: (parseHexColor(tag.color) ?? tt.textTertiary).withValues(alpha: 0.2),
+                          side: BorderSide.none,
+                          onPressed: () => fireAndForget(editTaskTags(context, ref, task)),
+                        ),
+                    ],
+                  ),
+                ],
+                // The subtasks; adding one is in the footer.
+                if (task.kind != TaskKind.note && children.isNotEmpty) ...[
                   const SizedBox(height: 16),
                   Divider(color: tt.divider, height: 1),
                   const SizedBox(height: 8),
@@ -394,12 +397,6 @@ class _DetailState extends ConsumerState<_Detail> {
                         ),
                       ),
                     ),
-                  TextButton.icon(
-                    style: TextButton.styleFrom(alignment: Alignment.centerLeft, foregroundColor: tt.primary, padding: EdgeInsets.zero),
-                    onPressed: () => unawaited(_addSubtask(task)),
-                    icon: const Icon(Icons.add, size: 16),
-                    label: Text(t.detailAddSubtask, style: const TextStyle(fontSize: TtText.body)),
-                  ),
                 ],
                 CommentsSection(taskId: task.id),
               ],
@@ -407,54 +404,75 @@ class _DetailState extends ConsumerState<_Detail> {
           ),
         ),
         if (_commenting) CommentInput(taskId: task.id, onClose: () => setState(() => _commenting = false)),
-        // Footer: list selector · "…" (48 px, measured).
+        // Footer: list selector · tag · subtask · format · comment · "…" (48 px, measured). The tag and
+        // subtask buttons show their labels when the detail is wide enough, else only their icons.
         SizedBox(
           height: TtSizes.detailBarHeight,
           child: Padding(
             padding: const EdgeInsets.fromLTRB(18, 0, 24, 0),
-            child: Row(
-              children: [
-                // A long list name shrinks (…) before the buttons on a narrow screen.
-                Expanded(
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: TextButton.icon(
-                      style: TextButton.styleFrom(foregroundColor: tt.textSecondary),
-                      onPressed: () => fireAndForget(_openMenuAtFooter(context)),
-                      icon: Icon(Icons.drive_file_move_outline, size: 18, color: tt.textTertiary),
-                      label: Text(
-                        list == null ? '' : labels.listName(list),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(fontSize: TtText.body),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final roomy = constraints.maxWidth >= 560;
+                return Row(
+                  children: [
+                    // A long list name shrinks (…) before the buttons on a narrow screen.
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: TextButton.icon(
+                          style: TextButton.styleFrom(foregroundColor: tt.textSecondary),
+                          onPressed: () => fireAndForget(_openMenuAtFooter(context)),
+                          icon: Icon(Icons.drive_file_move_outline, size: 18, color: tt.textTertiary),
+                          label: Text(
+                            list == null ? '' : labels.listName(list),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(fontSize: TtText.body),
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ),
-                if (task.kind != TaskKind.checklist)
-                  IconButton(
-                    tooltip: t.formatBar,
-                    icon: Icon(Icons.text_format, color: _formatting ? tt.primary : tt.textSecondary, size: 20),
-                    onPressed: () => setState(() => _formatting = !_formatting),
-                  ),
-                IconButton(
-                  tooltip: t.commentHint,
-                  icon: Icon(Icons.chat_bubble_outline, color: _commenting ? tt.primary : tt.textSecondary, size: 18),
-                  onPressed: () => setState(() => _commenting = !_commenting),
-                ),
-                Builder(
-                  builder: (context) => IconButton(
-                    tooltip: t.menuMore,
-                    icon: Icon(Icons.more_horiz, color: tt.textSecondary, size: 18),
-                    onPressed: () {
-                      final box = context.findRenderObject()! as RenderBox;
-                      fireAndForget(
-                        showTaskMenu(context, ref, task, box.localToGlobal(Offset.zero), onAddSubtask: (id) => context.go('$_routeBase/$id')),
-                      );
-                    },
-                  ),
-                ),
-              ],
+                    _FooterAction(
+                      icon: Icons.sell_outlined,
+                      label: t.detailFooterTag,
+                      tooltip: t.detailAddTag,
+                      showLabel: roomy,
+                      onPressed: () => fireAndForget(editTaskTags(context, ref, task)),
+                    ),
+                    if (task.kind != TaskKind.note && task.status == TaskStatus.open)
+                      _FooterAction(
+                        icon: Icons.subdirectory_arrow_right,
+                        label: t.detailFooterSubtask,
+                        tooltip: t.detailAddSubtask,
+                        showLabel: roomy,
+                        onPressed: () => unawaited(_addSubtask(task)),
+                      ),
+                    if (task.kind != TaskKind.checklist)
+                      IconButton(
+                        tooltip: t.formatBar,
+                        icon: Icon(Icons.text_format, color: _formatting ? tt.primary : tt.textSecondary, size: 20),
+                        onPressed: () => setState(() => _formatting = !_formatting),
+                      ),
+                    IconButton(
+                      tooltip: t.commentHint,
+                      icon: Icon(Icons.chat_bubble_outline, color: _commenting ? tt.primary : tt.textSecondary, size: 18),
+                      onPressed: () => setState(() => _commenting = !_commenting),
+                    ),
+                    Builder(
+                      builder: (context) => IconButton(
+                        tooltip: t.menuMore,
+                        icon: Icon(Icons.more_horiz, color: tt.textSecondary, size: 18),
+                        onPressed: () {
+                          final box = context.findRenderObject()! as RenderBox;
+                          fireAndForget(
+                            showTaskMenu(context, ref, task, box.localToGlobal(Offset.zero), onAddSubtask: (id) => context.go('$_routeBase/$id')),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
           ),
         ),
@@ -629,6 +647,39 @@ class _FileDropState extends State<_FileDrop> {
           color: _over ? tt.primary.withValues(alpha: 0.06) : null,
         ),
         child: widget.child,
+      ),
+    );
+  }
+}
+
+/// A footer action: "+ Etiqueta" with its label when the detail is wide, its icon alone (with the
+/// tooltip) when it is narrow.
+class _FooterAction extends StatelessWidget {
+  const _FooterAction({required this.icon, required this.label, required this.tooltip, required this.showLabel, required this.onPressed});
+
+  final IconData icon;
+  final String label;
+  final String tooltip;
+  final bool showLabel;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final tt = context.tt;
+    if (!showLabel) {
+      return IconButton(
+        tooltip: tooltip,
+        icon: Icon(icon, size: 18, color: tt.textSecondary),
+        onPressed: onPressed,
+      );
+    }
+    return Tooltip(
+      message: tooltip,
+      child: TextButton.icon(
+        style: TextButton.styleFrom(foregroundColor: tt.textSecondary, padding: const EdgeInsets.symmetric(horizontal: 8)),
+        onPressed: onPressed,
+        icon: Icon(Icons.add, size: 16, color: tt.textSecondary),
+        label: Text(label, style: const TextStyle(fontSize: TtText.small)),
       ),
     );
   }
