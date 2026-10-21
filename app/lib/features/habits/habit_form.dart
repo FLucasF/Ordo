@@ -16,6 +16,7 @@ import '../common/color_choice.dart';
 import '../common/feedback.dart';
 import '../date_picker/date_picker.dart';
 import 'habit_widgets.dart';
+import '../common/emoji_picker.dart';
 
 /// Habit sections: Manhã, Tarde, Noite, Outros.
 const habitSections = ['morning', 'afternoon', 'evening', 'others'];
@@ -195,13 +196,21 @@ class _HabitFormState extends ConsumerState<_HabitForm> {
             children: [
               Row(
                 children: [
-                  SizedBox(
-                    width: 52,
-                    child: TextField(
-                      controller: _icon,
-                      textAlign: TextAlign.center,
-                      decoration: const InputDecoration(hintText: '🙂'),
-                      onChanged: (_) => setState(() {}),
+                  // The habit's emoji, picked from all of them like a list's icon ("Redefinir" removes it).
+                  InkWell(
+                    borderRadius: BorderRadius.circular(8),
+                    onTap: () async {
+                      final picked = await showEmojiPicker(context);
+                      if (picked != null) setState(() => _icon.text = picked);
+                    },
+                    child: Container(
+                      width: 48,
+                      height: 48,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(color: context.tt.fieldFill, borderRadius: BorderRadius.circular(8)),
+                      child: _icon.text.isEmpty
+                          ? Icon(Icons.add_reaction_outlined, color: context.tt.textTertiary)
+                          : Text(_icon.text, style: const TextStyle(fontSize: 24)),
                     ),
                   ),
                   const SizedBox(width: 10),

@@ -425,6 +425,28 @@ void main() {
     await _dispose(tester);
   });
 
+  testWidgets('the habit form picks its icon from all the emojis, like a list', (tester) async {
+    await pumpApp(tester, '/habit');
+    unawaited(showHabitForm(tester.element(find.byType(HabitPage))));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byIcon(Icons.add_reaction_outlined));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.widgetWithText(TextField, 'Buscar emoji'), 'livro');
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('📖'));
+    await tester.pumpAndSettle();
+    expect(find.text('📖'), findsOneWidget);
+    await tester.enterText(find.widgetWithText(TextField, 'Check-in diário'), 'Ler');
+    await tester.tap(find.text('Salvar'));
+    for (var i = 0; i < 5; i++) {
+      await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 20)));
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+    final habit = (await tester.runAsync(() => db.select(db.habits).get()))!.single;
+    expect((habit.name, habit.icon), ('Ler', '📖'));
+    await _dispose(tester);
+  });
+
   testWidgets('phone: Matriz is in the drawer, shows the 4 quadrants at once; long press drags a task', (tester) async {
     final repo = Repository(db, clock: clock);
     final id = await tester.runAsync(() => repo.createTask(listId: inboxListId, title: 'Pagar conta', priority: Priority.high));
