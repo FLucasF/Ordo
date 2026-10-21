@@ -10,7 +10,7 @@ Os dados ficam **só no seu aparelho**: não tem conta, login nem servidor. Para
 
 ## O que tem
 
-- **Tarefas:** listas, pastas, seções, etiquetas, subtarefas, checklists e notas. Também prioridade, datas com hora, duração, repetição (inclusive "pular fins de semana"), lembretes, anexos, comentários e fuso horário.
+- **Tarefas:** listas, **áreas** (pastas com ícone e cor), **sublistas** (até 3 níveis), seções, etiquetas, subtarefas, checklists e notas. Também prioridade, datas com hora, duração, repetição (inclusive "pular fins de semana"), lembretes, anexos, comentários e fuso horário.
 - **Adição rápida:** escreva a data em português ("amanhã às 15h", "sexta", "25/09"), `!alta`, `#etiqueta` e `~Lista` no próprio título.
 - **Smart lists:** Hoje, Amanhã, Próximos 7 dias, Todas, Caixa de Entrada, Resumo, Concluído, Não será feito e Lixeira. Há ainda filtros personalizados.
 - **Visualizações:** Lista, Kanban e Linha do tempo. O Calendário tem dia, semana, vários dias, mês, ano e agenda.
@@ -32,7 +32,7 @@ Os dados ficam **só no seu aparelho**: não tem conta, login nem servidor. Para
 
 ### Baixar e instalar (jeito fácil)
 
-1. Abra a página de [**Releases**](https://github.com/FLucasF/toDO-manager/releases/latest) e baixe o **`OrdoSetup-1.5.2.exe`**.
+1. Abra a página de [**Releases**](https://github.com/FLucasF/toDO-manager/releases/latest) e baixe o **`OrdoSetup-1.6.0.exe`**.
 2. Dê dois cliques no arquivo baixado.
 3. O Windows pode mostrar o aviso azul do **SmartScreen** ("O Windows protegeu o computador"), porque o instalador não tem assinatura digital paga. Clique em **Mais informações → Executar assim mesmo**.
 4. Siga o instalador: **Avançar → Instalar → Concluir**. Ele não pede senha de administrador e cria o atalho **Ordo** no menu Iniciar. Se você marcar a opção, cria também na área de trabalho.
@@ -74,7 +74,7 @@ Funciona no Android 7.0 ou mais novo.
 
 ### Baixar e instalar (jeito fácil)
 
-1. **No celular**, abra a página de [**Releases**](https://github.com/FLucasF/toDO-manager/releases/latest) e toque em **`Ordo-1.5.2.apk`** para baixar.
+1. **No celular**, abra a página de [**Releases**](https://github.com/FLucasF/toDO-manager/releases/latest) e toque em **`Ordo-1.6.0.apk`** para baixar.
 2. Quando terminar, toque na notificação do download, ou abra o app **Arquivos → Downloads** e toque no arquivo.
 3. O Android avisa que, por segurança, o app de onde você está instalando (Chrome ou Arquivos) não pode instalar apps. Toque em **Configurações**, ligue **Permitir desta fonte** e volte.
 4. Toque em **Instalar** e depois em **Abrir**.
@@ -120,7 +120,7 @@ adb install -r app/build/app/outputs/flutter-apk/app-release.apk
 - Para **criar uma lista**, use o **+** ao lado de "Listas". Nela você escolhe a cor, o ícone, a pasta e se é lista de tarefas ou de notas.
 - Para **adicionar uma tarefa**, escreva no campo do topo da lista e aperte Enter. No Windows, a tecla `N` abre a adição rápida de qualquer lugar.
 - **Abrir, concluir e organizar:** clique numa tarefa para abrir o detalhe; a caixinha conclui. O botão direito (ou o **…**) abre o menu: data, prioridade, mover, etiquetas, foco, duplicar, converter em nota…
-- **Mudar a ordem:** arraste a tarefa para cima ou para baixo (no celular, segure e arraste; segurar e soltar sem mover abre o menu). Solte bem à direita de outra tarefa para virar subtarefa dela. Numa lista ordenada por data ou prioridade, como Hoje, arrastar passa a lista para a ordem **Personalizado**.
+- **Mudar a ordem:** arraste a tarefa para cima ou para baixo (no celular, segure e arraste; segurar e soltar sem mover abre o menu). Para virar subtarefa de outra, arraste bem para a direita (ou segure **Shift**) ao soltar sobre ela. Numa lista ordenada por data ou prioridade, como Hoje, arrastar passa a lista para a ordem **Personalizado**.
 - **Editar e apagar qualquer coisa:** tudo o que você adiciona (lançamentos, contas, hábitos, contagens, listas, etiquetas, filtros…) tem o **⋯** na própria linha, com Editar e Deletar. Ao abrir para editar, o formulário tem a **lixeira** vermelha. O que não dá para desfazer pede confirmação antes.
 - **Criar:** em cada tela, o botão azul no canto de cima diz o que cria (**+ Novo lançamento**, **+ Novo hábito**, **+ Nova tarefa**…). No celular é o **+** redondo embaixo.
 
@@ -163,19 +163,27 @@ Escreva tudo no título, e o app entende:
 - **Matriz:** as tarefas se dividem por urgência e importância. Arraste entre os quadrantes, e use o **…** do topo para editar as regras.
 - **Foco:** Pomodoro ou cronômetro, com ou sem tarefa vinculada. Os registros aparecem na própria tela e nas Estatísticas. O aviso de fim do Pomo e da pausa chega mesmo com o app fechado, com som de **despertador** (troque em **… → Configurações de foco → Som do Pomo**). Fechar o app não perde o Pomo em andamento.
 - **Hábitos:** marque o dia no círculo; clicar num dia já marcado abre o menu para desfazer ou registrar como foi. Ao criar, escolha na galeria ou crie o seu, com meta, frequência, lembrete e **cor** (o botão ao lado do nome abre as mesmas cores do Calendário, com o arco-íris para qualquer cor; o botão direito → **Cor** troca na hora).
-- **Contagem regressiva:** para contagens, datas especiais, aniversários e feriados, agrupadas por tipo. Os **Tipos** do painel da esquerda mostram ou escondem cada um.
+- **Contagem regressiva:** para contagens, datas especiais, aniversários e feriados, agrupadas por tipo. Os **Tipos** do painel da esquerda mostram ou escondem cada um. Uma contagem **vinculada a uma lista ou área** vira o painel do projeto: progresso, **taxa de exatidão** (no prazo 100%, atrasada 50%, não feita 0%), **ritmo** ("faça 2,3 tarefas por dia"), evolução e, ao encerrar, o **relatório final** com troféus.
 - **Finanças** (valores em reais). As partes ficam nas **abas** do topo:
   - **Lançamentos:** receitas e despesas com valor, data, descrição, categoria e cartão. Veja por mês, ano ou período, filtre por categoria, tipo ou palavra;
   - **Categorias:** as prontas e as suas, com **limite por mês**; o app avisa a partir de 80% do limite;
   - **Cartões:** dia de fechamento e de vencimento, fatura de cada mês (aberta, fechada, paga ou vencida), compras **parceladas** distribuídas nas faturas seguintes e **Pagar fatura** (o pagamento não conta como gasto de novo). A compra conta no mês da fatura;
   - **Contas fixas:** aluguel, assinaturas, salário, mensais ou anuais, com lembrete. Ao **Pagar** (ou **Receber**), vira lançamento;
-  - **Empréstimos:** quem pegou, valor, data, vencimento e juros (em % ou pelo total a receber); o app mostra o lucro, os pagamentos (inclusive parciais), o saldo e se está em dia, atrasado ou quitado, e avisa no vencimento e no atraso;
+  - **Empréstimos:** quem pegou, valor, data, vencimento e juros (em % ou pelo total a receber), **à vista ou parcelado** (cada parcela com vencimento, lembrete e **Receber parcela** com 1 toque); o app mostra o lucro, os pagamentos (inclusive parciais), o saldo e se está em dia, atrasado ou quitado;
+  - **Caixinhas:** metas de dinheiro guardado (ex.: viagem, reserva) com valor e data-alvo; **Guardar** e **Retirar** não contam como gasto, e o app mostra quanto guardar por mês;
+  - Em Lançamentos, o **+** ao lado de cada dia cria um lançamento naquela data;
   - **Relatórios:** gastos por categoria; receitas × despesas dos últimos meses, em **Geral** ou **Detalhado** (o que entrou e o que saiu por categoria), com os juros recebidos dos empréstimos como uma parte separada das receitas; comparação entre dois meses e o resumo dos empréstimos. Contas fixas entram quando você marca **Pagar**.
 - **Dieta:** diário do que você comeu, com a **Tabela TACO** (NEPA/Unicamp, 4ª edição: 597 alimentos, valores por 100 g).
   - **+ Adicionar alimento:** escolha a refeição, busque (sem precisar de acento: "feijao" acha "Feijão") e diga a quantidade em gramas ou numa medida caseira ("colher de sopa cheia", "unidade"…). A conta aparece na hora;
   - **Não achei:** cadastre um alimento seu (calorias, proteínas, carboidratos, gorduras e fibras por 100 g, e uma medida caseira) e ele já entra na refeição;
   - **Totais do dia:** a rosca de proteínas, carboidratos e gorduras com as calorias no centro, e o total de cada refeição. Tudo se edita e se apaga (⋯ na linha ou a lixeira no formulário);
   - na aba **Alimentos** ficam os seus alimentos e a busca na TACO.
+  - **Refeições suas:** além das 6 de sempre, crie as suas com nome e **horário** (o horário escolhe a refeição sugerida);
+  - **Medidas caseiras:** quantas quiser, nos seus alimentos e também nos da TACO;
+  - **Metas** (⚙): calorias e macros do dia, com barras de progresso em "Totais do dia";
+  - **Plano:** o cardápio base, por dia da semana; no Diário, **Importar plano do dia** preenche tudo com 1 toque;
+  - **Adesão:** quanto do plano e da meta você cumpriu, dia a dia, num calendário de calor.
+- **Diário:** humor, energia, notas do dia (com o mesmo editor das tarefas) e destaque/gratidão, salvos sozinhos; no fim, o **resumo automático do dia** (tarefas, hábitos, dieta, foco e finanças). Linha do tempo e calendário colorido pelo humor, com busca e filtros por humor e energia.
 - **Resumo:** um relatório do período que pode ser editado. Dá para copiar, salvar em PDF ou imagem, mandar por e-mail ou inserir numa nota.
 - **Busca:** tecla `/`. A paleta de comandos é `Ctrl+K`, e `?` mostra todos os atalhos. As teclas podem ser mudadas em Configurações → Atalhos.
 
@@ -190,7 +198,7 @@ Abra pelo avatar (canto superior esquerdo) → **Configurações**. As abas:
 
 - **Conta:** backup.
 - **Funcionalidades:** módulos e smart lists visíveis.
-- **Aparência:** tema e cores.
+- **Aparência:** idioma (**Português** ou **Latina**), tema, cores, **temas prontos** e **papel de parede** (degradês ou imagem sua, com escurecer/clarear). Cada lista e área pode ter o seu fundo.
 - **Mais configurações:** início da semana, formato de data, fuso horário, lembretes padrão etc.
 - **Modelos de tarefa**, **Atalhos** e **Integrações e Importação**.
 
@@ -199,6 +207,7 @@ A duração e o som do Pomodoro ficam no **…** da tela Foco.
 ### Backup e troca de aparelho
 
 - **Configurações → Conta → Gerar Backup** salva um `.zip` com tudo, inclusive anexos. Em **Importar backups locais**, esse arquivo substitui os dados do aparelho (o app pede confirmação).
+- **Excel:** *Configurações → Conta → Exportar para Excel* gera uma planilha com uma aba por módulo. **Importar do Excel** traz tarefas e lançamentos, mostra uma prévia antes e só acrescenta (faz uma cópia de segurança antes).
 - **Backups automáticos:** o app faz sozinho uma cópia por dia, sem os anexos, e guarda as 7 mais recentes. Elas ficam listadas em Configurações → Conta → Backups automáticos, com o botão **Restaurar**.
 - **Deixar o celular e o PC iguais (pelo Wi-Fi):** toque no avatar → **Sincronizar aparelhos** (ou *Configurações → Conta*).
   1. No aparelho que vai **ficar igual ao outro**, toque em **Receber neste aparelho**. Aparece um código de 6 números.
