@@ -28,7 +28,7 @@ Os dados ficam **só no seu aparelho**: não tem conta, login nem servidor. Para
 
 ### Baixar e instalar (jeito fácil)
 
-1. Abra a página de [**Releases**](https://github.com/FLucasF/toDO-manager/releases/latest) e baixe o **`OrdoSetup-1.6.1.exe`**.
+1. Abra a página de [**Releases**](https://github.com/FLucasF/Ordo/releases/latest) e baixe o **`OrdoSetup-1.6.1.exe`**.
 2. Dê dois cliques no arquivo baixado.
 3. O Windows pode mostrar o aviso azul do **SmartScreen** ("O Windows protegeu o computador"), porque o instalador não tem assinatura digital paga. Clique em **Mais informações → Executar assim mesmo**.
 4. Siga o instalador: **Avançar → Instalar → Concluir**. Ele não pede senha de administrador e cria o atalho **Ordo** no menu Iniciar. Se você marcar a opção, cria também na área de trabalho.
@@ -54,8 +54,8 @@ O que precisa:
 - Para gerar o instalador, o [Inno Setup 6](https://jrsoftware.org/isinfo.php), que é gratuito: `winget install JRSoftware.InnoSetup`.
 
 ```bash
-git clone https://github.com/FLucasF/toDO-manager.git
-cd toDO-manager/app
+git clone https://github.com/FLucasF/Ordo.git
+cd Ordo/app
 flutter pub get
 powershell -ExecutionPolicy Bypass -File windows\installer\build_installer.ps1
 ```
@@ -70,7 +70,7 @@ Funciona no Android 7.0 ou mais novo.
 
 ### Baixar e instalar (jeito fácil)
 
-1. **No celular**, abra a página de [**Releases**](https://github.com/FLucasF/toDO-manager/releases/latest) e toque em **`Ordo-1.6.1.apk`** para baixar.
+1. **No celular**, abra a página de [**Releases**](https://github.com/FLucasF/Ordo/releases/latest) e toque em **`Ordo-1.6.1.apk`** para baixar.
 2. Quando terminar, toque na notificação do download, ou abra o app **Arquivos → Downloads** e toque no arquivo.
 3. O Android avisa que, por segurança, o app de onde você está instalando (Chrome ou Arquivos) não pode instalar apps. Toque em **Configurações**, ligue **Permitir desta fonte** e volte.
 4. Toque em **Instalar** e depois em **Abrir**.
@@ -93,7 +93,7 @@ O que precisa:
 Para assinar com a sua chave, crie-a uma vez e aponte o projeto para ela, conforme o [docs/distribuicao.md](docs/distribuicao.md#android-apk). Sem ela, o APK sai com a chave de teste, que só serve para experimentar. A chave e a senha ficam fora do repositório (`key.properties` e `*.jks` estão no `.gitignore`).
 
 ```bash
-cd toDO-manager/app
+cd Ordo/app
 flutter build apk --release
 ```
 
