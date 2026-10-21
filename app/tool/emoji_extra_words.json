@@ -1,0 +1,1017 @@
+{
+ "😀": [
+  "sorriso",
+  "feliz"
+ ],
+ "😁": [
+  "sorriso",
+  "alegre"
+ ],
+ "😂": [
+  "risada",
+  "chorar"
+ ],
+ "😊": [
+  "feliz",
+  "contente"
+ ],
+ "😍": [
+  "amor",
+  "apaixonado"
+ ],
+ "🥰": [
+  "amor",
+  "carinho"
+ ],
+ "😎": [
+  "legal",
+  "oculos"
+ ],
+ "🤓": [
+  "nerd",
+  "estudo"
+ ],
+ "🤔": [
+  "pensar",
+  "duvida"
+ ],
+ "😴": [
+  "sono",
+  "dormir"
+ ],
+ "😷": [
+  "doente",
+  "saude"
+ ],
+ "🤒": [
+  "doente",
+  "febre"
+ ],
+ "🥳": [
+  "festa",
+  "aniversario"
+ ],
+ "😇": [
+  "anjo"
+ ],
+ "😡": [
+  "raiva",
+  "bravo"
+ ],
+ "😭": [
+  "chorar",
+  "triste"
+ ],
+ "😱": [
+  "medo",
+  "susto"
+ ],
+ "🤯": [
+  "cabeca",
+  "explodindo"
+ ],
+ "🙏": [
+  "obrigado",
+  "orar"
+ ],
+ "👍": [
+  "joinha",
+  "ok"
+ ],
+ "👏": [
+  "palmas"
+ ],
+ "💪": [
+  "forca",
+  "academia",
+  "treino"
+ ],
+ "👋": [
+  "ola",
+  "tchau"
+ ],
+ "✌️": [
+  "paz"
+ ],
+ "🤝": [
+  "acordo",
+  "parceria"
+ ],
+ "👀": [
+  "olhos",
+  "ver"
+ ],
+ "🧠": [
+  "cerebro",
+  "mente",
+  "estudo"
+ ],
+ "❤️": [
+  "vermelho",
+  "coracao"
+ ],
+ "👶": [
+  "bebe",
+  "crianca"
+ ],
+ "👨‍👩‍👧": [
+  "familia"
+ ],
+ "🧑‍💻": [
+  "programador",
+  "computador",
+  "trabalho"
+ ],
+ "🧑‍🍳": [
+  "cozinheiro"
+ ],
+ "🧑‍🎓": [
+  "formatura",
+  "estudante"
+ ],
+ "🧑‍⚕️": [
+  "medico",
+  "saude"
+ ],
+ "🧘": [
+  "meditacao",
+  "yoga"
+ ],
+ "🏃": [
+  "correr",
+  "corrida"
+ ],
+ "🐶": [
+  "cachorro",
+  "cao",
+  "pet"
+ ],
+ "🐱": [
+  "gato",
+  "pet"
+ ],
+ "🐭": [
+  "rato"
+ ],
+ "🐰": [
+  "coelho"
+ ],
+ "🦊": [
+  "raposa"
+ ],
+ "🐻": [
+  "urso"
+ ],
+ "🐼": [
+  "panda"
+ ],
+ "🐨": [
+  "coala"
+ ],
+ "🦁": [
+  "leao"
+ ],
+ "🐮": [
+  "vaca"
+ ],
+ "🐷": [
+  "porco"
+ ],
+ "🐸": [
+  "sapo"
+ ],
+ "🐵": [
+  "macaco"
+ ],
+ "🐔": [
+  "galinha"
+ ],
+ "🐧": [
+  "pinguim"
+ ],
+ "🐦": [
+  "passaro"
+ ],
+ "🦋": [
+  "borboleta"
+ ],
+ "🐝": [
+  "abelha"
+ ],
+ "🐞": [
+  "joaninha"
+ ],
+ "🐢": [
+  "tartaruga"
+ ],
+ "🐍": [
+  "cobra"
+ ],
+ "🐙": [
+  "polvo"
+ ],
+ "🐟": [
+  "peixe"
+ ],
+ "🐬": [
+  "golfinho"
+ ],
+ "🌱": [
+  "planta",
+  "broto"
+ ],
+ "🌳": [
+  "arvore"
+ ],
+ "🌵": [
+  "cacto"
+ ],
+ "🌸": [
+  "flor",
+  "cerejeira"
+ ],
+ "🌻": [
+  "girassol"
+ ],
+ "🌹": [
+  "rosa",
+  "flor"
+ ],
+ "🍀": [
+  "trevo",
+  "sorte"
+ ],
+ "🍁": [
+  "folha",
+  "outono"
+ ],
+ "🌞": [
+  "sol"
+ ],
+ "🌙": [
+  "lua",
+  "noite"
+ ],
+ "⭐": [
+  "estrela",
+  "favorito"
+ ],
+ "🌈": [
+  "arco-iris"
+ ],
+ "☁️": [
+  "nuvem"
+ ],
+ "⛄": [
+  "neve",
+  "inverno"
+ ],
+ "🔥": [
+  "quente",
+  "urgente"
+ ],
+ "💧": [
+  "agua",
+  "gota"
+ ],
+ "🍎": [
+  "maca",
+  "fruta"
+ ],
+ "🍌": [
+  "banana"
+ ],
+ "🍇": [
+  "uva"
+ ],
+ "🍓": [
+  "morango"
+ ],
+ "🍉": [
+  "melancia"
+ ],
+ "🍍": [
+  "abacaxi"
+ ],
+ "🥑": [
+  "abacate"
+ ],
+ "🍋": [
+  "limao"
+ ],
+ "🥕": [
+  "cenoura"
+ ],
+ "🥦": [
+  "brocolis"
+ ],
+ "🌽": [
+  "milho"
+ ],
+ "🍅": [
+  "tomate"
+ ],
+ "🥔": [
+  "batata"
+ ],
+ "🍞": [
+  "pao",
+  "padaria"
+ ],
+ "🧀": [
+  "queijo"
+ ],
+ "🥚": [
+  "ovo"
+ ],
+ "🍳": [
+  "cozinhar",
+  "ovo"
+ ],
+ "🥩": [
+  "carne",
+  "churrasco"
+ ],
+ "🍗": [
+  "frango"
+ ],
+ "🍔": [
+  "hamburguer",
+  "lanche"
+ ],
+ "🍕": [
+  "pizza"
+ ],
+ "🌭": [
+  "cachorro-quente"
+ ],
+ "🌮": [
+  "taco"
+ ],
+ "🍝": [
+  "macarrao",
+  "massa"
+ ],
+ "🍣": [
+  "sushi"
+ ],
+ "🍜": [
+  "lamen",
+  "sopa"
+ ],
+ "🍰": [
+  "bolo"
+ ],
+ "🎂": [
+  "bolo",
+  "aniversario"
+ ],
+ "🍫": [
+  "chocolate"
+ ],
+ "🍪": [
+  "biscoito"
+ ],
+ "🍩": [
+  "rosquinha"
+ ],
+ "🍦": [
+  "sorvete"
+ ],
+ "☕": [
+  "cafe"
+ ],
+ "🍵": [
+  "cha"
+ ],
+ "🥛": [
+  "leite"
+ ],
+ "🍺": [
+  "cerveja"
+ ],
+ "🍷": [
+  "vinho"
+ ],
+ "🥤": [
+  "refrigerante"
+ ],
+ "🧃": [
+  "suco"
+ ],
+ "🛒": [
+  "mercado",
+  "compras"
+ ],
+ "⚽": [
+  "futebol",
+  "bola"
+ ],
+ "🏀": [
+  "basquete"
+ ],
+ "🏐": [
+  "volei"
+ ],
+ "🎾": [
+  "tenis"
+ ],
+ "🏓": [
+  "pingue-pongue"
+ ],
+ "🏸": [
+  "badminton"
+ ],
+ "🥊": [
+  "boxe",
+  "luta"
+ ],
+ "🏊": [
+  "natacao",
+  "piscina"
+ ],
+ "🚴": [
+  "bicicleta",
+  "ciclismo"
+ ],
+ "🏋️": [
+  "academia",
+  "peso",
+  "musculacao"
+ ],
+ "🤸": [
+  "ginastica"
+ ],
+ "⛹️": [
+  "esporte"
+ ],
+ "🧗": [
+  "escalada"
+ ],
+ "🏄": [
+  "surfe"
+ ],
+ "⛷️": [
+  "esqui"
+ ],
+ "🎯": [
+  "alvo",
+  "meta",
+  "objetivo"
+ ],
+ "🎮": [
+  "jogo",
+  "videogame"
+ ],
+ "🎲": [
+  "dado",
+  "jogo",
+  "tabuleiro"
+ ],
+ "🧩": [
+  "quebra-cabeca"
+ ],
+ "♟️": [
+  "xadrez"
+ ],
+ "🎨": [
+  "arte",
+  "pintura"
+ ],
+ "🎭": [
+  "teatro"
+ ],
+ "🎬": [
+  "filme",
+  "cinema"
+ ],
+ "🎤": [
+  "cantar",
+  "microfone"
+ ],
+ "🎧": [
+  "musica",
+  "fone"
+ ],
+ "🎵": [
+  "musica",
+  "nota"
+ ],
+ "🎸": [
+  "violao",
+  "guitarra"
+ ],
+ "🎹": [
+  "piano",
+  "teclado"
+ ],
+ "🥁": [
+  "bateria"
+ ],
+ "📚": [
+  "livros",
+  "leitura",
+  "estudo"
+ ],
+ "🏆": [
+  "trofeu",
+  "vitoria"
+ ],
+ "🥇": [
+  "medalha",
+  "primeiro"
+ ],
+ "✈️": [
+  "aviao",
+  "viagem",
+  "voo"
+ ],
+ "🚗": [
+  "carro"
+ ],
+ "🚕": [
+  "taxi"
+ ],
+ "🚌": [
+  "onibus"
+ ],
+ "🚆": [
+  "trem"
+ ],
+ "🚇": [
+  "metro"
+ ],
+ "🚲": [
+  "bicicleta"
+ ],
+ "🛵": [
+  "moto"
+ ],
+ "🚀": [
+  "foguete",
+  "lancamento"
+ ],
+ "⛵": [
+  "barco",
+  "veleiro"
+ ],
+ "🚢": [
+  "navio",
+  "cruzeiro"
+ ],
+ "🗺️": [
+  "mapa"
+ ],
+ "🧭": [
+  "bussola"
+ ],
+ "🏖️": [
+  "praia",
+  "ferias"
+ ],
+ "🏝️": [
+  "ilha"
+ ],
+ "⛰️": [
+  "montanha"
+ ],
+ "🏕️": [
+  "acampamento"
+ ],
+ "🏙️": [
+  "cidade"
+ ],
+ "🏠": [
+  "casa",
+  "lar"
+ ],
+ "🏡": [
+  "casa",
+  "jardim"
+ ],
+ "🏢": [
+  "escritorio",
+  "predio",
+  "trabalho"
+ ],
+ "🏥": [
+  "hospital"
+ ],
+ "🏫": [
+  "escola"
+ ],
+ "🏦": [
+  "banco"
+ ],
+ "🏨": [
+  "hotel"
+ ],
+ "⛪": [
+  "igreja"
+ ],
+ "🗽": [
+  "estatua",
+  "liberdade"
+ ],
+ "🗼": [
+  "torre"
+ ],
+ "🌍": [
+  "mundo",
+  "terra"
+ ],
+ "🧳": [
+  "mala",
+  "bagagem"
+ ],
+ "⛽": [
+  "gasolina",
+  "posto"
+ ],
+ "🚦": [
+  "semaforo",
+  "transito"
+ ],
+ "💡": [
+  "ideia",
+  "lampada"
+ ],
+ "📱": [
+  "celular"
+ ],
+ "💻": [
+  "computador",
+  "notebook"
+ ],
+ "⌨️": [
+  "teclado"
+ ],
+ "🖥️": [
+  "monitor"
+ ],
+ "🖨️": [
+  "impressora"
+ ],
+ "📷": [
+  "camera",
+  "foto"
+ ],
+ "🎥": [
+  "video",
+  "filmadora"
+ ],
+ "📺": [
+  "televisao"
+ ],
+ "📻": [
+  "radio"
+ ],
+ "⏰": [
+  "despertador",
+  "alarme"
+ ],
+ "⌛": [
+  "tempo",
+  "ampulheta"
+ ],
+ "📅": [
+  "calendario",
+  "data"
+ ],
+ "📆": [
+  "agenda"
+ ],
+ "📌": [
+  "alfinete",
+  "fixar"
+ ],
+ "📎": [
+  "clipe",
+  "anexo"
+ ],
+ "✏️": [
+  "lapis",
+  "escrever"
+ ],
+ "🖊️": [
+  "caneta"
+ ],
+ "📝": [
+  "anotacao",
+  "nota"
+ ],
+ "📒": [
+  "caderno"
+ ],
+ "📓": [
+  "caderno"
+ ],
+ "📖": [
+  "livro"
+ ],
+ "🗂️": [
+  "pastas",
+  "arquivo"
+ ],
+ "📁": [
+  "pasta"
+ ],
+ "📦": [
+  "caixa",
+  "pacote",
+  "entrega"
+ ],
+ "📬": [
+  "correio",
+  "carta"
+ ],
+ "✉️": [
+  "email",
+  "envelope"
+ ],
+ "💼": [
+  "maleta",
+  "trabalho"
+ ],
+ "💰": [
+  "dinheiro"
+ ],
+ "💳": [
+  "cartao"
+ ],
+ "🧾": [
+  "recibo",
+  "conta"
+ ],
+ "🔑": [
+  "chave"
+ ],
+ "🔒": [
+  "cadeado",
+  "seguranca"
+ ],
+ "🔧": [
+  "ferramenta",
+  "chave"
+ ],
+ "🔨": [
+  "martelo"
+ ],
+ "🧰": [
+  "caixa",
+  "ferramentas"
+ ],
+ "🧹": [
+  "vassoura",
+  "limpeza"
+ ],
+ "🧺": [
+  "cesto",
+  "roupa"
+ ],
+ "🛏️": [
+  "cama"
+ ],
+ "💊": [
+  "remedio"
+ ],
+ "🎁": [
+  "presente"
+ ],
+ "🎈": [
+  "balao",
+  "festa"
+ ],
+ "🕯️": [
+  "vela"
+ ],
+ "🔔": [
+  "sino",
+  "notificacao"
+ ],
+ "🔍": [
+  "lupa",
+  "busca"
+ ],
+ "🧪": [
+  "quimica",
+  "ciencia"
+ ],
+ "🔬": [
+  "microscopio"
+ ],
+ "🪴": [
+  "vaso",
+  "planta"
+ ],
+ "✅": [
+  "feito",
+  "concluido"
+ ],
+ "☑️": [
+  "caixa",
+  "marcada"
+ ],
+ "✔️": [
+  "certo"
+ ],
+ "❌": [
+  "errado",
+  "cancelar"
+ ],
+ "❗": [
+  "importante",
+  "atencao"
+ ],
+ "❓": [
+  "pergunta",
+  "duvida"
+ ],
+ "⚠️": [
+  "aviso",
+  "cuidado"
+ ],
+ "⛔": [
+  "proibido"
+ ],
+ "🔴": [
+  "vermelho"
+ ],
+ "🟠": [
+  "laranja"
+ ],
+ "🟡": [
+  "amarelo"
+ ],
+ "🟢": [
+  "verde"
+ ],
+ "🔵": [
+  "azul"
+ ],
+ "🟣": [
+  "roxo"
+ ],
+ "⚫": [
+  "preto"
+ ],
+ "⚪": [
+  "branco"
+ ],
+ "🧡": [
+  "laranja",
+  "coracao"
+ ],
+ "💛": [
+  "amarelo",
+  "coracao"
+ ],
+ "💚": [
+  "verde",
+  "coracao"
+ ],
+ "💙": [
+  "azul",
+  "coracao"
+ ],
+ "💜": [
+  "roxo",
+  "coracao"
+ ],
+ "🖤": [
+  "preto",
+  "coracao"
+ ],
+ "🤍": [
+  "branco",
+  "coracao"
+ ],
+ "✨": [
+  "brilho"
+ ],
+ "💯": [
+  "cem",
+  "perfeito"
+ ],
+ "♻️": [
+  "reciclar"
+ ],
+ "➕": [
+  "mais",
+  "adicionar"
+ ],
+ "➖": [
+  "menos"
+ ],
+ "🔁": [
+  "repetir"
+ ],
+ "▶️": [
+  "play",
+  "iniciar"
+ ],
+ "⏸️": [
+  "pausa"
+ ],
+ "⏹️": [
+  "parar"
+ ],
+ "🔜": [
+  "em",
+  "breve"
+ ],
+ "🆕": [
+  "novo"
+ ],
+ "🆗": [
+  "ok"
+ ],
+ "#️⃣": [
+  "hashtag",
+  "numero"
+ ],
+ "💤": [
+  "dormir"
+ ],
+ "🏁": [
+  "chegada",
+  "bandeira"
+ ],
+ "🚩": [
+  "bandeira",
+  "vermelha"
+ ],
+ "🏳️": [
+  "bandeira",
+  "branca"
+ ],
+ "🏴": [
+  "bandeira",
+  "preta"
+ ],
+ "🏳️‍🌈": [
+  "arco-iris",
+  "orgulho"
+ ],
+ "🇧🇷": [
+  "brasil"
+ ],
+ "🇵🇹": [
+  "portugal"
+ ],
+ "🇺🇸": [
+  "estados",
+  "unidos",
+  "eua"
+ ],
+ "🇬🇧": [
+  "reino",
+  "unido",
+  "inglaterra"
+ ],
+ "🇪🇸": [
+  "espanha"
+ ],
+ "🇫🇷": [
+  "franca"
+ ],
+ "🇮🇹": [
+  "italia"
+ ],
+ "🇩🇪": [
+  "alemanha"
+ ],
+ "🇯🇵": [
+  "japao"
+ ],
+ "🇨🇳": [
+  "china"
+ ],
+ "🇰🇷": [
+  "coreia"
+ ],
+ "🇦🇷": [
+  "argentina"
+ ],
+ "🇨🇱": [
+  "chile"
+ ],
+ "🇺🇾": [
+  "uruguai"
+ ],
+ "🇵🇾": [
+  "paraguai"
+ ],
+ "🇲🇽": [
+  "mexico"
+ ],
+ "🇨🇦": [
+  "canada"
+ ],
+ "🇦🇺": [
+  "australia"
+ ],
+ "🇮🇳": [
+  "india"
+ ]
+}
