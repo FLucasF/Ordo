@@ -155,5 +155,7 @@ void main() {
     // The safety copy of what was here.
     expect(auto.list(), hasLength(1));
     await tester.pumpWidget(const SizedBox.shrink());
+    // The linked devices' list (a query kept open) closes on its next tick.
+    await tester.pump(const Duration(minutes: 2));
   });
 }

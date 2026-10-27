@@ -25,6 +25,7 @@ import '../summary/summary_pane.dart';
 import '../tasks/task_list_pane.dart';
 import '../tasks/timeline_board.dart';
 import '../settings/settings_dialog.dart';
+import '../sync/sync_indicator.dart';
 import 'shortcut_help.dart';
 
 /// Main layout. Wide windows: icon bar · sidebar · list · detail. Narrow windows and phones:
@@ -323,6 +324,8 @@ class IconBar extends ConsumerWidget {
             onPressed: () => unawaited(showQuickSearch(context)),
           ),
           const Spacer(),
+          // The linked devices' sync, when there is one.
+          const SyncIndicator(),
           // "Ajuda": Página inicial · Atalhos · Sobre. The Help Center, feedback and
           // change log of TickTick are web pages of the company, so they are left out.
           PopupMenuButton<String>(
@@ -508,6 +511,7 @@ class _DrawerHeader extends StatelessWidget {
             ),
           ),
           const Spacer(),
+          const SyncIndicator(size: 20),
           IconButton(icon: const Icon(Icons.search), tooltip: t.navSearch, onPressed: () => unawaited(showQuickSearch(context))),
         ],
       ),

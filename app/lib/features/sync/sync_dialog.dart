@@ -5,11 +5,67 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/format/date_labels.dart';
+import '../../app/providers.dart';
 import '../../app/theme/app_theme.dart';
+import '../../data/db/database.dart';
+import '../../data/sync/sync_link.dart';
 import '../../l10n/app_localizations.dart';
 import '../backup/auto_backup.dart';
 import '../backup/backup_actions.dart';
+import '../common/feedback.dart';
 import 'device_sync.dart';
+import 'sync_service.dart';
+
+/// The question when two devices link: the other's name and the number both screens show, to compare.
+Future<bool> confirmLinkDialog(BuildContext context, String name, String code) async {
+  final t = AppLocalizations.of(context);
+  final ok = await showDialog<bool>(
+    context: context,
+    barrierDismissible: false,
+    builder: (context) => AlertDialog(
+      title: Text(t.syncLinkConfirmTitle(name), style: const TextStyle(fontSize: 16)),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(t.syncLinkConfirmBody(name)),
+          const SizedBox(height: 16),
+          Text(
+            '${code.substring(0, 3)} ${code.substring(3)}',
+            key: const ValueKey('linkCode'),
+            style: const TextStyle(fontSize: 34, fontWeight: FontWeight.w700, letterSpacing: 4),
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(context, false), child: Text(t.syncLinkDecline)),
+        FilledButton(onPressed: () => Navigator.pop(context, true), child: Text(t.syncLinkAccept)),
+      ],
+    ),
+  );
+  return ok ?? false;
+}
+
+/// "agora mesmo", "há 5 min", "há 3 h" or "em 20/10/2026".
+String syncAgo(AppLocalizations t, DateTime at, DateTime now) {
+  final d = now.difference(at);
+  if (d.inMinutes < 1) return t.syncAgoNow;
+  if (d.inMinutes < 60) return t.syncAgoMinutes(d.inMinutes);
+  if (d.inHours < 24) return t.syncAgoHours(d.inHours);
+  return t.syncAgoDate(DateLabels.numeric(at.toLocal()));
+}
+
+/// A linked device's line: synced when, syncing, out of reach or what went wrong.
+String linkStatusText(AppLocalizations t, LinkedDevice device, LinkStatus? status, DateTime now) {
+  final at = status?.at ?? device.lastSyncAt;
+  final when = at == null ? null : syncAgo(t, at, now);
+  return switch (status?.state) {
+    LinkState.syncing => t.syncStateSyncing,
+    LinkState.offline => [t.syncStateOffline, if (when != null) t.syncLastAt(when)].join(' · '),
+    LinkState.failed => status!.reason == 'unknown' ? t.syncStateUnknown : t.syncStateFailed,
+    _ => when == null ? t.syncStateWaiting : t.syncStateSynced(when),
+  };
+}
 
 /// "Sincronizar com outro aparelho": one device sends everything it has, the other becomes equal to
 /// it (after a safety copy of its own data), over the home Wi-Fi.
@@ -24,7 +80,7 @@ Future<void> showDeviceSync(BuildContext context) => showDialog<void>(
   },
 );
 
-enum _Stage { choose, receive, send }
+enum _Stage { choose, receive, send, link }
 
 class _SyncDialog extends ConsumerStatefulWidget {
   const _SyncDialog();
@@ -53,10 +109,20 @@ class _SyncDialogState extends ConsumerState<_SyncDialog> {
   bool _sending = false;
   SyncOutcome? _outcome;
 
+  // Linking.
+  List<FoundDevice> _found = const [];
+  Timer? _finding;
+  bool _linking = false;
+  bool _linkOk = false;
+  String? _linkResult;
+  final _linkAddress = TextEditingController();
+
   @override
   void dispose() {
     unawaited(_receiver?.stop());
     unawaited(_search?.cancel());
+    _finding?.cancel();
+    _linkAddress.dispose();
     _code.dispose();
     _address.dispose();
     super.dispose();
@@ -96,6 +162,45 @@ class _SyncDialogState extends ConsumerState<_SyncDialog> {
       }
       rethrow;
     }
+  }
+
+  SyncService get _service => ref.read(syncServiceProvider);
+
+  /// "Ligar a outro aparelho": the devices with Ordo open on the network, looked for again every few
+  /// seconds.
+  Future<void> _startLinking() async {
+    setState(() => _stage = _Stage.link);
+    final addresses = await localAddresses();
+    if (mounted) setState(() => _addresses = addresses);
+    Future<void> find() async {
+      final found = await findDevices(selfId: await _service.host.engine.deviceId());
+      if (mounted && _stage == _Stage.link) setState(() => _found = found);
+    }
+
+    await find();
+    _finding = Timer.periodic(const Duration(seconds: 4), (_) => unawaited(find()));
+  }
+
+  Future<void> _link(InternetAddress address, int port) async {
+    final t = AppLocalizations.of(context);
+    _finding?.cancel();
+    setState(() => _linking = true);
+    try {
+      final device = await _service.host.link(address, port, (name, code) => confirmLinkDialog(context, name, code));
+      _linkOk = true;
+      _linkResult = t.syncLinked(device.name);
+      unawaited(_service.syncNow());
+    } on Object {
+      _linkOk = false;
+      _linkResult = t.syncLinkFailed;
+    }
+    if (mounted) setState(() => _linking = false);
+  }
+
+  Future<void> _unlink(LinkedDevice device) async {
+    final t = AppLocalizations.of(context);
+    if (!await confirm(context, message: t.syncUnlinkConfirm(device.name), confirmLabel: t.syncUnlink)) return;
+    await _service.host.forget(device.id);
   }
 
   void _startSending() {
@@ -151,7 +256,10 @@ class _SyncDialogState extends ConsumerState<_SyncDialog> {
                   onPressed: () {
                     unawaited(_receiver?.stop());
                     unawaited(_search?.cancel());
+                    _finding?.cancel();
                     setState(() {
+                      _found = const [];
+                      _linkResult = null;
                       _receiver = null;
                       _search = null;
                       _peer = null;
@@ -181,6 +289,7 @@ class _SyncDialogState extends ConsumerState<_SyncDialog> {
               _Stage.choose => _choose(t, tt),
               _Stage.receive => _receive(t, tt),
               _Stage.send => _sendBody(t, tt),
+              _Stage.link => _linkBody(t, tt),
             },
           ),
         ),
@@ -227,6 +336,15 @@ class _SyncDialogState extends ConsumerState<_SyncDialog> {
       ),
     );
     return [
+      ..._linkedDevices(t, tt),
+      const SizedBox(height: 18),
+      Divider(height: 1, color: tt.divider),
+      const SizedBox(height: 14),
+      Text(
+        t.syncFullCopyTitle,
+        style: TextStyle(fontWeight: FontWeight.w600, color: tt.text),
+      ),
+      const SizedBox(height: 4),
       Text(t.syncIntro, style: TextStyle(color: tt.textSecondary)),
       const SizedBox(height: 6),
       option(Icons.upload_rounded, t.syncSend, t.syncSendHint, _startSending),
@@ -372,6 +490,144 @@ class _SyncDialogState extends ConsumerState<_SyncDialog> {
           _ => t.syncFailed,
         }, style: TextStyle(color: tt.overdue)),
       ],
+    ];
+  }
+
+  /// "Sincronia automática": the linked devices with their state, "Ligar a outro aparelho" and
+  /// "Sincronizar agora".
+  List<Widget> _linkedDevices(AppLocalizations t, TtColors tt) {
+    final db = ref.read(databaseProvider);
+    return [
+      Text(
+        t.syncAutoTitle,
+        style: TextStyle(fontWeight: FontWeight.w600, color: tt.text),
+      ),
+      const SizedBox(height: 4),
+      Text(t.syncAutoIntro, style: TextStyle(color: tt.textSecondary)),
+      StreamBuilder<List<LinkedDevice>>(
+        stream: db.select(db.syncPeers).watch(),
+        builder: (context, snapshot) {
+          final devices = snapshot.data ?? const <LinkedDevice>[];
+          return ValueListenableBuilder<Map<String, LinkStatus>>(
+            valueListenable: _service.status,
+            builder: (context, status, _) => Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (devices.isEmpty)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: Text(t.syncNoLinked, style: TextStyle(color: tt.textTertiary)),
+                  ),
+                for (final d in devices) ...[
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: Icon(status[d.id]?.state == LinkState.syncing ? Icons.sync : Icons.devices_other_outlined, color: tt.primary),
+                    title: Text(d.name),
+                    subtitle: Text(
+                      linkStatusText(t, d, status[d.id], DateTime.now()),
+                      style: TextStyle(fontSize: TtText.small, color: tt.textSecondary),
+                    ),
+                    trailing: PopupMenuButton<String>(
+                      tooltip: '',
+                      onSelected: (_) => unawaited(_unlink(d)),
+                      itemBuilder: (_) => [PopupMenuItem(value: 'unlink', height: 36, child: Text(t.syncUnlink))],
+                    ),
+                  ),
+                  if (status[d.id]?.clockOff ?? false)
+                    Text(
+                      t.syncClockOff(d.name),
+                      style: TextStyle(fontSize: TtText.small, color: tt.overdue),
+                    ),
+                ],
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    FilledButton.icon(
+                      key: const ValueKey('syncLink'),
+                      icon: const Icon(Icons.add_link, size: 18),
+                      label: Text(t.syncLinkButton),
+                      onPressed: () => unawaited(_startLinking()),
+                    ),
+                    if (devices.isNotEmpty)
+                      OutlinedButton.icon(
+                        icon: const Icon(Icons.sync, size: 18),
+                        label: Text(t.syncNow),
+                        onPressed: () => unawaited(_service.syncNow()),
+                      ),
+                  ],
+                ),
+                if (devices.isEmpty) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    t.syncFirstTimeTip,
+                    style: TextStyle(fontSize: TtText.small, color: tt.textTertiary),
+                  ),
+                ],
+              ],
+            ),
+          );
+        },
+      ),
+    ];
+  }
+
+  List<Widget> _linkBody(AppLocalizations t, TtColors tt) {
+    if (_linkResult case final message?) return [_result(tt, _linkOk, message)];
+    if (_linking) return const [SizedBox(height: 24), Center(child: CircularProgressIndicator())];
+    void typed() {
+      final address = InternetAddress.tryParse(_linkAddress.text.trim());
+      if (address != null) unawaited(_link(address, syncPort));
+    }
+
+    return [
+      Text(t.syncLinkHint, style: TextStyle(color: tt.textSecondary)),
+      const SizedBox(height: 12),
+      if (_found.isEmpty)
+        Row(
+          children: [
+            const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)),
+            const SizedBox(width: 12),
+            Expanded(child: Text(t.syncLinkSearching, style: TextStyle(color: tt.textTertiary))),
+          ],
+        ),
+      for (final d in _found)
+        ListTile(
+          contentPadding: EdgeInsets.zero,
+          leading: Icon(Icons.devices_other_outlined, color: tt.primary),
+          title: Text(d.name),
+          subtitle: Text(d.address.address, style: TextStyle(fontSize: TtText.small, color: tt.textTertiary)),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () => unawaited(_link(d.address, d.port)),
+        ),
+      const SizedBox(height: 16),
+      Row(
+        children: [
+          Expanded(
+            child: TextField(
+              controller: _linkAddress,
+              keyboardType: TextInputType.url,
+              decoration: InputDecoration(labelText: t.syncLinkAddressLabel, isDense: true),
+              onSubmitted: (_) => typed(),
+            ),
+          ),
+          const SizedBox(width: 8),
+          TextButton(onPressed: typed, child: Text(t.syncLinkAccept)),
+        ],
+      ),
+      if (_addresses.isNotEmpty) ...[
+        const SizedBox(height: 10),
+        Text(
+          t.syncThisAddress(_addresses.map((a) => a.address).join(', ')),
+          style: TextStyle(fontSize: TtText.small, color: tt.textTertiary),
+        ),
+      ],
+      const SizedBox(height: 6),
+      Text(
+        t.syncFirewall,
+        style: TextStyle(fontSize: TtText.small, color: tt.textTertiary),
+      ),
     ];
   }
 

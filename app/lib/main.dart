@@ -16,6 +16,7 @@ import 'features/appearance/backgrounds.dart';
 import 'features/countdown/countdown_card.dart';
 import 'features/mini_calendar/mini_calendar.dart';
 import 'features/subscriptions/subscriptions.dart';
+import 'features/sync/sync_service.dart';
 import 'core/app_folder.dart';
 
 Future<void> main() async {
@@ -32,6 +33,7 @@ Future<void> main() async {
         countdownImagesProvider.overrideWithValue(Directory(p.join(support.path, 'countdown_images'))),
         backgroundsDirProvider.overrideWithValue(Directory(p.join(support.path, 'backgrounds'))),
         autoBackupProvider.overrideWithValue(AutoBackup(Directory(p.join(support.path, 'backups')))),
+        syncEnabledProvider.overrideWithValue(true),
       ],
       child: const TasksApp(),
     ),

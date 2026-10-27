@@ -5620,6 +5620,122 @@ class AppLocalizationsLa extends AppLocalizations {
   String get syncWaitingOther => 'Alterum instrumentum mittere exspectatur…';
 
   @override
+  String get syncAutoTitle => 'Synchronia automatica';
+
+  @override
+  String get syncAutoIntro =>
+      'Machinae coniunctae per se pares fiunt, cum in eodem Wi-Fi Ordine aperto sunt: mutationes utriusque iunguntur, nec quidquam perit.';
+
+  @override
+  String get syncNoLinked => 'Nulla machina adhuc coniuncta.';
+
+  @override
+  String get syncLinkButton => 'Cum alia machina coniungere';
+
+  @override
+  String get syncNow => 'Nunc synchronizare';
+
+  @override
+  String get syncAgoNow => 'modo';
+
+  @override
+  String syncAgoMinutes(int count) {
+    return 'ante $count min';
+  }
+
+  @override
+  String syncAgoHours(int count) {
+    return 'ante $count h';
+  }
+
+  @override
+  String syncAgoDate(String date) {
+    return 'die $date';
+  }
+
+  @override
+  String syncStateSynced(String when) {
+    return 'Synchronizatum $when';
+  }
+
+  @override
+  String get syncStateSyncing => 'Synchronizatur…';
+
+  @override
+  String get syncStateOffline => 'Nunc extra fines';
+
+  @override
+  String get syncStateWaiting => 'Nondum synchronizatum';
+
+  @override
+  String get syncStateUnknown => 'Altera machina hanc coniunctionem non iam habet. Hic seiunge et iterum coniunge.';
+
+  @override
+  String get syncStateFailed => 'Proxime non successit; iterum per se temptabitur.';
+
+  @override
+  String syncLastAt(String when) {
+    return 'Ultimo $when';
+  }
+
+  @override
+  String syncClockOff(String name) {
+    return 'Horologium \"$name\" ab hoc differt. Horam in utraque corrige.';
+  }
+
+  @override
+  String get syncUnlink => 'Seiungere';
+
+  @override
+  String syncUnlinkConfirm(String name) {
+    return 'Seiungere \"$name\"? Data utriusque manent; tantum non iam iunguntur.';
+  }
+
+  @override
+  String get syncLinkSearching => 'Machinae cum Ordine aperto in eodem Wi-Fi quaeruntur…';
+
+  @override
+  String get syncLinkHint => 'Ordinem in altera machina apertum relinque. Utraque numerum ostendet: confer et in utraque Coniungere tange.';
+
+  @override
+  String syncLinkConfirmTitle(String name) {
+    return 'Cum \"$name\" coniungere?';
+  }
+
+  @override
+  String syncLinkConfirmBody(String name) {
+    return 'Confer num \"$name\" eundem numerum ostendat. Si alius est, Recusare tange.';
+  }
+
+  @override
+  String get syncLinkAccept => 'Coniungere';
+
+  @override
+  String get syncLinkDecline => 'Recusare';
+
+  @override
+  String syncLinked(String name) {
+    return 'Factum! \"$name\" coniuncta est. Prima synchronia omnia utriusque iungit.';
+  }
+
+  @override
+  String get syncLinkFailed => 'Coniungi non potuit. Confer utramque in eodem Wi-Fi Ordine aperto esse, et numerum eundem fuisse.';
+
+  @override
+  String get syncLinkAddressLabel => 'Inscriptio alterius machinae (e.g. 192.168.0.10)';
+
+  @override
+  String syncThisAddress(String address) {
+    return 'Inscriptio huius machinae: $address';
+  }
+
+  @override
+  String get syncFullCopyTitle => 'Exemplar plenum (semel)';
+
+  @override
+  String get syncFirstTimeTip => 'Si machinae seorsum coeperunt eademque in utraque habent, prius exemplar plenum fac: ita nihil duplex apparebit.';
+
+  @override
   String get widgetDay => 'Dies';
 
   @override

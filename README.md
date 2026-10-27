@@ -28,7 +28,7 @@ Os dados ficam **só no seu aparelho**: não tem conta, login nem servidor. Para
 
 ### Baixar e instalar (jeito fácil)
 
-1. Abra a página de [**Releases**](https://github.com/FLucasF/Ordo/releases/latest) e baixe o **`OrdoSetup-1.6.2.exe`**.
+1. Abra a página de [**Releases**](https://github.com/FLucasF/Ordo/releases/latest) e baixe o **`OrdoSetup-1.7.0.exe`**.
 2. Dê dois cliques no arquivo baixado.
 3. O Windows pode mostrar o aviso azul do **SmartScreen** ("O Windows protegeu o computador"), porque o instalador não tem assinatura digital paga. Clique em **Mais informações → Executar assim mesmo**.
 4. Siga o instalador: **Avançar → Instalar → Concluir**. Ele não pede senha de administrador e cria o atalho **Ordo** no menu Iniciar. Se você marcar a opção, cria também na área de trabalho.
@@ -70,7 +70,7 @@ Funciona no Android 7.0 ou mais novo.
 
 ### Baixar e instalar (jeito fácil)
 
-1. **No celular**, abra a página de [**Releases**](https://github.com/FLucasF/Ordo/releases/latest) e toque em **`Ordo-1.6.2.apk`** para baixar.
+1. **No celular**, abra a página de [**Releases**](https://github.com/FLucasF/Ordo/releases/latest) e toque em **`Ordo-1.7.0.apk`** para baixar.
 2. Quando terminar, toque na notificação do download, ou abra o app **Arquivos → Downloads** e toque no arquivo.
 3. O Android avisa que, por segurança, o app de onde você está instalando (Chrome ou Arquivos) não pode instalar apps. Toque em **Configurações**, ligue **Permitir desta fonte** e volte.
 4. Toque em **Instalar** e depois em **Abrir**.
@@ -350,12 +350,22 @@ Abra pelo avatar (canto superior esquerdo) → **Configurações**. As abas:
 - **Configurações → Conta → Gerar Backup** salva um `.zip` com tudo, inclusive anexos e imagens. Em **Importar backups locais**, esse arquivo substitui os dados do aparelho (o app pede confirmação).
 - **Backups automáticos:** o app faz sozinho uma cópia por dia, sem os anexos, e guarda as 7 mais recentes. Elas ficam listadas em *Configurações → Conta → Backups automáticos*, com o botão **Restaurar**.
 - **Excel:** *Configurações → Conta → Exportar para Excel* gera uma planilha com uma aba por módulo (Tarefas, Hábitos, Lançamentos, Cartões, Faturas pagas, Empréstimos, Recebimentos, Caixinhas, Movimentações, Dieta, Diário), com datas e valores em reais formatados. **Importar do Excel** traz **tarefas e lançamentos** (da planilha exportada ou de uma sua com as mesmas colunas), mostra uma **prévia** com os erros antes, **só acrescenta** e faz uma cópia de segurança antes.
-- **Deixar o celular e o PC iguais (pelo Wi-Fi):** toque no avatar → **Sincronizar aparelhos** (ou *Configurações → Conta*).
+- **Sincronia automática (pelo Wi-Fi):** ligue o celular e o PC uma vez, e eles ficam iguais sozinhos.
+  1. Abra o Ordo nos dois, no mesmo Wi-Fi. Num deles, toque no avatar → **Sincronizar aparelhos** → **Ligar a outro aparelho** e escolha o outro na lista (ou digite o endereço dele).
+  2. Os **dois mostram um número de 6 dígitos**. Confira se é o mesmo e toque em **Ligar** nos dois.
+  3. Pronto. A partir daí, sempre que os dois estiverem no mesmo Wi-Fi com o Ordo aberto, eles trocam as mudanças: ao abrir o app, alguns segundos depois de cada alteração e a cada 2 minutos. No PC, o Ordo continua rodando perto do relógio, então o celular sincroniza com ele sempre que você abre o app.
+
+  **Nada se perde:** as mudanças dos dois lados são **juntadas**. Se o mesmo item foi alterado nos dois, vale a alteração mais recente; uma exclusão também viaja (a não ser que o item tenha sido editado do outro lado depois). Se os dois escreveram no Diário no mesmo dia, as notas ficam juntas. Anexos, imagens das contagens e fundos vão junto. Preferências do aparelho (tamanho da janela, mini calendário, papel de parede, iniciar com o Windows) não viajam.
+
+  **Seguro:** a ligação combina uma chave secreta entre os dois (o número conferido nas duas telas impede que um terceiro se meta no meio), e cada sincronia é **criptografada** com ela. Nada passa pela internet. O ícone de nuvem na barra (PC) ou no topo da gaveta (celular) mostra o estado; em **Sincronizar aparelhos** dá para **Sincronizar agora** ou **Desligar** um aparelho. Os relógios dos dois precisam estar certos (o app avisa se estiverem diferentes). Redes de visitante ou de empresa às vezes bloqueiam a conversa entre aparelhos; o Wi-Fi de casa e o roteador do celular funcionam.
+
+  Se os aparelhos começaram separados, com as mesmas coisas cadastradas nos dois, faça antes uma **cópia completa** (abaixo) para nada aparecer em dobro.
+- **Cópia completa (uma vez):** toque no avatar → **Sincronizar aparelhos** (ou *Configurações → Conta*), na parte de baixo.
   1. No aparelho que vai **ficar igual ao outro**, toque em **Receber neste aparelho**. Aparece um código de 6 números.
   2. No aparelho que **tem os dados certos**, toque em **Enviar deste aparelho**, escolha o outro na lista e digite o código.
   3. Pronto: tudo (tarefas, hábitos, finanças, dieta, diário, anexos, configurações) vai de um para o outro. Antes de trocar, quem recebe guarda uma cópia dos próprios dados, que aparece com a hora em *Backups automáticos*, para desfazer.
 
-  Os dois precisam estar no **mesmo Wi-Fi**, com o app aberto e **na mesma versão**. Não usa internet nem conta: os dados vão direto de um aparelho para o outro pela rede de casa, sem criptografia, então use em redes de confiança (não em Wi-Fi público). É uma cópia completa, não uma junção: use como fonte o aparelho onde você mexeu por último. No Windows, na primeira vez que receber, o Firewall pergunta; clique em **Permitir acesso**. Se um não achar o outro, use **Digitar endereço** com o endereço que aparece na tela de quem recebe.
+  Os dois precisam estar no **mesmo Wi-Fi**, com o app aberto e **na mesma versão**. Não usa internet nem conta: os dados vão direto de um aparelho para o outro pela rede de casa, sem criptografia, então use em redes de confiança (não em Wi-Fi público). É uma cópia completa, não uma junção: use como fonte o aparelho onde você mexeu por último. Para o dia a dia, prefira a sincronia automática. No Windows, na primeira vez que receber, o Firewall pergunta; clique em **Permitir acesso**. Se um não achar o outro, use **Digitar endereço** com o endereço que aparece na tela de quem recebe.
 - **Por arquivo:** gere o backup num aparelho, copie o `.zip` e importe no outro.
 - **Vindo do TickTick:** lá, gere o backup em *Configurações → Conta → Backup & Recuperação*. Aqui, importe em *Configurações → Integrações e Importação → Backup do TickTick (.csv)*. Traz pastas, listas, seções, etiquetas, subtarefas, checklists e concluídas.
 

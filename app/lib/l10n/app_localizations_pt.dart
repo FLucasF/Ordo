@@ -5610,6 +5610,124 @@ class AppLocalizationsPt extends AppLocalizations {
   String get syncWaitingOther => 'Esperando o outro aparelho enviar…';
 
   @override
+  String get syncAutoTitle => 'Sincronia automática';
+
+  @override
+  String get syncAutoIntro =>
+      'Aparelhos ligados ficam iguais sozinhos sempre que estão no mesmo Wi-Fi com o Ordo aberto: as mudanças dos dois são juntadas, e nada do que foi feito em um se perde.';
+
+  @override
+  String get syncNoLinked => 'Nenhum aparelho ligado ainda.';
+
+  @override
+  String get syncLinkButton => 'Ligar a outro aparelho';
+
+  @override
+  String get syncNow => 'Sincronizar agora';
+
+  @override
+  String get syncAgoNow => 'agora mesmo';
+
+  @override
+  String syncAgoMinutes(int count) {
+    return 'há $count min';
+  }
+
+  @override
+  String syncAgoHours(int count) {
+    return 'há $count h';
+  }
+
+  @override
+  String syncAgoDate(String date) {
+    return 'em $date';
+  }
+
+  @override
+  String syncStateSynced(String when) {
+    return 'Sincronizado $when';
+  }
+
+  @override
+  String get syncStateSyncing => 'Sincronizando…';
+
+  @override
+  String get syncStateOffline => 'Fora do alcance agora';
+
+  @override
+  String get syncStateWaiting => 'Ainda não sincronizado';
+
+  @override
+  String get syncStateUnknown => 'O outro aparelho não tem mais esta ligação. Desligue aqui e ligue de novo.';
+
+  @override
+  String get syncStateFailed => 'Não deu certo da última vez; o app tenta de novo sozinho.';
+
+  @override
+  String syncLastAt(String when) {
+    return 'Última vez $when';
+  }
+
+  @override
+  String syncClockOff(String name) {
+    return 'O relógio de \"$name\" está diferente do deste aparelho. Acerte a hora nos dois para que a mudança mais recente sempre vença.';
+  }
+
+  @override
+  String get syncUnlink => 'Desligar';
+
+  @override
+  String syncUnlinkConfirm(String name) {
+    return 'Desligar \"$name\"? Os dados dos dois continuam como estão; eles só param de se juntar.';
+  }
+
+  @override
+  String get syncLinkSearching => 'Procurando aparelhos com o Ordo aberto no mesmo Wi-Fi…';
+
+  @override
+  String get syncLinkHint =>
+      'Deixe o Ordo aberto no outro aparelho. Ao escolher, os dois mostram um número: confira se é o mesmo e toque em Ligar nos dois.';
+
+  @override
+  String syncLinkConfirmTitle(String name) {
+    return 'Ligar a \"$name\"?';
+  }
+
+  @override
+  String syncLinkConfirmBody(String name) {
+    return 'Confira se \"$name\" mostra este mesmo número. Se for diferente, toque em Recusar.';
+  }
+
+  @override
+  String get syncLinkAccept => 'Ligar';
+
+  @override
+  String get syncLinkDecline => 'Recusar';
+
+  @override
+  String syncLinked(String name) {
+    return 'Pronto! \"$name\" está ligado. A primeira sincronia junta tudo o que os dois têm.';
+  }
+
+  @override
+  String get syncLinkFailed => 'Não deu para ligar. Confira se os dois estão no mesmo Wi-Fi com o Ordo aberto e se o número era o mesmo.';
+
+  @override
+  String get syncLinkAddressLabel => 'Endereço do outro aparelho (ex.: 192.168.0.10)';
+
+  @override
+  String syncThisAddress(String address) {
+    return 'Endereço deste aparelho: $address';
+  }
+
+  @override
+  String get syncFullCopyTitle => 'Cópia completa (uma vez)';
+
+  @override
+  String get syncFirstTimeTip =>
+      'Se os aparelhos começaram separados e têm as mesmas coisas cadastradas nos dois, faça antes uma cópia completa: assim nada aparece em dobro depois de ligar.';
+
+  @override
   String get widgetDay => 'Dia';
 
   @override

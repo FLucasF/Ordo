@@ -46,6 +46,8 @@ import 'routes.dart';
 import 'theme/app_theme.dart';
 import 'window_title.dart';
 import '../features/common/color_choice.dart';
+import '../features/sync/sync_dialog.dart' show confirmLinkDialog;
+import '../features/sync/sync_service.dart';
 import 'focus_restorer.dart';
 import 'latin_fallback.dart';
 
@@ -168,6 +170,9 @@ class _TasksAppState extends ConsumerState<TasksApp> {
   (bool, bool, AppLanguage)? _desktop;
   Timer? _autoBackup;
 
+  /// Syncs the linked devices again when the app comes back to the front.
+  AppLifecycleListener? _lifecycle;
+
   @override
   void initState() {
     super.initState();
@@ -182,6 +187,16 @@ class _TasksAppState extends ConsumerState<TasksApp> {
         unawaited(runAutoBackup(ref));
         _autoBackup = Timer.periodic(const Duration(hours: 1), (_) => unawaited(runAutoBackup(ref)));
       });
+    }
+    // The linked devices stay in step while the app runs; a link another device starts is asked here.
+    if (ref.read(syncEnabledProvider)) {
+      final sync = ref.read(syncServiceProvider);
+      sync.confirmLink = (name, code) async {
+        final context = _router.routerDelegate.navigatorKey.currentContext;
+        return context != null && context.mounted && await confirmLinkDialog(context, name, code);
+      };
+      unawaited(sync.start());
+      _lifecycle = AppLifecycleListener(onResume: () => unawaited(sync.syncNow()));
     }
     // "Tempo flutuante": tasks keep their clock time when this device changed zone.
     final zone = deviceZoneId();
@@ -426,6 +441,7 @@ class _TasksAppState extends ConsumerState<TasksApp> {
     _popupTimer?.cancel();
     _muteTimer?.cancel();
     _autoBackup?.cancel();
+    _lifecycle?.dispose();
     unawaited(_responses?.cancel());
     _router.dispose();
     super.dispose();

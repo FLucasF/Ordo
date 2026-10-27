@@ -22578,6 +22578,1086 @@ class JournalEntriesCompanion extends UpdateCompanion<JournalEntry> {
   }
 }
 
+class $SyncChangesTable extends SyncChanges
+    with TableInfo<$SyncChangesTable, SyncChange> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SyncChangesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _tblMeta = const VerificationMeta('tbl');
+  @override
+  late final GeneratedColumn<String> tbl = GeneratedColumn<String>(
+    'tbl',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _rowIdMeta = const VerificationMeta('rowId');
+  @override
+  late final GeneratedColumn<String> rowId = GeneratedColumn<String>(
+    'row_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _seqMeta = const VerificationMeta('seq');
+  @override
+  late final GeneratedColumn<int> seq = GeneratedColumn<int>(
+    'seq',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _changedAtMeta = const VerificationMeta(
+    'changedAt',
+  );
+  @override
+  late final GeneratedColumn<String> changedAt = GeneratedColumn<String>(
+    'changed_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [tbl, rowId, seq, changedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'sync_changes';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SyncChange> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('tbl')) {
+      context.handle(
+        _tblMeta,
+        tbl.isAcceptableOrUnknown(data['tbl']!, _tblMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_tblMeta);
+    }
+    if (data.containsKey('row_id')) {
+      context.handle(
+        _rowIdMeta,
+        rowId.isAcceptableOrUnknown(data['row_id']!, _rowIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_rowIdMeta);
+    }
+    if (data.containsKey('seq')) {
+      context.handle(
+        _seqMeta,
+        seq.isAcceptableOrUnknown(data['seq']!, _seqMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_seqMeta);
+    }
+    if (data.containsKey('changed_at')) {
+      context.handle(
+        _changedAtMeta,
+        changedAt.isAcceptableOrUnknown(data['changed_at']!, _changedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_changedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {tbl, rowId};
+  @override
+  SyncChange map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SyncChange(
+      tbl: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}tbl'],
+      )!,
+      rowId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}row_id'],
+      )!,
+      seq: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}seq'],
+      )!,
+      changedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}changed_at'],
+      )!,
+    );
+  }
+
+  @override
+  $SyncChangesTable createAlias(String alias) {
+    return $SyncChangesTable(attachedDatabase, alias);
+  }
+}
+
+class SyncChange extends DataClass implements Insertable<SyncChange> {
+  final String tbl;
+  final String rowId;
+  final int seq;
+
+  /// When the change was made here (UTC ISO text, as drift stores dates): for a deletion, the moment
+  /// to compare with the other device's edits.
+  final String changedAt;
+  const SyncChange({
+    required this.tbl,
+    required this.rowId,
+    required this.seq,
+    required this.changedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['tbl'] = Variable<String>(tbl);
+    map['row_id'] = Variable<String>(rowId);
+    map['seq'] = Variable<int>(seq);
+    map['changed_at'] = Variable<String>(changedAt);
+    return map;
+  }
+
+  SyncChangesCompanion toCompanion(bool nullToAbsent) {
+    return SyncChangesCompanion(
+      tbl: Value(tbl),
+      rowId: Value(rowId),
+      seq: Value(seq),
+      changedAt: Value(changedAt),
+    );
+  }
+
+  factory SyncChange.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SyncChange(
+      tbl: serializer.fromJson<String>(json['tbl']),
+      rowId: serializer.fromJson<String>(json['rowId']),
+      seq: serializer.fromJson<int>(json['seq']),
+      changedAt: serializer.fromJson<String>(json['changedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'tbl': serializer.toJson<String>(tbl),
+      'rowId': serializer.toJson<String>(rowId),
+      'seq': serializer.toJson<int>(seq),
+      'changedAt': serializer.toJson<String>(changedAt),
+    };
+  }
+
+  SyncChange copyWith({
+    String? tbl,
+    String? rowId,
+    int? seq,
+    String? changedAt,
+  }) => SyncChange(
+    tbl: tbl ?? this.tbl,
+    rowId: rowId ?? this.rowId,
+    seq: seq ?? this.seq,
+    changedAt: changedAt ?? this.changedAt,
+  );
+  SyncChange copyWithCompanion(SyncChangesCompanion data) {
+    return SyncChange(
+      tbl: data.tbl.present ? data.tbl.value : this.tbl,
+      rowId: data.rowId.present ? data.rowId.value : this.rowId,
+      seq: data.seq.present ? data.seq.value : this.seq,
+      changedAt: data.changedAt.present ? data.changedAt.value : this.changedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SyncChange(')
+          ..write('tbl: $tbl, ')
+          ..write('rowId: $rowId, ')
+          ..write('seq: $seq, ')
+          ..write('changedAt: $changedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(tbl, rowId, seq, changedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SyncChange &&
+          other.tbl == this.tbl &&
+          other.rowId == this.rowId &&
+          other.seq == this.seq &&
+          other.changedAt == this.changedAt);
+}
+
+class SyncChangesCompanion extends UpdateCompanion<SyncChange> {
+  final Value<String> tbl;
+  final Value<String> rowId;
+  final Value<int> seq;
+  final Value<String> changedAt;
+  final Value<int> rowid;
+  const SyncChangesCompanion({
+    this.tbl = const Value.absent(),
+    this.rowId = const Value.absent(),
+    this.seq = const Value.absent(),
+    this.changedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  SyncChangesCompanion.insert({
+    required String tbl,
+    required String rowId,
+    required int seq,
+    required String changedAt,
+    this.rowid = const Value.absent(),
+  }) : tbl = Value(tbl),
+       rowId = Value(rowId),
+       seq = Value(seq),
+       changedAt = Value(changedAt);
+  static Insertable<SyncChange> custom({
+    Expression<String>? tbl,
+    Expression<String>? rowId,
+    Expression<int>? seq,
+    Expression<String>? changedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (tbl != null) 'tbl': tbl,
+      if (rowId != null) 'row_id': rowId,
+      if (seq != null) 'seq': seq,
+      if (changedAt != null) 'changed_at': changedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  SyncChangesCompanion copyWith({
+    Value<String>? tbl,
+    Value<String>? rowId,
+    Value<int>? seq,
+    Value<String>? changedAt,
+    Value<int>? rowid,
+  }) {
+    return SyncChangesCompanion(
+      tbl: tbl ?? this.tbl,
+      rowId: rowId ?? this.rowId,
+      seq: seq ?? this.seq,
+      changedAt: changedAt ?? this.changedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (tbl.present) {
+      map['tbl'] = Variable<String>(tbl.value);
+    }
+    if (rowId.present) {
+      map['row_id'] = Variable<String>(rowId.value);
+    }
+    if (seq.present) {
+      map['seq'] = Variable<int>(seq.value);
+    }
+    if (changedAt.present) {
+      map['changed_at'] = Variable<String>(changedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SyncChangesCompanion(')
+          ..write('tbl: $tbl, ')
+          ..write('rowId: $rowId, ')
+          ..write('seq: $seq, ')
+          ..write('changedAt: $changedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $SyncPeersTable extends SyncPeers
+    with TableInfo<$SyncPeersTable, LinkedDevice> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SyncPeersTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _secretMeta = const VerificationMeta('secret');
+  @override
+  late final GeneratedColumn<String> secret = GeneratedColumn<String>(
+    'secret',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _addressMeta = const VerificationMeta(
+    'address',
+  );
+  @override
+  late final GeneratedColumn<String> address = GeneratedColumn<String>(
+    'address',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _portMeta = const VerificationMeta('port');
+  @override
+  late final GeneratedColumn<int> port = GeneratedColumn<int>(
+    'port',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _sentSeqMeta = const VerificationMeta(
+    'sentSeq',
+  );
+  @override
+  late final GeneratedColumn<int> sentSeq = GeneratedColumn<int>(
+    'sent_seq',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _pairedAtMeta = const VerificationMeta(
+    'pairedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> pairedAt = GeneratedColumn<DateTime>(
+    'paired_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _lastSyncAtMeta = const VerificationMeta(
+    'lastSyncAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastSyncAt = GeneratedColumn<DateTime>(
+    'last_sync_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    name,
+    secret,
+    address,
+    port,
+    sentSeq,
+    pairedAt,
+    lastSyncAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'sync_peers';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<LinkedDevice> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('secret')) {
+      context.handle(
+        _secretMeta,
+        secret.isAcceptableOrUnknown(data['secret']!, _secretMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_secretMeta);
+    }
+    if (data.containsKey('address')) {
+      context.handle(
+        _addressMeta,
+        address.isAcceptableOrUnknown(data['address']!, _addressMeta),
+      );
+    }
+    if (data.containsKey('port')) {
+      context.handle(
+        _portMeta,
+        port.isAcceptableOrUnknown(data['port']!, _portMeta),
+      );
+    }
+    if (data.containsKey('sent_seq')) {
+      context.handle(
+        _sentSeqMeta,
+        sentSeq.isAcceptableOrUnknown(data['sent_seq']!, _sentSeqMeta),
+      );
+    }
+    if (data.containsKey('paired_at')) {
+      context.handle(
+        _pairedAtMeta,
+        pairedAt.isAcceptableOrUnknown(data['paired_at']!, _pairedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_pairedAtMeta);
+    }
+    if (data.containsKey('last_sync_at')) {
+      context.handle(
+        _lastSyncAtMeta,
+        lastSyncAt.isAcceptableOrUnknown(
+          data['last_sync_at']!,
+          _lastSyncAtMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  LinkedDevice map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return LinkedDevice(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      secret: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}secret'],
+      )!,
+      address: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}address'],
+      ),
+      port: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}port'],
+      ),
+      sentSeq: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}sent_seq'],
+      )!,
+      pairedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}paired_at'],
+      )!,
+      lastSyncAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_sync_at'],
+      ),
+    );
+  }
+
+  @override
+  $SyncPeersTable createAlias(String alias) {
+    return $SyncPeersTable(attachedDatabase, alias);
+  }
+}
+
+class LinkedDevice extends DataClass implements Insertable<LinkedDevice> {
+  /// The other device's id ([SyncState.deviceId] over there).
+  final String id;
+  final String name;
+
+  /// The secret both devices agreed on when linked (base64): it proves who is talking and keys the
+  /// encryption.
+  final String secret;
+
+  /// Where it was last reached, to try first.
+  final String? address;
+  final int? port;
+
+  /// The last of this device's changes ([SyncChanges.seq]) the other one confirmed.
+  final int sentSeq;
+  final DateTime pairedAt;
+  final DateTime? lastSyncAt;
+  const LinkedDevice({
+    required this.id,
+    required this.name,
+    required this.secret,
+    this.address,
+    this.port,
+    required this.sentSeq,
+    required this.pairedAt,
+    this.lastSyncAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['name'] = Variable<String>(name);
+    map['secret'] = Variable<String>(secret);
+    if (!nullToAbsent || address != null) {
+      map['address'] = Variable<String>(address);
+    }
+    if (!nullToAbsent || port != null) {
+      map['port'] = Variable<int>(port);
+    }
+    map['sent_seq'] = Variable<int>(sentSeq);
+    map['paired_at'] = Variable<DateTime>(pairedAt);
+    if (!nullToAbsent || lastSyncAt != null) {
+      map['last_sync_at'] = Variable<DateTime>(lastSyncAt);
+    }
+    return map;
+  }
+
+  SyncPeersCompanion toCompanion(bool nullToAbsent) {
+    return SyncPeersCompanion(
+      id: Value(id),
+      name: Value(name),
+      secret: Value(secret),
+      address: address == null && nullToAbsent
+          ? const Value.absent()
+          : Value(address),
+      port: port == null && nullToAbsent ? const Value.absent() : Value(port),
+      sentSeq: Value(sentSeq),
+      pairedAt: Value(pairedAt),
+      lastSyncAt: lastSyncAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastSyncAt),
+    );
+  }
+
+  factory LinkedDevice.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return LinkedDevice(
+      id: serializer.fromJson<String>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      secret: serializer.fromJson<String>(json['secret']),
+      address: serializer.fromJson<String?>(json['address']),
+      port: serializer.fromJson<int?>(json['port']),
+      sentSeq: serializer.fromJson<int>(json['sentSeq']),
+      pairedAt: serializer.fromJson<DateTime>(json['pairedAt']),
+      lastSyncAt: serializer.fromJson<DateTime?>(json['lastSyncAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'name': serializer.toJson<String>(name),
+      'secret': serializer.toJson<String>(secret),
+      'address': serializer.toJson<String?>(address),
+      'port': serializer.toJson<int?>(port),
+      'sentSeq': serializer.toJson<int>(sentSeq),
+      'pairedAt': serializer.toJson<DateTime>(pairedAt),
+      'lastSyncAt': serializer.toJson<DateTime?>(lastSyncAt),
+    };
+  }
+
+  LinkedDevice copyWith({
+    String? id,
+    String? name,
+    String? secret,
+    Value<String?> address = const Value.absent(),
+    Value<int?> port = const Value.absent(),
+    int? sentSeq,
+    DateTime? pairedAt,
+    Value<DateTime?> lastSyncAt = const Value.absent(),
+  }) => LinkedDevice(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    secret: secret ?? this.secret,
+    address: address.present ? address.value : this.address,
+    port: port.present ? port.value : this.port,
+    sentSeq: sentSeq ?? this.sentSeq,
+    pairedAt: pairedAt ?? this.pairedAt,
+    lastSyncAt: lastSyncAt.present ? lastSyncAt.value : this.lastSyncAt,
+  );
+  LinkedDevice copyWithCompanion(SyncPeersCompanion data) {
+    return LinkedDevice(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      secret: data.secret.present ? data.secret.value : this.secret,
+      address: data.address.present ? data.address.value : this.address,
+      port: data.port.present ? data.port.value : this.port,
+      sentSeq: data.sentSeq.present ? data.sentSeq.value : this.sentSeq,
+      pairedAt: data.pairedAt.present ? data.pairedAt.value : this.pairedAt,
+      lastSyncAt: data.lastSyncAt.present
+          ? data.lastSyncAt.value
+          : this.lastSyncAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LinkedDevice(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('secret: $secret, ')
+          ..write('address: $address, ')
+          ..write('port: $port, ')
+          ..write('sentSeq: $sentSeq, ')
+          ..write('pairedAt: $pairedAt, ')
+          ..write('lastSyncAt: $lastSyncAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    name,
+    secret,
+    address,
+    port,
+    sentSeq,
+    pairedAt,
+    lastSyncAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is LinkedDevice &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.secret == this.secret &&
+          other.address == this.address &&
+          other.port == this.port &&
+          other.sentSeq == this.sentSeq &&
+          other.pairedAt == this.pairedAt &&
+          other.lastSyncAt == this.lastSyncAt);
+}
+
+class SyncPeersCompanion extends UpdateCompanion<LinkedDevice> {
+  final Value<String> id;
+  final Value<String> name;
+  final Value<String> secret;
+  final Value<String?> address;
+  final Value<int?> port;
+  final Value<int> sentSeq;
+  final Value<DateTime> pairedAt;
+  final Value<DateTime?> lastSyncAt;
+  final Value<int> rowid;
+  const SyncPeersCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.secret = const Value.absent(),
+    this.address = const Value.absent(),
+    this.port = const Value.absent(),
+    this.sentSeq = const Value.absent(),
+    this.pairedAt = const Value.absent(),
+    this.lastSyncAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  SyncPeersCompanion.insert({
+    required String id,
+    required String name,
+    required String secret,
+    this.address = const Value.absent(),
+    this.port = const Value.absent(),
+    this.sentSeq = const Value.absent(),
+    required DateTime pairedAt,
+    this.lastSyncAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       name = Value(name),
+       secret = Value(secret),
+       pairedAt = Value(pairedAt);
+  static Insertable<LinkedDevice> custom({
+    Expression<String>? id,
+    Expression<String>? name,
+    Expression<String>? secret,
+    Expression<String>? address,
+    Expression<int>? port,
+    Expression<int>? sentSeq,
+    Expression<DateTime>? pairedAt,
+    Expression<DateTime>? lastSyncAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (secret != null) 'secret': secret,
+      if (address != null) 'address': address,
+      if (port != null) 'port': port,
+      if (sentSeq != null) 'sent_seq': sentSeq,
+      if (pairedAt != null) 'paired_at': pairedAt,
+      if (lastSyncAt != null) 'last_sync_at': lastSyncAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  SyncPeersCompanion copyWith({
+    Value<String>? id,
+    Value<String>? name,
+    Value<String>? secret,
+    Value<String?>? address,
+    Value<int?>? port,
+    Value<int>? sentSeq,
+    Value<DateTime>? pairedAt,
+    Value<DateTime?>? lastSyncAt,
+    Value<int>? rowid,
+  }) {
+    return SyncPeersCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      secret: secret ?? this.secret,
+      address: address ?? this.address,
+      port: port ?? this.port,
+      sentSeq: sentSeq ?? this.sentSeq,
+      pairedAt: pairedAt ?? this.pairedAt,
+      lastSyncAt: lastSyncAt ?? this.lastSyncAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (secret.present) {
+      map['secret'] = Variable<String>(secret.value);
+    }
+    if (address.present) {
+      map['address'] = Variable<String>(address.value);
+    }
+    if (port.present) {
+      map['port'] = Variable<int>(port.value);
+    }
+    if (sentSeq.present) {
+      map['sent_seq'] = Variable<int>(sentSeq.value);
+    }
+    if (pairedAt.present) {
+      map['paired_at'] = Variable<DateTime>(pairedAt.value);
+    }
+    if (lastSyncAt.present) {
+      map['last_sync_at'] = Variable<DateTime>(lastSyncAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SyncPeersCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('secret: $secret, ')
+          ..write('address: $address, ')
+          ..write('port: $port, ')
+          ..write('sentSeq: $sentSeq, ')
+          ..write('pairedAt: $pairedAt, ')
+          ..write('lastSyncAt: $lastSyncAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $SyncStateTable extends SyncState
+    with TableInfo<$SyncStateTable, SyncStateRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SyncStateTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _deviceIdMeta = const VerificationMeta(
+    'deviceId',
+  );
+  @override
+  late final GeneratedColumn<String> deviceId = GeneratedColumn<String>(
+    'device_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _applyingMeta = const VerificationMeta(
+    'applying',
+  );
+  @override
+  late final GeneratedColumn<int> applying = GeneratedColumn<int>(
+    'applying',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, deviceId, applying];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'sync_state';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SyncStateRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('device_id')) {
+      context.handle(
+        _deviceIdMeta,
+        deviceId.isAcceptableOrUnknown(data['device_id']!, _deviceIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_deviceIdMeta);
+    }
+    if (data.containsKey('applying')) {
+      context.handle(
+        _applyingMeta,
+        applying.isAcceptableOrUnknown(data['applying']!, _applyingMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  SyncStateRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SyncStateRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      deviceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}device_id'],
+      )!,
+      applying: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}applying'],
+      )!,
+    );
+  }
+
+  @override
+  $SyncStateTable createAlias(String alias) {
+    return $SyncStateTable(attachedDatabase, alias);
+  }
+}
+
+class SyncStateRow extends DataClass implements Insertable<SyncStateRow> {
+  final int id;
+
+  /// This device's id, made once.
+  final String deviceId;
+
+  /// 1 while changes from the other device are written: the triggers then leave them out of
+  /// [SyncChanges], so they don't travel back.
+  final int applying;
+  const SyncStateRow({
+    required this.id,
+    required this.deviceId,
+    required this.applying,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['device_id'] = Variable<String>(deviceId);
+    map['applying'] = Variable<int>(applying);
+    return map;
+  }
+
+  SyncStateCompanion toCompanion(bool nullToAbsent) {
+    return SyncStateCompanion(
+      id: Value(id),
+      deviceId: Value(deviceId),
+      applying: Value(applying),
+    );
+  }
+
+  factory SyncStateRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SyncStateRow(
+      id: serializer.fromJson<int>(json['id']),
+      deviceId: serializer.fromJson<String>(json['deviceId']),
+      applying: serializer.fromJson<int>(json['applying']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'deviceId': serializer.toJson<String>(deviceId),
+      'applying': serializer.toJson<int>(applying),
+    };
+  }
+
+  SyncStateRow copyWith({int? id, String? deviceId, int? applying}) =>
+      SyncStateRow(
+        id: id ?? this.id,
+        deviceId: deviceId ?? this.deviceId,
+        applying: applying ?? this.applying,
+      );
+  SyncStateRow copyWithCompanion(SyncStateCompanion data) {
+    return SyncStateRow(
+      id: data.id.present ? data.id.value : this.id,
+      deviceId: data.deviceId.present ? data.deviceId.value : this.deviceId,
+      applying: data.applying.present ? data.applying.value : this.applying,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SyncStateRow(')
+          ..write('id: $id, ')
+          ..write('deviceId: $deviceId, ')
+          ..write('applying: $applying')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, deviceId, applying);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SyncStateRow &&
+          other.id == this.id &&
+          other.deviceId == this.deviceId &&
+          other.applying == this.applying);
+}
+
+class SyncStateCompanion extends UpdateCompanion<SyncStateRow> {
+  final Value<int> id;
+  final Value<String> deviceId;
+  final Value<int> applying;
+  const SyncStateCompanion({
+    this.id = const Value.absent(),
+    this.deviceId = const Value.absent(),
+    this.applying = const Value.absent(),
+  });
+  SyncStateCompanion.insert({
+    this.id = const Value.absent(),
+    required String deviceId,
+    this.applying = const Value.absent(),
+  }) : deviceId = Value(deviceId);
+  static Insertable<SyncStateRow> custom({
+    Expression<int>? id,
+    Expression<String>? deviceId,
+    Expression<int>? applying,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (deviceId != null) 'device_id': deviceId,
+      if (applying != null) 'applying': applying,
+    });
+  }
+
+  SyncStateCompanion copyWith({
+    Value<int>? id,
+    Value<String>? deviceId,
+    Value<int>? applying,
+  }) {
+    return SyncStateCompanion(
+      id: id ?? this.id,
+      deviceId: deviceId ?? this.deviceId,
+      applying: applying ?? this.applying,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (deviceId.present) {
+      map['device_id'] = Variable<String>(deviceId.value);
+    }
+    if (applying.present) {
+      map['applying'] = Variable<int>(applying.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SyncStateCompanion(')
+          ..write('id: $id, ')
+          ..write('deviceId: $deviceId, ')
+          ..write('applying: $applying')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -22617,6 +23697,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $FinGoalsTable finGoals = $FinGoalsTable(this);
   late final $FinGoalMovesTable finGoalMoves = $FinGoalMovesTable(this);
   late final $JournalEntriesTable journalEntries = $JournalEntriesTable(this);
+  late final $SyncChangesTable syncChanges = $SyncChangesTable(this);
+  late final $SyncPeersTable syncPeers = $SyncPeersTable(this);
+  late final $SyncStateTable syncState = $SyncStateTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -22654,6 +23737,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     finGoals,
     finGoalMoves,
     journalEntries,
+    syncChanges,
+    syncPeers,
+    syncState,
   ];
   @override
   DriftDatabaseOptions get options =>
@@ -37394,6 +38480,625 @@ typedef $$JournalEntriesTableProcessedTableManager =
       JournalEntry,
       PrefetchHooks Function()
     >;
+typedef $$SyncChangesTableCreateCompanionBuilder =
+    SyncChangesCompanion Function({
+      required String tbl,
+      required String rowId,
+      required int seq,
+      required String changedAt,
+      Value<int> rowid,
+    });
+typedef $$SyncChangesTableUpdateCompanionBuilder =
+    SyncChangesCompanion Function({
+      Value<String> tbl,
+      Value<String> rowId,
+      Value<int> seq,
+      Value<String> changedAt,
+      Value<int> rowid,
+    });
+
+class $$SyncChangesTableFilterComposer
+    extends Composer<_$AppDatabase, $SyncChangesTable> {
+  $$SyncChangesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get tbl => $composableBuilder(
+    column: $table.tbl,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get rowId => $composableBuilder(
+    column: $table.rowId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get seq => $composableBuilder(
+    column: $table.seq,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get changedAt => $composableBuilder(
+    column: $table.changedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$SyncChangesTableOrderingComposer
+    extends Composer<_$AppDatabase, $SyncChangesTable> {
+  $$SyncChangesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get tbl => $composableBuilder(
+    column: $table.tbl,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get rowId => $composableBuilder(
+    column: $table.rowId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get seq => $composableBuilder(
+    column: $table.seq,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get changedAt => $composableBuilder(
+    column: $table.changedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$SyncChangesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SyncChangesTable> {
+  $$SyncChangesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get tbl =>
+      $composableBuilder(column: $table.tbl, builder: (column) => column);
+
+  GeneratedColumn<String> get rowId =>
+      $composableBuilder(column: $table.rowId, builder: (column) => column);
+
+  GeneratedColumn<int> get seq =>
+      $composableBuilder(column: $table.seq, builder: (column) => column);
+
+  GeneratedColumn<String> get changedAt =>
+      $composableBuilder(column: $table.changedAt, builder: (column) => column);
+}
+
+class $$SyncChangesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $SyncChangesTable,
+          SyncChange,
+          $$SyncChangesTableFilterComposer,
+          $$SyncChangesTableOrderingComposer,
+          $$SyncChangesTableAnnotationComposer,
+          $$SyncChangesTableCreateCompanionBuilder,
+          $$SyncChangesTableUpdateCompanionBuilder,
+          (
+            SyncChange,
+            BaseReferences<_$AppDatabase, $SyncChangesTable, SyncChange>,
+          ),
+          SyncChange,
+          PrefetchHooks Function()
+        > {
+  $$SyncChangesTableTableManager(_$AppDatabase db, $SyncChangesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SyncChangesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SyncChangesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SyncChangesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> tbl = const Value.absent(),
+                Value<String> rowId = const Value.absent(),
+                Value<int> seq = const Value.absent(),
+                Value<String> changedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => SyncChangesCompanion(
+                tbl: tbl,
+                rowId: rowId,
+                seq: seq,
+                changedAt: changedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String tbl,
+                required String rowId,
+                required int seq,
+                required String changedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => SyncChangesCompanion.insert(
+                tbl: tbl,
+                rowId: rowId,
+                seq: seq,
+                changedAt: changedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$SyncChangesTable, SyncChange>(table),
+                  BaseReferences<_$AppDatabase, $SyncChangesTable, SyncChange>(
+                    db,
+                    table,
+                    e,
+                  ),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$SyncChangesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $SyncChangesTable,
+      SyncChange,
+      $$SyncChangesTableFilterComposer,
+      $$SyncChangesTableOrderingComposer,
+      $$SyncChangesTableAnnotationComposer,
+      $$SyncChangesTableCreateCompanionBuilder,
+      $$SyncChangesTableUpdateCompanionBuilder,
+      (
+        SyncChange,
+        BaseReferences<_$AppDatabase, $SyncChangesTable, SyncChange>,
+      ),
+      SyncChange,
+      PrefetchHooks Function()
+    >;
+typedef $$SyncPeersTableCreateCompanionBuilder = SyncPeersCompanion Function({
+  required String id,
+  required String name,
+  required String secret,
+  Value<String?> address,
+  Value<int?> port,
+  Value<int> sentSeq,
+  required DateTime pairedAt,
+  Value<DateTime?> lastSyncAt,
+  Value<int> rowid,
+});
+typedef $$SyncPeersTableUpdateCompanionBuilder = SyncPeersCompanion Function({
+  Value<String> id,
+  Value<String> name,
+  Value<String> secret,
+  Value<String?> address,
+  Value<int?> port,
+  Value<int> sentSeq,
+  Value<DateTime> pairedAt,
+  Value<DateTime?> lastSyncAt,
+  Value<int> rowid,
+});
+
+class $$SyncPeersTableFilterComposer
+    extends Composer<_$AppDatabase, $SyncPeersTable> {
+  $$SyncPeersTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get secret => $composableBuilder(
+    column: $table.secret,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get address => $composableBuilder(
+    column: $table.address,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get port => $composableBuilder(
+    column: $table.port,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get sentSeq => $composableBuilder(
+    column: $table.sentSeq,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get pairedAt => $composableBuilder(
+    column: $table.pairedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastSyncAt => $composableBuilder(
+    column: $table.lastSyncAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$SyncPeersTableOrderingComposer
+    extends Composer<_$AppDatabase, $SyncPeersTable> {
+  $$SyncPeersTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get secret => $composableBuilder(
+    column: $table.secret,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get address => $composableBuilder(
+    column: $table.address,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get port => $composableBuilder(
+    column: $table.port,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get sentSeq => $composableBuilder(
+    column: $table.sentSeq,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get pairedAt => $composableBuilder(
+    column: $table.pairedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastSyncAt => $composableBuilder(
+    column: $table.lastSyncAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$SyncPeersTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SyncPeersTable> {
+  $$SyncPeersTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get secret =>
+      $composableBuilder(column: $table.secret, builder: (column) => column);
+
+  GeneratedColumn<String> get address =>
+      $composableBuilder(column: $table.address, builder: (column) => column);
+
+  GeneratedColumn<int> get port =>
+      $composableBuilder(column: $table.port, builder: (column) => column);
+
+  GeneratedColumn<int> get sentSeq =>
+      $composableBuilder(column: $table.sentSeq, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get pairedAt =>
+      $composableBuilder(column: $table.pairedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastSyncAt => $composableBuilder(
+    column: $table.lastSyncAt,
+    builder: (column) => column,
+  );
+}
+
+class $$SyncPeersTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $SyncPeersTable,
+          LinkedDevice,
+          $$SyncPeersTableFilterComposer,
+          $$SyncPeersTableOrderingComposer,
+          $$SyncPeersTableAnnotationComposer,
+          $$SyncPeersTableCreateCompanionBuilder,
+          $$SyncPeersTableUpdateCompanionBuilder,
+          (
+            LinkedDevice,
+            BaseReferences<_$AppDatabase, $SyncPeersTable, LinkedDevice>,
+          ),
+          LinkedDevice,
+          PrefetchHooks Function()
+        > {
+  $$SyncPeersTableTableManager(_$AppDatabase db, $SyncPeersTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SyncPeersTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SyncPeersTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SyncPeersTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String> secret = const Value.absent(),
+                Value<String?> address = const Value.absent(),
+                Value<int?> port = const Value.absent(),
+                Value<int> sentSeq = const Value.absent(),
+                Value<DateTime> pairedAt = const Value.absent(),
+                Value<DateTime?> lastSyncAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => SyncPeersCompanion(
+                id: id,
+                name: name,
+                secret: secret,
+                address: address,
+                port: port,
+                sentSeq: sentSeq,
+                pairedAt: pairedAt,
+                lastSyncAt: lastSyncAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String name,
+                required String secret,
+                Value<String?> address = const Value.absent(),
+                Value<int?> port = const Value.absent(),
+                Value<int> sentSeq = const Value.absent(),
+                required DateTime pairedAt,
+                Value<DateTime?> lastSyncAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => SyncPeersCompanion.insert(
+                id: id,
+                name: name,
+                secret: secret,
+                address: address,
+                port: port,
+                sentSeq: sentSeq,
+                pairedAt: pairedAt,
+                lastSyncAt: lastSyncAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$SyncPeersTable, LinkedDevice>(table),
+                  BaseReferences<_$AppDatabase, $SyncPeersTable, LinkedDevice>(
+                    db,
+                    table,
+                    e,
+                  ),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$SyncPeersTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $SyncPeersTable,
+      LinkedDevice,
+      $$SyncPeersTableFilterComposer,
+      $$SyncPeersTableOrderingComposer,
+      $$SyncPeersTableAnnotationComposer,
+      $$SyncPeersTableCreateCompanionBuilder,
+      $$SyncPeersTableUpdateCompanionBuilder,
+      (
+        LinkedDevice,
+        BaseReferences<_$AppDatabase, $SyncPeersTable, LinkedDevice>,
+      ),
+      LinkedDevice,
+      PrefetchHooks Function()
+    >;
+typedef $$SyncStateTableCreateCompanionBuilder = SyncStateCompanion Function({
+  Value<int> id,
+  required String deviceId,
+  Value<int> applying,
+});
+typedef $$SyncStateTableUpdateCompanionBuilder = SyncStateCompanion Function({
+  Value<int> id,
+  Value<String> deviceId,
+  Value<int> applying,
+});
+
+class $$SyncStateTableFilterComposer
+    extends Composer<_$AppDatabase, $SyncStateTable> {
+  $$SyncStateTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get deviceId => $composableBuilder(
+    column: $table.deviceId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get applying => $composableBuilder(
+    column: $table.applying,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$SyncStateTableOrderingComposer
+    extends Composer<_$AppDatabase, $SyncStateTable> {
+  $$SyncStateTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get deviceId => $composableBuilder(
+    column: $table.deviceId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get applying => $composableBuilder(
+    column: $table.applying,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$SyncStateTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SyncStateTable> {
+  $$SyncStateTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get deviceId =>
+      $composableBuilder(column: $table.deviceId, builder: (column) => column);
+
+  GeneratedColumn<int> get applying =>
+      $composableBuilder(column: $table.applying, builder: (column) => column);
+}
+
+class $$SyncStateTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $SyncStateTable,
+          SyncStateRow,
+          $$SyncStateTableFilterComposer,
+          $$SyncStateTableOrderingComposer,
+          $$SyncStateTableAnnotationComposer,
+          $$SyncStateTableCreateCompanionBuilder,
+          $$SyncStateTableUpdateCompanionBuilder,
+          (
+            SyncStateRow,
+            BaseReferences<_$AppDatabase, $SyncStateTable, SyncStateRow>,
+          ),
+          SyncStateRow,
+          PrefetchHooks Function()
+        > {
+  $$SyncStateTableTableManager(_$AppDatabase db, $SyncStateTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SyncStateTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SyncStateTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SyncStateTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> deviceId = const Value.absent(),
+                Value<int> applying = const Value.absent(),
+              }) => SyncStateCompanion(
+                id: id,
+                deviceId: deviceId,
+                applying: applying,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String deviceId,
+                Value<int> applying = const Value.absent(),
+              }) => SyncStateCompanion.insert(
+                id: id,
+                deviceId: deviceId,
+                applying: applying,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$SyncStateTable, SyncStateRow>(table),
+                  BaseReferences<_$AppDatabase, $SyncStateTable, SyncStateRow>(
+                    db,
+                    table,
+                    e,
+                  ),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$SyncStateTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $SyncStateTable,
+      SyncStateRow,
+      $$SyncStateTableFilterComposer,
+      $$SyncStateTableOrderingComposer,
+      $$SyncStateTableAnnotationComposer,
+      $$SyncStateTableCreateCompanionBuilder,
+      $$SyncStateTableUpdateCompanionBuilder,
+      (
+        SyncStateRow,
+        BaseReferences<_$AppDatabase, $SyncStateTable, SyncStateRow>,
+      ),
+      SyncStateRow,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -37461,4 +39166,10 @@ class $AppDatabaseManager {
       $$FinGoalMovesTableTableManager(_db, _db.finGoalMoves);
   $$JournalEntriesTableTableManager get journalEntries =>
       $$JournalEntriesTableTableManager(_db, _db.journalEntries);
+  $$SyncChangesTableTableManager get syncChanges =>
+      $$SyncChangesTableTableManager(_db, _db.syncChanges);
+  $$SyncPeersTableTableManager get syncPeers =>
+      $$SyncPeersTableTableManager(_db, _db.syncPeers);
+  $$SyncStateTableTableManager get syncState =>
+      $$SyncStateTableTableManager(_db, _db.syncState);
 }

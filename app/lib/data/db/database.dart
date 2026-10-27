@@ -9,7 +9,9 @@ import 'database.steps.dart';
 import 'diet_tables.dart';
 import 'journal_tables.dart';
 import 'finance_tables.dart';
+import 'sync_tables.dart';
 import 'tables.dart';
+import '../sync/sync_schema.dart';
 import '../../core/app_folder.dart';
 
 part 'database.g.dart';
@@ -48,6 +50,9 @@ part 'database.g.dart';
     FinGoals,
     FinGoalMoves,
     JournalEntries,
+    SyncChanges,
+    SyncPeers,
+    SyncState,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -56,12 +61,13 @@ class AppDatabase extends _$AppDatabase {
   /// Bump on every schema change and run `dart run drift_dev make-migrations` to freeze the new
   /// schema and generate its migration test.
   @override
-  int get schemaVersion => 21;
+  int get schemaVersion => 22;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onCreate: (m) async {
       await m.createAll();
+      await installSync(this, newId());
       await _createInbox();
       await _createMeals();
     },
@@ -167,9 +173,21 @@ class AppDatabase extends _$AppDatabase {
         await m.addColumn(schema.countdowns, schema.countdowns.goalDays);
         await m.addColumn(schema.finEntries, schema.finEntries.sortOrder);
       },
+      from21To22: (m, schema) async {
+        await m.createTable(schema.syncChanges);
+        await m.createTable(schema.syncPeers);
+        await m.createTable(schema.syncState);
+        await installSync(this, newId());
+        // What was there before is new to any device linked later.
+        await logExistingRows(this);
+      },
     ),
     beforeOpen: (details) async {
       await customStatement('PRAGMA foreign_keys = ON');
+      // The sync's triggers, made again in case a migration rebuilt a table (not on an older schema,
+      // which only the migration tests open).
+      final hasSync = await customSelect("SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'sync_state'").getSingleOrNull();
+      if (hasSync != null) await installSync(this, newId());
       // WAL: reads don't block writes and a write survives the app closing midway.
       await customStatement('PRAGMA journal_mode = WAL');
     },

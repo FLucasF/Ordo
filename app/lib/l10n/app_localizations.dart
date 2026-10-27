@@ -10436,6 +10436,192 @@ abstract class AppLocalizations {
   /// **'Esperando o outro aparelho enviar…'**
   String get syncWaitingOther;
 
+  /// No description provided for @syncAutoTitle.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sincronia automática'**
+  String get syncAutoTitle;
+
+  /// No description provided for @syncAutoIntro.
+  ///
+  /// In pt, this message translates to:
+  /// **'Aparelhos ligados ficam iguais sozinhos sempre que estão no mesmo Wi-Fi com o Ordo aberto: as mudanças dos dois são juntadas, e nada do que foi feito em um se perde.'**
+  String get syncAutoIntro;
+
+  /// No description provided for @syncNoLinked.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhum aparelho ligado ainda.'**
+  String get syncNoLinked;
+
+  /// No description provided for @syncLinkButton.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ligar a outro aparelho'**
+  String get syncLinkButton;
+
+  /// No description provided for @syncNow.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sincronizar agora'**
+  String get syncNow;
+
+  /// No description provided for @syncAgoNow.
+  ///
+  /// In pt, this message translates to:
+  /// **'agora mesmo'**
+  String get syncAgoNow;
+
+  /// No description provided for @syncAgoMinutes.
+  ///
+  /// In pt, this message translates to:
+  /// **'há {count} min'**
+  String syncAgoMinutes(int count);
+
+  /// No description provided for @syncAgoHours.
+  ///
+  /// In pt, this message translates to:
+  /// **'há {count} h'**
+  String syncAgoHours(int count);
+
+  /// No description provided for @syncAgoDate.
+  ///
+  /// In pt, this message translates to:
+  /// **'em {date}'**
+  String syncAgoDate(String date);
+
+  /// No description provided for @syncStateSynced.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sincronizado {when}'**
+  String syncStateSynced(String when);
+
+  /// No description provided for @syncStateSyncing.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sincronizando…'**
+  String get syncStateSyncing;
+
+  /// No description provided for @syncStateOffline.
+  ///
+  /// In pt, this message translates to:
+  /// **'Fora do alcance agora'**
+  String get syncStateOffline;
+
+  /// No description provided for @syncStateWaiting.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ainda não sincronizado'**
+  String get syncStateWaiting;
+
+  /// No description provided for @syncStateUnknown.
+  ///
+  /// In pt, this message translates to:
+  /// **'O outro aparelho não tem mais esta ligação. Desligue aqui e ligue de novo.'**
+  String get syncStateUnknown;
+
+  /// No description provided for @syncStateFailed.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não deu certo da última vez; o app tenta de novo sozinho.'**
+  String get syncStateFailed;
+
+  /// No description provided for @syncLastAt.
+  ///
+  /// In pt, this message translates to:
+  /// **'Última vez {when}'**
+  String syncLastAt(String when);
+
+  /// No description provided for @syncClockOff.
+  ///
+  /// In pt, this message translates to:
+  /// **'O relógio de \"{name}\" está diferente do deste aparelho. Acerte a hora nos dois para que a mudança mais recente sempre vença.'**
+  String syncClockOff(String name);
+
+  /// No description provided for @syncUnlink.
+  ///
+  /// In pt, this message translates to:
+  /// **'Desligar'**
+  String get syncUnlink;
+
+  /// No description provided for @syncUnlinkConfirm.
+  ///
+  /// In pt, this message translates to:
+  /// **'Desligar \"{name}\"? Os dados dos dois continuam como estão; eles só param de se juntar.'**
+  String syncUnlinkConfirm(String name);
+
+  /// No description provided for @syncLinkSearching.
+  ///
+  /// In pt, this message translates to:
+  /// **'Procurando aparelhos com o Ordo aberto no mesmo Wi-Fi…'**
+  String get syncLinkSearching;
+
+  /// No description provided for @syncLinkHint.
+  ///
+  /// In pt, this message translates to:
+  /// **'Deixe o Ordo aberto no outro aparelho. Ao escolher, os dois mostram um número: confira se é o mesmo e toque em Ligar nos dois.'**
+  String get syncLinkHint;
+
+  /// No description provided for @syncLinkConfirmTitle.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ligar a \"{name}\"?'**
+  String syncLinkConfirmTitle(String name);
+
+  /// No description provided for @syncLinkConfirmBody.
+  ///
+  /// In pt, this message translates to:
+  /// **'Confira se \"{name}\" mostra este mesmo número. Se for diferente, toque em Recusar.'**
+  String syncLinkConfirmBody(String name);
+
+  /// No description provided for @syncLinkAccept.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ligar'**
+  String get syncLinkAccept;
+
+  /// No description provided for @syncLinkDecline.
+  ///
+  /// In pt, this message translates to:
+  /// **'Recusar'**
+  String get syncLinkDecline;
+
+  /// No description provided for @syncLinked.
+  ///
+  /// In pt, this message translates to:
+  /// **'Pronto! \"{name}\" está ligado. A primeira sincronia junta tudo o que os dois têm.'**
+  String syncLinked(String name);
+
+  /// No description provided for @syncLinkFailed.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não deu para ligar. Confira se os dois estão no mesmo Wi-Fi com o Ordo aberto e se o número era o mesmo.'**
+  String get syncLinkFailed;
+
+  /// No description provided for @syncLinkAddressLabel.
+  ///
+  /// In pt, this message translates to:
+  /// **'Endereço do outro aparelho (ex.: 192.168.0.10)'**
+  String get syncLinkAddressLabel;
+
+  /// No description provided for @syncThisAddress.
+  ///
+  /// In pt, this message translates to:
+  /// **'Endereço deste aparelho: {address}'**
+  String syncThisAddress(String address);
+
+  /// No description provided for @syncFullCopyTitle.
+  ///
+  /// In pt, this message translates to:
+  /// **'Cópia completa (uma vez)'**
+  String get syncFullCopyTitle;
+
+  /// No description provided for @syncFirstTimeTip.
+  ///
+  /// In pt, this message translates to:
+  /// **'Se os aparelhos começaram separados e têm as mesmas coisas cadastradas nos dois, faça antes uma cópia completa: assim nada aparece em dobro depois de ligar.'**
+  String get syncFirstTimeTip;
+
   /// No description provided for @widgetDay.
   ///
   /// In pt, this message translates to:
