@@ -5722,7 +5722,10 @@ class AppLocalizationsLa extends AppLocalizations {
   String get syncLinkFailed => 'Coniungi non potuit. Confer utramque in eodem Wi-Fi Ordine aperto esse, et numerum eundem fuisse.';
 
   @override
-  String get syncLinkAddressLabel => 'Inscriptio alterius machinae (e.g. 192.168.0.10)';
+  String get syncLinkAddressLabel => 'Inscriptio alterius machinae';
+
+  @override
+  String get syncLinkAddressHint => 'e.g. 192.168.0.10';
 
   @override
   String syncThisAddress(String address) {

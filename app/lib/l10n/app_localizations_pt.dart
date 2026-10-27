@@ -5713,7 +5713,10 @@ class AppLocalizationsPt extends AppLocalizations {
   String get syncLinkFailed => 'Não deu para ligar. Confira se os dois estão no mesmo Wi-Fi com o Ordo aberto e se o número era o mesmo.';
 
   @override
-  String get syncLinkAddressLabel => 'Endereço do outro aparelho (ex.: 192.168.0.10)';
+  String get syncLinkAddressLabel => 'Endereço do outro aparelho';
+
+  @override
+  String get syncLinkAddressHint => 'ex.: 192.168.0.10';
 
   @override
   String syncThisAddress(String address) {

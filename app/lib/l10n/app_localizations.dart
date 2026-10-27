@@ -10601,8 +10601,14 @@ abstract class AppLocalizations {
   /// No description provided for @syncLinkAddressLabel.
   ///
   /// In pt, this message translates to:
-  /// **'Endereço do outro aparelho (ex.: 192.168.0.10)'**
+  /// **'Endereço do outro aparelho'**
   String get syncLinkAddressLabel;
+
+  /// No description provided for @syncLinkAddressHint.
+  ///
+  /// In pt, this message translates to:
+  /// **'ex.: 192.168.0.10'**
+  String get syncLinkAddressHint;
 
   /// No description provided for @syncThisAddress.
   ///

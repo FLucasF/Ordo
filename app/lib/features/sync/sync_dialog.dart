@@ -608,7 +608,7 @@ class _SyncDialogState extends ConsumerState<_SyncDialog> {
             child: TextField(
               controller: _linkAddress,
               keyboardType: TextInputType.url,
-              decoration: InputDecoration(labelText: t.syncLinkAddressLabel, isDense: true),
+              decoration: InputDecoration(labelText: t.syncLinkAddressLabel, hintText: t.syncLinkAddressHint, isDense: true),
               onSubmitted: (_) => typed(),
             ),
           ),
