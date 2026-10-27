@@ -1397,6 +1397,9 @@ class Repository {
     String? image,
     String? listId,
     String? folderId,
+    String? habitId,
+    String? habitSection,
+    int? goalDays,
   }) async {
     final id = newId();
     final last = await (_db.selectOnly(
@@ -1424,6 +1427,9 @@ class Repository {
             image: Value(image),
             listId: Value(listId),
             folderId: Value(listId == null ? folderId : null),
+            habitId: Value(habitId),
+            habitSection: Value(habitId == null ? habitSection : null),
+            goalDays: Value(goalDays),
             sortOrder: SortOrder.after(last),
             createdAt: _now,
             updatedAt: _now,
@@ -1449,6 +1455,9 @@ class Repository {
     required CountdownVisibility visibility,
     Value<String?> listId = const Value.absent(),
     Value<String?> folderId = const Value.absent(),
+    Value<String?> habitId = const Value.absent(),
+    Value<String?> habitSection = const Value.absent(),
+    Value<int?> goalDays = const Value.absent(),
   }) => _db.transaction(() async {
     final before = await (_db.select(_db.countdowns)..where((c) => c.id.equals(id))).getSingleOrNull();
     final dayMoved = before != null && before.closedAt == null && before.date != _calendarDate(date);
@@ -1466,6 +1475,9 @@ class Repository {
         visibility: Value(visibility),
         listId: listId,
         folderId: listId.present && listId.value != null ? const Value(null) : folderId,
+        habitId: habitId,
+        habitSection: habitId.present && habitId.value != null ? const Value(null) : habitSection,
+        goalDays: goalDays,
         report: dayMoved ? const Value(null) : const Value.absent(),
         updatedAt: Value(_now),
       ),
@@ -1606,6 +1618,13 @@ class Repository {
   Future<void> updateHabit(String id, HabitsCompanion changes) => (_db.update(_db.habits)..where((h) => h.id.equals(id))).write(
     changes.copyWith(startDate: changes.startDate.present ? Value(_habitDay(changes.startDate.value)) : const Value.absent(), updatedAt: Value(_now)),
   );
+
+  /// New sort orders for habits dragged into place ({habit id: order}).
+  Future<void> reorderHabits(Map<String, int> orders) => _db.transaction(() async {
+    for (final MapEntry(key: id, value: order) in orders.entries) {
+      await (_db.update(_db.habits)..where((h) => h.id.equals(id))).write(HabitsCompanion(sortOrder: Value(order), updatedAt: Value(_now)));
+    }
+  });
 
   Future<void> archiveHabit(String id, {required bool archived}) => (_db.update(
     _db.habits,

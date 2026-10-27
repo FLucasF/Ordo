@@ -284,10 +284,13 @@ class IconBar extends ConsumerWidget {
               ),
               onPressed: () => context.go(Routes.focus),
             ),
+          // Hábito stands out from the other modules: always in the accent color, on a tinted circle.
           if (prefs.has(AppFeature.habit))
             IconButton(
+              key: const ValueKey('iconBarHabit'),
               tooltip: t.navHabit,
-              icon: Icon(Icons.track_changes, color: current == AppModule.habit ? tt.primary : tt.textTertiary, size: 22),
+              style: IconButton.styleFrom(backgroundColor: tt.primary.withValues(alpha: current == AppModule.habit ? 0.28 : 0.14)),
+              icon: Icon(Icons.track_changes, color: tt.primary, size: 22),
               onPressed: () => context.go(Routes.habit),
             ),
           if (prefs.has(AppFeature.countdown))

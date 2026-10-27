@@ -214,14 +214,17 @@ Selecione várias tarefas (Ctrl/Shift + clique no PC; no celular, segure → **S
 
 ### Hábitos
 
-- Crie da **galeria** (Vida, Saúde, Exercício, Mente: 60 prontos) ou do zero, com **ícone** (emoji), **cor**, frase motivacional, frequência (diária, X vezes por semana, a cada N dias), meta (**conquistar tudo** ou **uma quantidade**, com unidade e passo), modo de marcar (automático, manual, completar tudo), data de início, dias de meta, **seção** (manhã, tarde, noite, outros) e lembretes.
+- Crie da **galeria** (Vida, Saúde, Exercício, Mente: 60 prontos) ou do zero, com **ícone** (emoji), **cor**, frase motivacional, frequência (diária, X vezes por semana, a cada N dias), meta (**conquistar tudo** ou **uma quantidade**, com unidade e passo), modo de marcar (automático, manual, completar tudo), data de início, dias de meta, **seção** (manhã, tarde, noite, outros ou uma sua), **etiquetas** (as mesmas das tarefas, mostradas ao lado dos totais) e lembretes.
 - Marque o dia no círculo; um dia já marcado abre o menu (desfazer, pular, não alcançado, registrar como foi, com humor e nota).
 - **Detalhe:** registros do mês, total de check-ins, taxa mensal, sequência atual, **mapa do ano**, log com os pensamentos de cada check-in.
-- Mostrar em "Hoje" e "Próximos 7 dias", ordenar por status, visão em cartão ou lista, arquivar, **exportar** (CSV).
+- **Arraste** pela alça (⠿) para mudar a ordem dentro da seção (na visão em lista, sem filtro de dia nem ordenação por status).
+- Mostrar em "Hoje" e "Próximos 7 dias" (lá, só o círculo marca; tocar no nome não sai da lista), ordenar por status, visão em cartão ou lista, arquivar, **exportar** (CSV).
+- **Hábito em destaque no menu:** no celular, é o primeiro botão da gaveta ☰, com o progresso do dia ("4 de 12 hoje"); no Windows, o ícone fica sempre colorido na barra.
 
 ### Contagem regressiva e painel do projeto
 
 - Tipos: **Contagem regressiva**, **Data especial**, **Aniversário** (com idade) e **Feriado**. Contagem para baixo ou para cima (cronômetro), modo de cálculo (o dia 1 começa no dia seguinte ou no próprio dia), ignorar o ano, repetir, lembretes.
+- **Seguir a sequência de um hábito** (ou de uma seção inteira de hábitos): em vez de uma data, escolha a **meta de dias seguidos** (7, 21, 30, 60, 90, 100, 365 ou outra). O cartão mostra quantos dias faltam e "12 de 30 dias seguidos"; se a sequência quebra, a contagem volta. Numa seção, o dia conta quando todos os hábitos pedidos naquele dia foram feitos.
 - **Cartões** em 6 estilos, com cor, **ícone** (emoji, texto ou ícone pronto) e **imagem de fundo**. Aparecem nas smart lists no dia, 3 ou 7 dias antes, sempre ou nunca. Fixar, arquivar, agrupar por tipo.
 - **Vincular a uma lista ou área** transforma a contagem num **painel do projeto**:
   - dias restantes, **progresso** (feitas/total) e barra no cartão;
@@ -235,8 +238,8 @@ Selecione várias tarefas (Ctrl/Shift + clique no PC; no celular, segure → **S
 
 Valores em reais. As partes ficam nas **abas** do topo; o painel da esquerda escolhe o mês e mostra os gastos do mês.
 
-- **Lançamentos:** receitas e despesas com valor, data, descrição, categoria, cartão e observação. Veja por mês, ano ou período; filtre por categoria, tipo ou palavra. O **+** ao lado de cada dia cria um lançamento naquela data. As caixinhas aparecem como "Guardado"/"Retirado", sem contar como gasto.
-- **Categorias:** as prontas (Alimentação, Mercado, Transporte, Moradia, Contas da casa, Saúde, Educação, Lazer, Compras, Assinaturas, Salário, Renda extra, Outros) e as suas, com **ícone**, cor e **limite por mês** (aviso a partir de 80%).
+- **Lançamentos:** receitas e despesas com valor, data, descrição, categoria, cartão e observação. Veja por mês, ano ou período; filtre por categoria, tipo ou palavra. O **+** ao lado de cada dia cria um lançamento naquela data. **Arraste** pela alça (⠿) para mudar a ordem dos lançamentos do mesmo dia (sem filtros ligados). As caixinhas aparecem como "Guardado"/"Retirado", sem contar como gasto.
+- **Categorias:** as prontas (Alimentação, Mercado, Transporte, Moradia, Contas da casa, Saúde, Educação, Lazer, Compras, Assinaturas, Salário, Renda extra, Outros) e as suas, com **ícone**, cor e **limite por mês** (aviso a partir de 80%). Arraste para mudar a ordem.
 - **Cartões:** fechamento e vencimento, limite e quanto está disponível, **fatura de cada mês** (aberta, fechada, paga ou vencida), compras **parceladas** distribuídas nas faturas seguintes, **Pagar fatura** (em partes também; o pagamento não conta como gasto de novo). A compra conta no mês da fatura. Arquivar cartões.
 - **Contas fixas:** aluguel, internet, assinaturas, salário, mensais ou anuais, com início, fim e lembrete. Atrasadas e vencimentos do mês aparecem em destaque; **Pagar** (ou **Receber**) vira lançamento, e dá para desfazer.
 - **Empréstimos:** quem pegou, valor emprestado, data, vencimento e juros (em % ou pelo total a receber). **À vista ou parcelado** (2 a 60 parcelas mensais, valor calculado ou digitado). Cada parcela tem status (paga, em aberto, atrasada), lembrete e **Receber parcela** com 1 toque; pagamentos a mais ou adiantados abatem as próximas. O app mostra lucro, recebido, saldo e se está **em dia, atrasado ou quitado**; filtre por situação e agrupe por mês do vencimento ou do empréstimo.
@@ -262,8 +265,9 @@ Diário do que você comeu, com a **Tabela TACO** (NEPA/Unicamp, 4ª edição: 5
 
 ### Diário
 
-- **Dia:** **humor** (5 rostos), **energia** (1 a 5), **destaque / gratidão** e **notas do dia** com o mesmo editor das tarefas (formatação, imagens, anexos, vínculos `[[`). Tudo salva sozinho. ‹ ›, "Hoje" e calendário para trocar de dia; a lixeira apaga a entrada (com Desfazer).
-- **Resumo do dia** automático: tarefas concluídas, hábitos feitos, calorias (contra a meta, se houver), minutos de foco e entradas e saídas das finanças. Cada linha abre o módulo dela.
+- **Dia:** **humor** (5 rostos), **energia** (1 a 5), **meta principal de amanhã** e **notas do dia** com o mesmo editor das tarefas (formatação, imagens, anexos, vínculos `[[`). Tudo salva sozinho. ‹ ›, "Hoje" e calendário para trocar de dia; a lixeira apaga a entrada (com Desfazer).
+- **Resumo do dia** automático: tarefas concluídas, hábitos feitos, calorias (contra a meta, se houver), minutos de foco e **finanças** (entrou, saiu e saldo do dia; aparece sempre que Finanças está ligada). Cada linha abre o módulo dela.
+- No Windows, a página do dia tem **barra de rolagem** sempre visível, e a caixa de notas cresce com o texto.
 - **Linha do tempo:** as entradas com humor, energia e trecho; **busca** por palavra (sem acento) e **filtros** por humor e energia.
 - **Calendário:** cada dia colorido pelo humor, com **gráficos** de humor e energia no mês.
 

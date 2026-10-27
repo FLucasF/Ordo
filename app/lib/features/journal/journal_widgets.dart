@@ -211,10 +211,10 @@ class JournalSummaryCard extends ConsumerWidget {
               Routes.diet,
             ),
           if (summary.focusMinutes > 0) line(Icons.timer_outlined, t.journalSummaryFocus(summary.focusMinutes), Routes.focus),
-          if (summary.hasFinance)
+          if (summary.finance)
             line(
               Icons.account_balance_wallet_outlined,
-              t.journalSummaryFinance(formatMoney(summary.income), formatMoney(summary.expense)),
+              t.journalSummaryFinance(formatMoney(summary.income), formatMoney(summary.expense), formatMoney(summary.balance)),
               Routes.finance,
             ),
           if (summary.isEmpty)

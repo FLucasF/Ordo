@@ -385,6 +385,10 @@ class _ContentEditorState extends State<ContentEditor> {
                 editorState: _editor,
                 editorScrollController: _scroll,
                 shrinkWrap: true,
+                // The box always fits the whole text and the page around it scrolls (see
+                // _keepCaretInView): appflowy's own scrolling to the caret, in a box still growing
+                // to the new line, looped without end and froze the app (Diário on Windows).
+                disableAutoScroll: true,
                 editorStyle: style,
                 footer: SizedBox(key: _end, height: 0),
                 blockComponentBuilders: {

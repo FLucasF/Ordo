@@ -104,7 +104,7 @@ class _CountdownPageState extends ConsumerState<CountdownPage> {
     final s = ref.watch(snapshotProvider).value ?? Snapshot.empty();
     final now = ref.watch(nowProvider).value ?? ref.watch(clockProvider).now();
     final narrow = MediaQuery.sizeOf(context).width < TtSizes.narrowBreakpoint;
-    final countdowns = sortCountdowns(s.countdowns.where((c) => (c.archivedAt != null) == _archived && !_hidden.contains(c.type)), now);
+    final countdowns = sortCountdowns(s.countdowns.where((c) => (c.archivedAt != null) == _archived && !_hidden.contains(c.type)), now, snapshot: s);
     _closeFinished(s, now);
 
     // A fixed card height: on a phone the two columns are narrow, and a width-based height cut the

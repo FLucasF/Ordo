@@ -12,6 +12,7 @@ import '../../data/db/database.dart';
 import '../../domain/countdown.dart';
 import '../../domain/enums.dart';
 import '../../domain/project.dart';
+import '../../domain/snapshot.dart';
 import '../../l10n/app_localizations.dart';
 import '../common/color_choice.dart';
 import '../common/emoji_picker.dart';
@@ -85,6 +86,11 @@ String _date(DateTime d, {bool withYear = true}) => DateLabels.numeric(d, withYe
 
 /// "Hoje 24/09/2026", "2 Dias até 26/09/2026", "5 Dias desde 20/09/2026".
 String countdownLegend(AppLocalizations t, Countdown c, CountdownStatus status) {
+  // Following a habit: the streak toward the goal.
+  if ((status.streak, c.goalDays) case (final streak?, final goal?)) {
+    if (streak >= goal) return t.countdownStreakReached(goal);
+    return status.phase == CountdownPhase.future ? t.countdownStreakProgress(streak, goal) : t.countdownStreakRun(streak, goal);
+  }
   final date = _date(status.target, withYear: !(c.type == CountdownType.birthday && c.ignoreYear));
   final legend = switch (status.phase) {
     CountdownPhase.today => t.countdownToday(date),
@@ -142,7 +148,8 @@ class _CountdownCardBodyState extends ConsumerState<CountdownCardBody> {
     final t = AppLocalizations.of(context);
     final tt = context.tt;
     final now = ref.watch(nowProvider).value ?? ref.watch(clockProvider).now();
-    final status = countdownStatus(countdown, now, countUp: countdown.countUp != _flipped);
+    final s = ref.watch(snapshotProvider).value ?? Snapshot.empty();
+    final status = countdownStatusIn(s, countdown, now, countUp: countdown.countUp != _flipped);
     final value = countdownIn(_unit, status.days, DateTime(now.year, now.month, now.day), status.target);
     final number = status.phase == CountdownPhase.today && status.days == 0 ? t.relativeToday : '$value';
     final unit = switch (_unit) {

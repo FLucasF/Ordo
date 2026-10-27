@@ -62,7 +62,8 @@ class FinanceRepository {
     final entries =
         await (_db.select(_db.finEntries)
               ..where((e) => e.deletedAt.isNull())
-              ..orderBy([(e) => OrderingTerm.desc(e.date), (e) => OrderingTerm.desc(e.createdAt)]))
+              // Newest day first; within a day the order dragged (a new entry on top), then the newest.
+              ..orderBy([(e) => OrderingTerm.desc(e.date), (e) => OrderingTerm(expression: e.sortOrder), (e) => OrderingTerm.desc(e.createdAt)]))
             .get();
     final cardPayments = await (_db.select(_db.finCardPayments)..where((p) => p.deletedAt.isNull())).get();
     final loans =
@@ -166,6 +167,10 @@ class FinanceRepository {
     final count = card == null ? 1 : installments.clamp(1, 99);
     final group = count > 1 ? newId() : null;
     final first = card == null ? null : invoiceMonthFor(card, date);
+    // A new entry goes on top of its day.
+    final top = await (_db.selectOnly(_db.finEntries)..addColumns([_db.finEntries.sortOrder.min()]))
+        .map((r) => r.read(_db.finEntries.sortOrder.min()))
+        .getSingle();
     final ids = <String>[];
     for (final (i, part) in splitCents(amount, count).indexed) {
       final id = newId();
@@ -190,10 +195,25 @@ class FinanceRepository {
               recurringId: Value(recurringId),
               recurringDue: Value(recurringDue == null ? null : storedDay(recurringDue)),
               note: Value(note.trim()),
+              sortOrder: Value(SortOrder.before(top)),
             ),
           );
     }
     return ids;
+  });
+
+  /// New orders for categories dragged into place ({category id: order}).
+  Future<void> reorderCategories(Map<String, int> orders) => _db.transaction(() async {
+    for (final MapEntry(key: id, value: order) in orders.entries) {
+      await (_db.update(_db.finCategories)..where((c) => c.id.equals(id))).write(FinCategoriesCompanion(sortOrder: Value(order), updatedAt: Value(_now)));
+    }
+  });
+
+  /// New orders for entries dragged into place within their day ({entry id: order}).
+  Future<void> reorderEntries(Map<String, int> orders) => _db.transaction(() async {
+    for (final MapEntry(key: id, value: order) in orders.entries) {
+      await (_db.update(_db.finEntries)..where((e) => e.id.equals(id))).write(FinEntriesCompanion(sortOrder: Value(order), updatedAt: Value(_now)));
+    }
   });
 
   /// Edits one entry. A card purchase moves to the invoice of its new day (or card).

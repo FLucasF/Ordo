@@ -574,6 +574,36 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
+  String get countdownFollow => 'Seguir a sequência de';
+
+  @override
+  String get countdownFollowNone => 'Nenhum hábito (conta até a data)';
+
+  @override
+  String countdownFollowSection(String name) {
+    return 'Seção: $name';
+  }
+
+  @override
+  String get countdownGoalDays => 'Meta (dias seguidos)';
+
+  @override
+  String countdownStreakProgress(int streak, int goal) {
+    return '$streak de $goal dias seguidos';
+  }
+
+  @override
+  String countdownStreakReached(int goal) {
+    return 'Meta de $goal dias alcançada';
+  }
+
+  @override
+  String countdownStreakRun(int streak, int goal) {
+    String _temp0 = intl.Intl.pluralLogic(streak, locale: localeName, other: '$streak dias seguidos · meta $goal', one: '1 dia seguido · meta $goal');
+    return '$_temp0';
+  }
+
+  @override
   String get projectDashboard => 'Painel do projeto';
 
   @override
@@ -4235,7 +4265,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get xlsxColEnergy => 'Energia';
 
   @override
-  String get xlsxColHighlight => 'Destaque';
+  String get xlsxColHighlight => 'Meta de amanhã';
 
   @override
   String get xlsxStatusOpen => 'Aberta';
@@ -5417,6 +5447,11 @@ class AppLocalizationsPt extends AppLocalizations {
   String get habitPanelLeft => 'Faltam';
 
   @override
+  String habitNavProgress(int done, int due) {
+    return '$done de $due hoje';
+  }
+
+  @override
   String get habitPanelNone => 'Nenhum hábito para hoje.';
 
   @override
@@ -5655,10 +5690,10 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
-  String get journalHighlight => 'Destaque / Gratidão';
+  String get journalHighlight => 'Meta Principal de Amanhã:';
 
   @override
-  String get journalHighlightHint => 'O melhor do dia, ou algo pelo qual você é grato';
+  String get journalHighlightHint => 'O que mais importa fazer amanhã';
 
   @override
   String get journalNotes => 'Notas do dia';
@@ -5708,8 +5743,8 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
-  String journalSummaryFinance(String income, String expense) {
-    return 'Entrou $income · saiu $expense';
+  String journalSummaryFinance(String income, String expense, String balance) {
+    return 'Entrou $income · saiu $expense · saldo $balance';
   }
 
   @override

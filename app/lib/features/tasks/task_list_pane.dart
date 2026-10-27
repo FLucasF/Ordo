@@ -73,7 +73,7 @@ class TaskListPane extends ConsumerWidget {
     final countdowns = [
       for (final c in snapshot.countdowns)
         if (List.generate(days, (i) => today.add(Duration(days: i))).any((day) => countdownShowsOn(c, day, now))) c,
-    ]..sort((a, b) => countdownStatus(a, now).target.compareTo(countdownStatus(b, now).target));
+    ]..sort((a, b) => countdownStatusIn(snapshot, a, now).target.compareTo(countdownStatusIn(snapshot, b, now).target));
     // "Hábito" in Hoje / Próximos 7 dias: today's habits with their check-in.
     final prefs = ref.watch(preferencesProvider).value ?? Preferences.defaults;
     final habits = days == 0 || !prefs.habitsInToday || !prefs.has(AppFeature.habit)
@@ -135,7 +135,7 @@ class TaskListPane extends ConsumerWidget {
                               ),
                             if (countdowns.isNotEmpty && prefs.has(AppFeature.countdown))
                               SliverToBoxAdapter(
-                                child: _CountdownSection(countdowns: countdowns, now: now),
+                                child: _CountdownSection(countdowns: countdowns, snapshot: snapshot, now: now),
                               ),
                           ],
                         ),
@@ -1241,9 +1241,12 @@ class _DropRowState extends ConsumerState<_DropRow> {
 /// "Contagem Regressiva" at the end of Hoje / Próximos 7 dias: name and "Hoje" / "Em 3 dias"; a click
 /// opens the countdowns.
 class _CountdownSection extends StatelessWidget {
-  const _CountdownSection({required this.countdowns, required this.now});
+  const _CountdownSection({required this.countdowns, required this.snapshot, required this.now});
 
   final List<Countdown> countdowns;
+
+  /// For the streak of a countdown that follows a habit.
+  final Snapshot snapshot;
   final DateTime now;
 
   @override
@@ -1264,7 +1267,7 @@ class _CountdownSection extends StatelessWidget {
             ),
             title: c.name,
             trailing: Text(
-              t.countdownDaysAway(daysBetween(startOfDay(now), countdownStatus(c, now).target).clamp(0, 99999)),
+              t.countdownDaysAway(daysBetween(startOfDay(now), countdownStatusIn(snapshot, c, now).target).clamp(0, 99999)),
               style: TextStyle(fontSize: TtText.small, color: tt.primary),
             ),
           ),
@@ -1288,9 +1291,9 @@ class _HabitSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         ListSectionTitle(t.navHabit),
+        // Only the dot answers: a tap beside it, aiming for it, stays in the list.
         for (final h in habits)
           ListItemRow(
-            onTap: () => context.go(Routes.habit),
             leading: HabitIcon(habit: h, size: 20),
             title: h.name,
             trailing: HabitDot(

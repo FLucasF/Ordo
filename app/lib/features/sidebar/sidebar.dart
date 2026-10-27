@@ -12,6 +12,7 @@ import '../../core/sort_order.dart';
 import '../../data/db/database.dart';
 import '../../data/preferences_repository.dart';
 import '../../domain/enums.dart';
+import '../../domain/habits.dart';
 import '../../domain/snapshot.dart';
 import '../../domain/views.dart';
 import '../../l10n/app_localizations.dart';
@@ -106,6 +107,15 @@ class Sidebar extends ConsumerWidget {
       child: ListView(
         padding: const EdgeInsets.fromLTRB(10, 14, 10, 12),
         children: [
+          // In the drawer, Hábito comes first and stands out, with the day's progress.
+          if (onNavigate != null && prefs.has(AppFeature.habit))
+            _HabitShortcut(
+              snapshot: s,
+              onTap: () {
+                context.go(Routes.habit);
+                onNavigate?.call();
+              },
+            ),
           if (pinned.isNotEmpty) _PinnedLists(items: [for (final p in pinned) p.$2], current: current, onTap: go),
           smart(SmartList.all, const Icon(Icons.all_inbox_outlined)),
           smart(SmartList.today, _DayIcon(day: ref.watch(nowProvider).value?.day ?? DateTime.now().day)),
@@ -173,7 +183,7 @@ class Sidebar extends ConsumerWidget {
           smart(SmartList.trash, const Icon(Icons.delete_outline)),
           // "Mini Calendário" (Settings → Mais configurações): a day opens the Calendar on it.
           if (prefs.miniCalendar) ...[_divider(tt), _MiniCalendar(onNavigate: onNavigate)],
-          // In the drawer the modules come last: Hábito · Contagem Regressiva · Foco, plus
+          // In the drawer the modules come last (Hábito is at the top): Contagem Regressiva · Foco, plus
           // the Calendário and the Matriz, which the narrow webapp leaves out but TickTick's
           // Android app has.
           if (onNavigate != null) ...[
@@ -181,7 +191,6 @@ class Sidebar extends ConsumerWidget {
             for (final (icon, label, route, feature) in [
               (Icons.calendar_month_outlined, t.navCalendar, Routes.calendar, AppFeature.calendar),
               (Icons.grid_view_outlined, t.navMatrix, Routes.matrix, AppFeature.matrix),
-              (Icons.track_changes, t.navHabit, Routes.habit, AppFeature.habit),
               (Icons.hourglass_bottom, t.navCountdown, Routes.countdown, AppFeature.countdown),
               (Icons.timer_outlined, t.navFocus, Routes.focus, AppFeature.focus),
               (Icons.account_balance_wallet_outlined, t.navFinance, Routes.finance, AppFeature.finance),
@@ -791,6 +800,58 @@ class _HelpBox extends StatelessWidget {
 
 /// One sidebar row: icon, name, optional color dot and count; right click / long press opens [onMenu],
 /// and so does its ⋯ (in place of the count under the mouse; always there on a phone).
+/// Hábito at the top of the drawer: a tinted button with today's progress ("4 de 12 hoje").
+class _HabitShortcut extends ConsumerWidget {
+  const _HabitShortcut({required this.snapshot, required this.onTap});
+
+  final Snapshot snapshot;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final t = AppLocalizations.of(context);
+    final tt = context.tt;
+    final today = startOfDay(ref.watch(nowProvider).value ?? DateTime.now());
+    final progress = habitProgressOn(
+      snapshot.habits,
+      (h) => snapshot.checkinsOf(h.id).where((c) => c.deletedAt == null && daysBetween(habitDay(c.day), today) == 0).firstOrNull,
+      today,
+    );
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Material(
+        color: tt.primary.withValues(alpha: 0.16),
+        borderRadius: BorderRadius.circular(12),
+        child: InkWell(
+          key: const ValueKey('drawerHabit'),
+          borderRadius: BorderRadius.circular(12),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            child: Row(
+              children: [
+                Icon(Icons.track_changes, color: tt.primary, size: 22),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    t.navHabit,
+                    style: TextStyle(fontWeight: FontWeight.w600, color: tt.text),
+                  ),
+                ),
+                if (progress.due > 0)
+                  Text(
+                    t.habitNavProgress(progress.done, progress.due),
+                    style: TextStyle(fontSize: TtText.small, color: tt.primary),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _SidebarItem extends ConsumerStatefulWidget {
   const _SidebarItem({
     required this.icon,

@@ -13,10 +13,25 @@ enum HabitDayState {
   failed,
 }
 
+/// The habits of [day] among [habits] (archived and deleted left out): how many are due that day and
+/// how many of those are done. [checkinOn] gives a habit's check-in of that day.
+({int done, int due}) habitProgressOn(Iterable<Habit> habits, HabitCheckin? Function(Habit h) checkinOn, DateTime day) {
+  var done = 0, due = 0;
+  for (final h in habits) {
+    if (h.deletedAt != null || h.archivedAt != null || !habitIsDue(h, day)) continue;
+    due++;
+    if (habitDayState(h, checkinOn(h), day) == HabitDayState.done) done++;
+  }
+  return (done: done, due: due);
+}
+
 /// Calendar day of a stored date (UTC midnight).
 DateTime habitDay(DateTime stored) => DateTime(stored.year, stored.month, stored.day);
 
 DateTime habitStart(Habit h) => habitDay(h.startDate);
+
+/// The ids of the habit's tags.
+Set<String> habitTagIds(Habit h) => {for (final id in h.tags.split(',')) if (id.isNotEmpty) id};
 
 Set<int> habitWeekdays(Habit h) => {for (final p in h.weekdays.split(',')) ?int.tryParse(p)};
 
@@ -43,6 +58,36 @@ HabitDayState habitDayState(Habit h, HabitCheckin? c, DateTime day) {
   if (value > 0 && habitGoalMet(h, value)) return HabitDayState.done;
   if (!habitIsDue(h, day)) return HabitDayState.notRequired;
   return value > 0 ? HabitDayState.partial : HabitDayState.open;
+}
+
+/// Days in a row, back from today, on which every habit of [habits] (a habit section) due that day
+/// was done. Today still open does not break it; days with nothing due, or only skipped habits, are
+/// passed over. A "Semanal" habit (N times a week) only counts on the days it was done.
+int habitSectionStreak(List<Habit> habits, List<HabitCheckin> Function(String habitId) checkinsOf, DateTime now) {
+  if (habits.isEmpty) return 0;
+  final today = startOfDay(now);
+  final byHabit = {
+    for (final h in habits) h.id: {for (final c in checkinsOf(h.id)) if (c.deletedAt == null) habitDay(c.day): c},
+  };
+  final first = habits.map(habitStart).reduce((a, b) => a.isBefore(b) ? a : b);
+  var streak = 0;
+  for (var d = today; !d.isBefore(first); d = DateTime(d.year, d.month, d.day - 1)) {
+    var due = 0, done = 0;
+    for (final h in habits) {
+      final state = habitDayState(h, byHabit[h.id]![d], d);
+      if (state == HabitDayState.notRequired || state == HabitDayState.skipped) continue;
+      if (h.frequency == HabitFrequency.weekly && state != HabitDayState.done) continue;
+      due++;
+      if (state == HabitDayState.done) done++;
+    }
+    if (due == 0) continue;
+    if (done == due) {
+      streak++;
+    } else if (d != today) {
+      break;
+    }
+  }
+  return streak;
 }
 
 /// Totals of a habit: days with the goal met, the current streak and this month's figures (Fluxos

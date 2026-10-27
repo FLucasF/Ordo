@@ -243,6 +243,12 @@ class Countdowns extends Table with SyncedRow {
   /// When the project was closed (or its day came), and its final report frozen then as JSON.
   DateTimeColumn get closedAt => dateTime().nullable()();
   TextColumn get report => text().nullable()();
+
+  /// What it follows instead of a date (schema v21): a habit's streak, or that of a habit section
+  /// (days in a row with all its habits done), toward [goalDays] days in a row.
+  TextColumn get habitId => text().nullable()();
+  TextColumn get habitSection => text().nullable()();
+  IntColumn get goalDays => integer().nullable()();
 }
 
 /// Focus sessions ("Foco em registro"), schema v8. Times in UTC; [seconds] is the
@@ -297,6 +303,9 @@ class Habits extends Table with SyncedRow {
   BoolColumn get autoShowLog => boolean().withDefault(const Constant(false))();
   DateTimeColumn get archivedAt => dateTime().nullable()();
   IntColumn get sortOrder => integer()();
+
+  /// The habit's tags (the tasks' tags), their ids comma separated (schema v21).
+  TextColumn get tags => text().withDefault(const Constant(''))();
 }
 
 /// One day of a habit: the amount done (1 for a simple check-in), a manual

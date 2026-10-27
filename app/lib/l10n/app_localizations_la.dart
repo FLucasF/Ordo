@@ -574,6 +574,41 @@ class AppLocalizationsLa extends AppLocalizations {
   }
 
   @override
+  String get countdownFollow => 'Seriem sequi';
+
+  @override
+  String get countdownFollowNone => 'Nulla consuetudo (ad diem numerat)';
+
+  @override
+  String countdownFollowSection(String name) {
+    return 'Pars: $name';
+  }
+
+  @override
+  String get countdownGoalDays => 'Meta (dies continui)';
+
+  @override
+  String countdownStreakProgress(int streak, int goal) {
+    return '$streak ex $goal diebus continuis';
+  }
+
+  @override
+  String countdownStreakReached(int goal) {
+    return 'Meta $goal dierum attacta';
+  }
+
+  @override
+  String countdownStreakRun(int streak, int goal) {
+    String _temp0 = intl.Intl.pluralLogic(
+      streak,
+      locale: localeName,
+      other: '$streak dies continui · meta $goal',
+      one: '1 dies continuus · meta $goal',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get projectDashboard => 'Tabula incepti';
 
   @override
@@ -4235,7 +4270,7 @@ class AppLocalizationsLa extends AppLocalizations {
   String get xlsxColEnergy => 'Vigor';
 
   @override
-  String get xlsxColHighlight => 'Insigne';
+  String get xlsxColHighlight => 'Propositum crastinum';
 
   @override
   String get xlsxStatusOpen => 'Apertum';
@@ -5422,6 +5457,11 @@ class AppLocalizationsLa extends AppLocalizations {
   String get habitPanelLeft => 'Restant';
 
   @override
+  String habitNavProgress(int done, int due) {
+    return '$done ex $due hodie';
+  }
+
+  @override
   String get habitPanelNone => 'Nulla consuetudo hodie.';
 
   @override
@@ -5660,10 +5700,10 @@ class AppLocalizationsLa extends AppLocalizations {
   }
 
   @override
-  String get journalHighlight => 'Praecipuum / Gratia';
+  String get journalHighlight => 'Propositum Praecipuum Crastini:';
 
   @override
-  String get journalHighlightHint => 'Optimum diei, aut aliquid pro quo gratus es';
+  String get journalHighlightHint => 'Quod cras maxime agendum est';
 
   @override
   String get journalNotes => 'Notae diei';
@@ -5713,8 +5753,8 @@ class AppLocalizationsLa extends AppLocalizations {
   }
 
   @override
-  String journalSummaryFinance(String income, String expense) {
-    return 'Accepta $income · expensa $expense';
+  String journalSummaryFinance(String income, String expense, String balance) {
+    return 'Accepta $income · expensa $expense · reliquum $balance';
   }
 
   @override

@@ -7079,6 +7079,39 @@ class $CountdownsTable extends Countdowns
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _habitIdMeta = const VerificationMeta(
+    'habitId',
+  );
+  @override
+  late final GeneratedColumn<String> habitId = GeneratedColumn<String>(
+    'habit_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _habitSectionMeta = const VerificationMeta(
+    'habitSection',
+  );
+  @override
+  late final GeneratedColumn<String> habitSection = GeneratedColumn<String>(
+    'habit_section',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _goalDaysMeta = const VerificationMeta(
+    'goalDays',
+  );
+  @override
+  late final GeneratedColumn<int> goalDays = GeneratedColumn<int>(
+    'goal_days',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -7108,6 +7141,9 @@ class $CountdownsTable extends Countdowns
     folderId,
     closedAt,
     report,
+    habitId,
+    habitSection,
+    goalDays,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -7274,6 +7310,27 @@ class $CountdownsTable extends Countdowns
         report.isAcceptableOrUnknown(data['report']!, _reportMeta),
       );
     }
+    if (data.containsKey('habit_id')) {
+      context.handle(
+        _habitIdMeta,
+        habitId.isAcceptableOrUnknown(data['habit_id']!, _habitIdMeta),
+      );
+    }
+    if (data.containsKey('habit_section')) {
+      context.handle(
+        _habitSectionMeta,
+        habitSection.isAcceptableOrUnknown(
+          data['habit_section']!,
+          _habitSectionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('goal_days')) {
+      context.handle(
+        _goalDaysMeta,
+        goalDays.isAcceptableOrUnknown(data['goal_days']!, _goalDaysMeta),
+      );
+    }
     return context;
   }
 
@@ -7397,6 +7454,18 @@ class $CountdownsTable extends Countdowns
         DriftSqlType.string,
         data['${effectivePrefix}report'],
       ),
+      habitId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}habit_id'],
+      ),
+      habitSection: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}habit_section'],
+      ),
+      goalDays: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}goal_days'],
+      ),
     );
   }
 
@@ -7459,6 +7528,12 @@ class Countdown extends DataClass implements Insertable<Countdown> {
   /// When the project was closed (or its day came), and its final report frozen then as JSON.
   final DateTime? closedAt;
   final String? report;
+
+  /// What it follows instead of a date (schema v21): a habit's streak, or that of a habit section
+  /// (days in a row with all its habits done), toward [goalDays] days in a row.
+  final String? habitId;
+  final String? habitSection;
+  final int? goalDays;
   const Countdown({
     required this.id,
     required this.createdAt,
@@ -7487,6 +7562,9 @@ class Countdown extends DataClass implements Insertable<Countdown> {
     this.folderId,
     this.closedAt,
     this.report,
+    this.habitId,
+    this.habitSection,
+    this.goalDays,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -7554,6 +7632,15 @@ class Countdown extends DataClass implements Insertable<Countdown> {
     if (!nullToAbsent || report != null) {
       map['report'] = Variable<String>(report);
     }
+    if (!nullToAbsent || habitId != null) {
+      map['habit_id'] = Variable<String>(habitId);
+    }
+    if (!nullToAbsent || habitSection != null) {
+      map['habit_section'] = Variable<String>(habitSection);
+    }
+    if (!nullToAbsent || goalDays != null) {
+      map['goal_days'] = Variable<int>(goalDays);
+    }
     return map;
   }
 
@@ -7608,6 +7695,15 @@ class Countdown extends DataClass implements Insertable<Countdown> {
       report: report == null && nullToAbsent
           ? const Value.absent()
           : Value(report),
+      habitId: habitId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(habitId),
+      habitSection: habitSection == null && nullToAbsent
+          ? const Value.absent()
+          : Value(habitSection),
+      goalDays: goalDays == null && nullToAbsent
+          ? const Value.absent()
+          : Value(goalDays),
     );
   }
 
@@ -7644,6 +7740,9 @@ class Countdown extends DataClass implements Insertable<Countdown> {
       folderId: serializer.fromJson<String?>(json['folderId']),
       closedAt: serializer.fromJson<DateTime?>(json['closedAt']),
       report: serializer.fromJson<String?>(json['report']),
+      habitId: serializer.fromJson<String?>(json['habitId']),
+      habitSection: serializer.fromJson<String?>(json['habitSection']),
+      goalDays: serializer.fromJson<int?>(json['goalDays']),
     );
   }
   @override
@@ -7677,6 +7776,9 @@ class Countdown extends DataClass implements Insertable<Countdown> {
       'folderId': serializer.toJson<String?>(folderId),
       'closedAt': serializer.toJson<DateTime?>(closedAt),
       'report': serializer.toJson<String?>(report),
+      'habitId': serializer.toJson<String?>(habitId),
+      'habitSection': serializer.toJson<String?>(habitSection),
+      'goalDays': serializer.toJson<int?>(goalDays),
     };
   }
 
@@ -7708,6 +7810,9 @@ class Countdown extends DataClass implements Insertable<Countdown> {
     Value<String?> folderId = const Value.absent(),
     Value<DateTime?> closedAt = const Value.absent(),
     Value<String?> report = const Value.absent(),
+    Value<String?> habitId = const Value.absent(),
+    Value<String?> habitSection = const Value.absent(),
+    Value<int?> goalDays = const Value.absent(),
   }) => Countdown(
     id: id ?? this.id,
     createdAt: createdAt ?? this.createdAt,
@@ -7736,6 +7841,9 @@ class Countdown extends DataClass implements Insertable<Countdown> {
     folderId: folderId.present ? folderId.value : this.folderId,
     closedAt: closedAt.present ? closedAt.value : this.closedAt,
     report: report.present ? report.value : this.report,
+    habitId: habitId.present ? habitId.value : this.habitId,
+    habitSection: habitSection.present ? habitSection.value : this.habitSection,
+    goalDays: goalDays.present ? goalDays.value : this.goalDays,
   );
   Countdown copyWithCompanion(CountdownsCompanion data) {
     return Countdown(
@@ -7774,6 +7882,11 @@ class Countdown extends DataClass implements Insertable<Countdown> {
       folderId: data.folderId.present ? data.folderId.value : this.folderId,
       closedAt: data.closedAt.present ? data.closedAt.value : this.closedAt,
       report: data.report.present ? data.report.value : this.report,
+      habitId: data.habitId.present ? data.habitId.value : this.habitId,
+      habitSection: data.habitSection.present
+          ? data.habitSection.value
+          : this.habitSection,
+      goalDays: data.goalDays.present ? data.goalDays.value : this.goalDays,
     );
   }
 
@@ -7806,7 +7919,10 @@ class Countdown extends DataClass implements Insertable<Countdown> {
           ..write('listId: $listId, ')
           ..write('folderId: $folderId, ')
           ..write('closedAt: $closedAt, ')
-          ..write('report: $report')
+          ..write('report: $report, ')
+          ..write('habitId: $habitId, ')
+          ..write('habitSection: $habitSection, ')
+          ..write('goalDays: $goalDays')
           ..write(')'))
         .toString();
   }
@@ -7840,6 +7956,9 @@ class Countdown extends DataClass implements Insertable<Countdown> {
     folderId,
     closedAt,
     report,
+    habitId,
+    habitSection,
+    goalDays,
   ]);
   @override
   bool operator ==(Object other) =>
@@ -7871,7 +7990,10 @@ class Countdown extends DataClass implements Insertable<Countdown> {
           other.listId == this.listId &&
           other.folderId == this.folderId &&
           other.closedAt == this.closedAt &&
-          other.report == this.report);
+          other.report == this.report &&
+          other.habitId == this.habitId &&
+          other.habitSection == this.habitSection &&
+          other.goalDays == this.goalDays);
 }
 
 class CountdownsCompanion extends UpdateCompanion<Countdown> {
@@ -7902,6 +8024,9 @@ class CountdownsCompanion extends UpdateCompanion<Countdown> {
   final Value<String?> folderId;
   final Value<DateTime?> closedAt;
   final Value<String?> report;
+  final Value<String?> habitId;
+  final Value<String?> habitSection;
+  final Value<int?> goalDays;
   final Value<int> rowid;
   const CountdownsCompanion({
     this.id = const Value.absent(),
@@ -7931,6 +8056,9 @@ class CountdownsCompanion extends UpdateCompanion<Countdown> {
     this.folderId = const Value.absent(),
     this.closedAt = const Value.absent(),
     this.report = const Value.absent(),
+    this.habitId = const Value.absent(),
+    this.habitSection = const Value.absent(),
+    this.goalDays = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   CountdownsCompanion.insert({
@@ -7961,6 +8089,9 @@ class CountdownsCompanion extends UpdateCompanion<Countdown> {
     this.folderId = const Value.absent(),
     this.closedAt = const Value.absent(),
     this.report = const Value.absent(),
+    this.habitId = const Value.absent(),
+    this.habitSection = const Value.absent(),
+    this.goalDays = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        createdAt = Value(createdAt),
@@ -7996,6 +8127,9 @@ class CountdownsCompanion extends UpdateCompanion<Countdown> {
     Expression<String>? folderId,
     Expression<DateTime>? closedAt,
     Expression<String>? report,
+    Expression<String>? habitId,
+    Expression<String>? habitSection,
+    Expression<int>? goalDays,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -8026,6 +8160,9 @@ class CountdownsCompanion extends UpdateCompanion<Countdown> {
       if (folderId != null) 'folder_id': folderId,
       if (closedAt != null) 'closed_at': closedAt,
       if (report != null) 'report': report,
+      if (habitId != null) 'habit_id': habitId,
+      if (habitSection != null) 'habit_section': habitSection,
+      if (goalDays != null) 'goal_days': goalDays,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -8058,6 +8195,9 @@ class CountdownsCompanion extends UpdateCompanion<Countdown> {
     Value<String?>? folderId,
     Value<DateTime?>? closedAt,
     Value<String?>? report,
+    Value<String?>? habitId,
+    Value<String?>? habitSection,
+    Value<int?>? goalDays,
     Value<int>? rowid,
   }) {
     return CountdownsCompanion(
@@ -8088,6 +8228,9 @@ class CountdownsCompanion extends UpdateCompanion<Countdown> {
       folderId: folderId ?? this.folderId,
       closedAt: closedAt ?? this.closedAt,
       report: report ?? this.report,
+      habitId: habitId ?? this.habitId,
+      habitSection: habitSection ?? this.habitSection,
+      goalDays: goalDays ?? this.goalDays,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -8182,6 +8325,15 @@ class CountdownsCompanion extends UpdateCompanion<Countdown> {
     if (report.present) {
       map['report'] = Variable<String>(report.value);
     }
+    if (habitId.present) {
+      map['habit_id'] = Variable<String>(habitId.value);
+    }
+    if (habitSection.present) {
+      map['habit_section'] = Variable<String>(habitSection.value);
+    }
+    if (goalDays.present) {
+      map['goal_days'] = Variable<int>(goalDays.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -8218,6 +8370,9 @@ class CountdownsCompanion extends UpdateCompanion<Countdown> {
           ..write('folderId: $folderId, ')
           ..write('closedAt: $closedAt, ')
           ..write('report: $report, ')
+          ..write('habitId: $habitId, ')
+          ..write('habitSection: $habitSection, ')
+          ..write('goalDays: $goalDays, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -9148,6 +9303,16 @@ class $HabitsTable extends Habits with TableInfo<$HabitsTable, Habit> {
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _tagsMeta = const VerificationMeta('tags');
+  @override
+  late final GeneratedColumn<String> tags = GeneratedColumn<String>(
+    'tags',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -9174,6 +9339,7 @@ class $HabitsTable extends Habits with TableInfo<$HabitsTable, Habit> {
     autoShowLog,
     archivedAt,
     sortOrder,
+    tags,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -9325,6 +9491,12 @@ class $HabitsTable extends Habits with TableInfo<$HabitsTable, Habit> {
     } else if (isInserting) {
       context.missing(_sortOrderMeta);
     }
+    if (data.containsKey('tags')) {
+      context.handle(
+        _tagsMeta,
+        tags.isAcceptableOrUnknown(data['tags']!, _tagsMeta),
+      );
+    }
     return context;
   }
 
@@ -9436,6 +9608,10 @@ class $HabitsTable extends Habits with TableInfo<$HabitsTable, Habit> {
         DriftSqlType.int,
         data['${effectivePrefix}sort_order'],
       )!,
+      tags: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}tags'],
+      )!,
     );
   }
 
@@ -9493,6 +9669,9 @@ class Habit extends DataClass implements Insertable<Habit> {
   final bool autoShowLog;
   final DateTime? archivedAt;
   final int sortOrder;
+
+  /// The habit's tags (the tasks' tags), their ids comma separated (schema v21).
+  final String tags;
   const Habit({
     required this.id,
     required this.createdAt,
@@ -9518,6 +9697,7 @@ class Habit extends DataClass implements Insertable<Habit> {
     required this.autoShowLog,
     this.archivedAt,
     required this.sortOrder,
+    required this.tags,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -9564,6 +9744,7 @@ class Habit extends DataClass implements Insertable<Habit> {
       map['archived_at'] = Variable<DateTime>(archivedAt);
     }
     map['sort_order'] = Variable<int>(sortOrder);
+    map['tags'] = Variable<String>(tags);
     return map;
   }
 
@@ -9601,6 +9782,7 @@ class Habit extends DataClass implements Insertable<Habit> {
           ? const Value.absent()
           : Value(archivedAt),
       sortOrder: Value(sortOrder),
+      tags: Value(tags),
     );
   }
 
@@ -9634,6 +9816,7 @@ class Habit extends DataClass implements Insertable<Habit> {
       autoShowLog: serializer.fromJson<bool>(json['autoShowLog']),
       archivedAt: serializer.fromJson<DateTime?>(json['archivedAt']),
       sortOrder: serializer.fromJson<int>(json['sortOrder']),
+      tags: serializer.fromJson<String>(json['tags']),
     );
   }
   @override
@@ -9664,6 +9847,7 @@ class Habit extends DataClass implements Insertable<Habit> {
       'autoShowLog': serializer.toJson<bool>(autoShowLog),
       'archivedAt': serializer.toJson<DateTime?>(archivedAt),
       'sortOrder': serializer.toJson<int>(sortOrder),
+      'tags': serializer.toJson<String>(tags),
     };
   }
 
@@ -9692,6 +9876,7 @@ class Habit extends DataClass implements Insertable<Habit> {
     bool? autoShowLog,
     Value<DateTime?> archivedAt = const Value.absent(),
     int? sortOrder,
+    String? tags,
   }) => Habit(
     id: id ?? this.id,
     createdAt: createdAt ?? this.createdAt,
@@ -9717,6 +9902,7 @@ class Habit extends DataClass implements Insertable<Habit> {
     autoShowLog: autoShowLog ?? this.autoShowLog,
     archivedAt: archivedAt.present ? archivedAt.value : this.archivedAt,
     sortOrder: sortOrder ?? this.sortOrder,
+    tags: tags ?? this.tags,
   );
   Habit copyWithCompanion(HabitsCompanion data) {
     return Habit(
@@ -9752,6 +9938,7 @@ class Habit extends DataClass implements Insertable<Habit> {
           ? data.archivedAt.value
           : this.archivedAt,
       sortOrder: data.sortOrder.present ? data.sortOrder.value : this.sortOrder,
+      tags: data.tags.present ? data.tags.value : this.tags,
     );
   }
 
@@ -9781,7 +9968,8 @@ class Habit extends DataClass implements Insertable<Habit> {
           ..write('reminders: $reminders, ')
           ..write('autoShowLog: $autoShowLog, ')
           ..write('archivedAt: $archivedAt, ')
-          ..write('sortOrder: $sortOrder')
+          ..write('sortOrder: $sortOrder, ')
+          ..write('tags: $tags')
           ..write(')'))
         .toString();
   }
@@ -9812,6 +10000,7 @@ class Habit extends DataClass implements Insertable<Habit> {
     autoShowLog,
     archivedAt,
     sortOrder,
+    tags,
   ]);
   @override
   bool operator ==(Object other) =>
@@ -9840,7 +10029,8 @@ class Habit extends DataClass implements Insertable<Habit> {
           other.reminders == this.reminders &&
           other.autoShowLog == this.autoShowLog &&
           other.archivedAt == this.archivedAt &&
-          other.sortOrder == this.sortOrder);
+          other.sortOrder == this.sortOrder &&
+          other.tags == this.tags);
 }
 
 class HabitsCompanion extends UpdateCompanion<Habit> {
@@ -9868,6 +10058,7 @@ class HabitsCompanion extends UpdateCompanion<Habit> {
   final Value<bool> autoShowLog;
   final Value<DateTime?> archivedAt;
   final Value<int> sortOrder;
+  final Value<String> tags;
   final Value<int> rowid;
   const HabitsCompanion({
     this.id = const Value.absent(),
@@ -9894,6 +10085,7 @@ class HabitsCompanion extends UpdateCompanion<Habit> {
     this.autoShowLog = const Value.absent(),
     this.archivedAt = const Value.absent(),
     this.sortOrder = const Value.absent(),
+    this.tags = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   HabitsCompanion.insert({
@@ -9921,6 +10113,7 @@ class HabitsCompanion extends UpdateCompanion<Habit> {
     this.autoShowLog = const Value.absent(),
     this.archivedAt = const Value.absent(),
     required int sortOrder,
+    this.tags = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        createdAt = Value(createdAt),
@@ -9953,6 +10146,7 @@ class HabitsCompanion extends UpdateCompanion<Habit> {
     Expression<bool>? autoShowLog,
     Expression<DateTime>? archivedAt,
     Expression<int>? sortOrder,
+    Expression<String>? tags,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -9980,6 +10174,7 @@ class HabitsCompanion extends UpdateCompanion<Habit> {
       if (autoShowLog != null) 'auto_show_log': autoShowLog,
       if (archivedAt != null) 'archived_at': archivedAt,
       if (sortOrder != null) 'sort_order': sortOrder,
+      if (tags != null) 'tags': tags,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -10009,6 +10204,7 @@ class HabitsCompanion extends UpdateCompanion<Habit> {
     Value<bool>? autoShowLog,
     Value<DateTime?>? archivedAt,
     Value<int>? sortOrder,
+    Value<String>? tags,
     Value<int>? rowid,
   }) {
     return HabitsCompanion(
@@ -10036,6 +10232,7 @@ class HabitsCompanion extends UpdateCompanion<Habit> {
       autoShowLog: autoShowLog ?? this.autoShowLog,
       archivedAt: archivedAt ?? this.archivedAt,
       sortOrder: sortOrder ?? this.sortOrder,
+      tags: tags ?? this.tags,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -10121,6 +10318,9 @@ class HabitsCompanion extends UpdateCompanion<Habit> {
     if (sortOrder.present) {
       map['sort_order'] = Variable<int>(sortOrder.value);
     }
+    if (tags.present) {
+      map['tags'] = Variable<String>(tags.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -10154,6 +10354,7 @@ class HabitsCompanion extends UpdateCompanion<Habit> {
           ..write('autoShowLog: $autoShowLog, ')
           ..write('archivedAt: $archivedAt, ')
           ..write('sortOrder: $sortOrder, ')
+          ..write('tags: $tags, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -14273,6 +14474,18 @@ class $FinEntriesTable extends FinEntries
     requiredDuringInsert: false,
     defaultValue: const Constant(''),
   );
+  static const VerificationMeta _sortOrderMeta = const VerificationMeta(
+    'sortOrder',
+  );
+  @override
+  late final GeneratedColumn<int> sortOrder = GeneratedColumn<int>(
+    'sort_order',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -14292,6 +14505,7 @@ class $FinEntriesTable extends FinEntries
     recurringId,
     recurringDue,
     note,
+    sortOrder,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -14429,6 +14643,12 @@ class $FinEntriesTable extends FinEntries
         note.isAcceptableOrUnknown(data['note']!, _noteMeta),
       );
     }
+    if (data.containsKey('sort_order')) {
+      context.handle(
+        _sortOrderMeta,
+        sortOrder.isAcceptableOrUnknown(data['sort_order']!, _sortOrderMeta),
+      );
+    }
     return context;
   }
 
@@ -14508,6 +14728,10 @@ class $FinEntriesTable extends FinEntries
         DriftSqlType.string,
         data['${effectivePrefix}note'],
       )!,
+      sortOrder: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}sort_order'],
+      )!,
     );
   }
 
@@ -14542,6 +14766,9 @@ class FinEntry extends DataClass implements Insertable<FinEntry> {
   final String? recurringId;
   final DateTime? recurringDue;
   final String note;
+
+  /// Order among the entries of the same day, dragged by the user (schema v21); lower first.
+  final int sortOrder;
   const FinEntry({
     required this.id,
     required this.createdAt,
@@ -14560,6 +14787,7 @@ class FinEntry extends DataClass implements Insertable<FinEntry> {
     this.recurringId,
     this.recurringDue,
     required this.note,
+    required this.sortOrder,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -14603,6 +14831,7 @@ class FinEntry extends DataClass implements Insertable<FinEntry> {
       map['recurring_due'] = Variable<DateTime>(recurringDue);
     }
     map['note'] = Variable<String>(note);
+    map['sort_order'] = Variable<int>(sortOrder);
     return map;
   }
 
@@ -14643,6 +14872,7 @@ class FinEntry extends DataClass implements Insertable<FinEntry> {
           ? const Value.absent()
           : Value(recurringDue),
       note: Value(note),
+      sortOrder: Value(sortOrder),
     );
   }
 
@@ -14669,6 +14899,7 @@ class FinEntry extends DataClass implements Insertable<FinEntry> {
       recurringId: serializer.fromJson<String?>(json['recurringId']),
       recurringDue: serializer.fromJson<DateTime?>(json['recurringDue']),
       note: serializer.fromJson<String>(json['note']),
+      sortOrder: serializer.fromJson<int>(json['sortOrder']),
     );
   }
   @override
@@ -14692,6 +14923,7 @@ class FinEntry extends DataClass implements Insertable<FinEntry> {
       'recurringId': serializer.toJson<String?>(recurringId),
       'recurringDue': serializer.toJson<DateTime?>(recurringDue),
       'note': serializer.toJson<String>(note),
+      'sortOrder': serializer.toJson<int>(sortOrder),
     };
   }
 
@@ -14713,6 +14945,7 @@ class FinEntry extends DataClass implements Insertable<FinEntry> {
     Value<String?> recurringId = const Value.absent(),
     Value<DateTime?> recurringDue = const Value.absent(),
     String? note,
+    int? sortOrder,
   }) => FinEntry(
     id: id ?? this.id,
     createdAt: createdAt ?? this.createdAt,
@@ -14737,6 +14970,7 @@ class FinEntry extends DataClass implements Insertable<FinEntry> {
     recurringId: recurringId.present ? recurringId.value : this.recurringId,
     recurringDue: recurringDue.present ? recurringDue.value : this.recurringDue,
     note: note ?? this.note,
+    sortOrder: sortOrder ?? this.sortOrder,
   );
   FinEntry copyWithCompanion(FinEntriesCompanion data) {
     return FinEntry(
@@ -14773,6 +15007,7 @@ class FinEntry extends DataClass implements Insertable<FinEntry> {
           ? data.recurringDue.value
           : this.recurringDue,
       note: data.note.present ? data.note.value : this.note,
+      sortOrder: data.sortOrder.present ? data.sortOrder.value : this.sortOrder,
     );
   }
 
@@ -14795,7 +15030,8 @@ class FinEntry extends DataClass implements Insertable<FinEntry> {
           ..write('installmentCount: $installmentCount, ')
           ..write('recurringId: $recurringId, ')
           ..write('recurringDue: $recurringDue, ')
-          ..write('note: $note')
+          ..write('note: $note, ')
+          ..write('sortOrder: $sortOrder')
           ..write(')'))
         .toString();
   }
@@ -14819,6 +15055,7 @@ class FinEntry extends DataClass implements Insertable<FinEntry> {
     recurringId,
     recurringDue,
     note,
+    sortOrder,
   );
   @override
   bool operator ==(Object other) =>
@@ -14840,7 +15077,8 @@ class FinEntry extends DataClass implements Insertable<FinEntry> {
           other.installmentCount == this.installmentCount &&
           other.recurringId == this.recurringId &&
           other.recurringDue == this.recurringDue &&
-          other.note == this.note);
+          other.note == this.note &&
+          other.sortOrder == this.sortOrder);
 }
 
 class FinEntriesCompanion extends UpdateCompanion<FinEntry> {
@@ -14861,6 +15099,7 @@ class FinEntriesCompanion extends UpdateCompanion<FinEntry> {
   final Value<String?> recurringId;
   final Value<DateTime?> recurringDue;
   final Value<String> note;
+  final Value<int> sortOrder;
   final Value<int> rowid;
   const FinEntriesCompanion({
     this.id = const Value.absent(),
@@ -14880,6 +15119,7 @@ class FinEntriesCompanion extends UpdateCompanion<FinEntry> {
     this.recurringId = const Value.absent(),
     this.recurringDue = const Value.absent(),
     this.note = const Value.absent(),
+    this.sortOrder = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   FinEntriesCompanion.insert({
@@ -14900,6 +15140,7 @@ class FinEntriesCompanion extends UpdateCompanion<FinEntry> {
     this.recurringId = const Value.absent(),
     this.recurringDue = const Value.absent(),
     this.note = const Value.absent(),
+    this.sortOrder = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        createdAt = Value(createdAt),
@@ -14925,6 +15166,7 @@ class FinEntriesCompanion extends UpdateCompanion<FinEntry> {
     Expression<String>? recurringId,
     Expression<DateTime>? recurringDue,
     Expression<String>? note,
+    Expression<int>? sortOrder,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -14945,6 +15187,7 @@ class FinEntriesCompanion extends UpdateCompanion<FinEntry> {
       if (recurringId != null) 'recurring_id': recurringId,
       if (recurringDue != null) 'recurring_due': recurringDue,
       if (note != null) 'note': note,
+      if (sortOrder != null) 'sort_order': sortOrder,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -14967,6 +15210,7 @@ class FinEntriesCompanion extends UpdateCompanion<FinEntry> {
     Value<String?>? recurringId,
     Value<DateTime?>? recurringDue,
     Value<String>? note,
+    Value<int>? sortOrder,
     Value<int>? rowid,
   }) {
     return FinEntriesCompanion(
@@ -14987,6 +15231,7 @@ class FinEntriesCompanion extends UpdateCompanion<FinEntry> {
       recurringId: recurringId ?? this.recurringId,
       recurringDue: recurringDue ?? this.recurringDue,
       note: note ?? this.note,
+      sortOrder: sortOrder ?? this.sortOrder,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -15047,6 +15292,9 @@ class FinEntriesCompanion extends UpdateCompanion<FinEntry> {
     if (note.present) {
       map['note'] = Variable<String>(note.value);
     }
+    if (sortOrder.present) {
+      map['sort_order'] = Variable<int>(sortOrder.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -15073,6 +15321,7 @@ class FinEntriesCompanion extends UpdateCompanion<FinEntry> {
           ..write('recurringId: $recurringId, ')
           ..write('recurringDue: $recurringDue, ')
           ..write('note: $note, ')
+          ..write('sortOrder: $sortOrder, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -27821,6 +28070,9 @@ typedef $$CountdownsTableCreateCompanionBuilder = CountdownsCompanion Function({
   Value<String?> folderId,
   Value<DateTime?> closedAt,
   Value<String?> report,
+  Value<String?> habitId,
+  Value<String?> habitSection,
+  Value<int?> goalDays,
   Value<int> rowid,
 });
 typedef $$CountdownsTableUpdateCompanionBuilder = CountdownsCompanion Function({
@@ -27851,6 +28103,9 @@ typedef $$CountdownsTableUpdateCompanionBuilder = CountdownsCompanion Function({
   Value<String?> folderId,
   Value<DateTime?> closedAt,
   Value<String?> report,
+  Value<String?> habitId,
+  Value<String?> habitSection,
+  Value<int?> goalDays,
   Value<int> rowid,
 });
 
@@ -28004,6 +28259,21 @@ class $$CountdownsTableFilterComposer
     column: $table.report,
     builder: (column) => ColumnFilters(column),
   );
+
+  ColumnFilters<String> get habitId => $composableBuilder(
+    column: $table.habitId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get habitSection => $composableBuilder(
+    column: $table.habitSection,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get goalDays => $composableBuilder(
+    column: $table.goalDays,
+    builder: (column) => ColumnFilters(column),
+  );
 }
 
 class $$CountdownsTableOrderingComposer
@@ -28149,6 +28419,21 @@ class $$CountdownsTableOrderingComposer
     column: $table.report,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get habitId => $composableBuilder(
+    column: $table.habitId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get habitSection => $composableBuilder(
+    column: $table.habitSection,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get goalDays => $composableBuilder(
+    column: $table.goalDays,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$CountdownsTableAnnotationComposer
@@ -28249,6 +28534,17 @@ class $$CountdownsTableAnnotationComposer
 
   GeneratedColumn<String> get report =>
       $composableBuilder(column: $table.report, builder: (column) => column);
+
+  GeneratedColumn<String> get habitId =>
+      $composableBuilder(column: $table.habitId, builder: (column) => column);
+
+  GeneratedColumn<String> get habitSection => $composableBuilder(
+    column: $table.habitSection,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get goalDays =>
+      $composableBuilder(column: $table.goalDays, builder: (column) => column);
 }
 
 class $$CountdownsTableTableManager
@@ -28309,6 +28605,9 @@ class $$CountdownsTableTableManager
                 Value<String?> folderId = const Value.absent(),
                 Value<DateTime?> closedAt = const Value.absent(),
                 Value<String?> report = const Value.absent(),
+                Value<String?> habitId = const Value.absent(),
+                Value<String?> habitSection = const Value.absent(),
+                Value<int?> goalDays = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CountdownsCompanion(
                 id: id,
@@ -28338,6 +28637,9 @@ class $$CountdownsTableTableManager
                 folderId: folderId,
                 closedAt: closedAt,
                 report: report,
+                habitId: habitId,
+                habitSection: habitSection,
+                goalDays: goalDays,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -28369,6 +28671,9 @@ class $$CountdownsTableTableManager
                 Value<String?> folderId = const Value.absent(),
                 Value<DateTime?> closedAt = const Value.absent(),
                 Value<String?> report = const Value.absent(),
+                Value<String?> habitId = const Value.absent(),
+                Value<String?> habitSection = const Value.absent(),
+                Value<int?> goalDays = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CountdownsCompanion.insert(
                 id: id,
@@ -28398,6 +28703,9 @@ class $$CountdownsTableTableManager
                 folderId: folderId,
                 closedAt: closedAt,
                 report: report,
+                habitId: habitId,
+                habitSection: habitSection,
+                goalDays: goalDays,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -28780,6 +29088,7 @@ typedef $$HabitsTableCreateCompanionBuilder = HabitsCompanion Function({
   Value<bool> autoShowLog,
   Value<DateTime?> archivedAt,
   required int sortOrder,
+  Value<String> tags,
   Value<int> rowid,
 });
 typedef $$HabitsTableUpdateCompanionBuilder = HabitsCompanion Function({
@@ -28807,6 +29116,7 @@ typedef $$HabitsTableUpdateCompanionBuilder = HabitsCompanion Function({
   Value<bool> autoShowLog,
   Value<DateTime?> archivedAt,
   Value<int> sortOrder,
+  Value<String> tags,
   Value<int> rowid,
 });
 
@@ -28965,6 +29275,11 @@ class $$HabitsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get tags => $composableBuilder(
+    column: $table.tags,
+    builder: (column) => ColumnFilters(column),
+  );
+
   Expression<bool> habitCheckinsRefs(
     Expression<bool> Function($$HabitCheckinsTableFilterComposer f) f,
   ) {
@@ -29119,6 +29434,11 @@ class $$HabitsTableOrderingComposer
     column: $table.sortOrder,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get tags => $composableBuilder(
+    column: $table.tags,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$HabitsTableAnnotationComposer
@@ -29210,6 +29530,9 @@ class $$HabitsTableAnnotationComposer
   GeneratedColumn<int> get sortOrder =>
       $composableBuilder(column: $table.sortOrder, builder: (column) => column);
 
+  GeneratedColumn<String> get tags =>
+      $composableBuilder(column: $table.tags, builder: (column) => column);
+
   Expression<T> habitCheckinsRefs<T extends Object>(
     Expression<T> Function($$HabitCheckinsTableAnnotationComposer a) f,
   ) {
@@ -29288,6 +29611,7 @@ class $$HabitsTableTableManager
                 Value<bool> autoShowLog = const Value.absent(),
                 Value<DateTime?> archivedAt = const Value.absent(),
                 Value<int> sortOrder = const Value.absent(),
+                Value<String> tags = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => HabitsCompanion(
                 id: id,
@@ -29314,6 +29638,7 @@ class $$HabitsTableTableManager
                 autoShowLog: autoShowLog,
                 archivedAt: archivedAt,
                 sortOrder: sortOrder,
+                tags: tags,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -29342,6 +29667,7 @@ class $$HabitsTableTableManager
                 Value<bool> autoShowLog = const Value.absent(),
                 Value<DateTime?> archivedAt = const Value.absent(),
                 required int sortOrder,
+                Value<String> tags = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => HabitsCompanion.insert(
                 id: id,
@@ -29368,6 +29694,7 @@ class $$HabitsTableTableManager
                 autoShowLog: autoShowLog,
                 archivedAt: archivedAt,
                 sortOrder: sortOrder,
+                tags: tags,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -32256,6 +32583,7 @@ typedef $$FinEntriesTableCreateCompanionBuilder = FinEntriesCompanion Function({
   Value<String?> recurringId,
   Value<DateTime?> recurringDue,
   Value<String> note,
+  Value<int> sortOrder,
   Value<int> rowid,
 });
 typedef $$FinEntriesTableUpdateCompanionBuilder = FinEntriesCompanion Function({
@@ -32276,6 +32604,7 @@ typedef $$FinEntriesTableUpdateCompanionBuilder = FinEntriesCompanion Function({
   Value<String?> recurringId,
   Value<DateTime?> recurringDue,
   Value<String> note,
+  Value<int> sortOrder,
   Value<int> rowid,
 });
 
@@ -32414,6 +32743,11 @@ class $$FinEntriesTableFilterComposer
 
   ColumnFilters<String> get note => $composableBuilder(
     column: $table.note,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get sortOrder => $composableBuilder(
+    column: $table.sortOrder,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -32566,6 +32900,11 @@ class $$FinEntriesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get sortOrder => $composableBuilder(
+    column: $table.sortOrder,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$FinCategoriesTableOrderingComposer get categoryId {
     final $$FinCategoriesTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -32699,6 +33038,9 @@ class $$FinEntriesTableAnnotationComposer
   GeneratedColumn<String> get note =>
       $composableBuilder(column: $table.note, builder: (column) => column);
 
+  GeneratedColumn<int> get sortOrder =>
+      $composableBuilder(column: $table.sortOrder, builder: (column) => column);
+
   $$FinCategoriesTableAnnotationComposer get categoryId {
     final $$FinCategoriesTableAnnotationComposer composer = $composerBuilder(
       composer: this,
@@ -32818,6 +33160,7 @@ class $$FinEntriesTableTableManager
                 Value<String?> recurringId = const Value.absent(),
                 Value<DateTime?> recurringDue = const Value.absent(),
                 Value<String> note = const Value.absent(),
+                Value<int> sortOrder = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => FinEntriesCompanion(
                 id: id,
@@ -32837,6 +33180,7 @@ class $$FinEntriesTableTableManager
                 recurringId: recurringId,
                 recurringDue: recurringDue,
                 note: note,
+                sortOrder: sortOrder,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -32858,6 +33202,7 @@ class $$FinEntriesTableTableManager
                 Value<String?> recurringId = const Value.absent(),
                 Value<DateTime?> recurringDue = const Value.absent(),
                 Value<String> note = const Value.absent(),
+                Value<int> sortOrder = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => FinEntriesCompanion.insert(
                 id: id,
@@ -32877,6 +33222,7 @@ class $$FinEntriesTableTableManager
                 recurringId: recurringId,
                 recurringDue: recurringDue,
                 note: note,
+                sortOrder: sortOrder,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

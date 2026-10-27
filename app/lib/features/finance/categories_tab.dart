@@ -10,6 +10,7 @@ import '../../domain/finance/finance.dart';
 import '../../domain/finance/finance_enums.dart';
 import '../../domain/finance/money.dart';
 import '../../l10n/app_localizations.dart';
+import '../common/reorderable_rows.dart';
 import '../common/emoji_picker.dart';
 import '../common/feedback.dart';
 import '../common/shell_widgets.dart';
@@ -41,25 +42,43 @@ class CategoriesBody extends ConsumerWidget {
       ),
     );
 
+    // Each kind's categories are put in order by dragging.
+    Widget rows(FinKind kind) {
+      final categories = s.categoriesOf(kind);
+      return ReorderableRows(
+        orders: [for (final c in categories) c.sortOrder],
+        onReorder: (changed) => unawaited(
+          ref.read(financeRepositoryProvider).reorderCategories({for (final e in changed.entries) categories[e.key].id: e.value}),
+        ),
+        rows: [
+          for (final c in categories)
+            (key: ValueKey(c.id), build: (handle) => _CategoryRow(category: c, total: totalOf(c.id), color: categoryColor(context, s, c), handle: handle)),
+        ],
+      );
+    }
+
     return ListView(
       padding: EdgeInsets.fromLTRB(narrow ? 12 : 20, 0, narrow ? 12 : 20, 32),
       children: [
         section(FinKind.expense, t.finExpenses),
-        for (final c in s.categoriesOf(FinKind.expense)) _CategoryRow(category: c, total: totalOf(c.id), color: categoryColor(context, s, c)),
+        rows(FinKind.expense),
         const SizedBox(height: 8),
         Divider(height: 1, color: tt.divider),
         section(FinKind.income, t.finIncomes),
-        for (final c in s.categoriesOf(FinKind.income)) _CategoryRow(category: c, total: totalOf(c.id), color: categoryColor(context, s, c)),
+        rows(FinKind.income),
       ],
     );
   }
 }
 
 class _CategoryRow extends ConsumerWidget {
-  const _CategoryRow({required this.category, required this.total, required this.color});
+  const _CategoryRow({required this.category, required this.total, required this.color, this.handle});
 
   final FinCategory category;
   final int total;
+
+  /// The drag handle ([ReorderableRows]).
+  final Widget? handle;
 
   /// The category's color: its dot, as in the panel and the charts.
   final Color color;
@@ -111,9 +130,10 @@ class _CategoryRow extends ConsumerWidget {
         borderRadius: BorderRadius.circular(8),
         onTap: () => unawaited(showCategoryForm(context, editing: category, kind: category.kind)),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+          padding: EdgeInsets.fromLTRB(handle == null ? 4 : 0, 8, 4, 8),
           child: Row(
             children: [
+              if (handle case final handle?) SizedBox(width: 18, child: handle),
               Container(
                 width: 10,
                 height: 10,

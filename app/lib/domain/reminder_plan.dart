@@ -243,7 +243,8 @@ List<PlannedReminder> planCountdownReminders(
   final end = now.add(horizon);
   final planned = <PlannedReminder>[];
   for (final c in s.countdowns) {
-    if (c.archivedAt != null || c.deletedAt != null || c.reminders.isEmpty) continue;
+    // One that follows a habit has no fixed day to remind of.
+    if (c.archivedAt != null || c.deletedAt != null || c.reminders.isEmpty || countdownFollowsHabit(c)) continue;
     // Reminders go by the next occurrence, even when the card counts up.
     final first = countdownStatus(c, now, countUp: false).target;
     final triggers = c.reminders.split(',').where((t) => t.isNotEmpty).toList();

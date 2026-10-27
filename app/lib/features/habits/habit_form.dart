@@ -15,6 +15,7 @@ import '../../l10n/app_localizations.dart';
 import '../common/color_choice.dart';
 import '../common/feedback.dart';
 import '../date_picker/date_picker.dart';
+import '../tasks/task_actions.dart' show pickTags;
 import 'habit_widgets.dart';
 import '../common/emoji_picker.dart';
 
@@ -69,6 +70,7 @@ class _HabitFormState extends ConsumerState<_HabitForm> {
   late String _section = _h?.section ?? 'others';
   late final List<String> _reminders = _h == null ? [] : _h!.reminders.split(',').where((r) => r.isNotEmpty).toList();
   late bool _autoLog = _h?.autoShowLog ?? false;
+  late final Set<String> _tags = _h == null ? {} : habitTagIds(_h!);
 
   static String _num(double v) => v == v.roundToDouble() ? v.toInt().toString() : v.toString();
 
@@ -107,6 +109,7 @@ class _HabitFormState extends ConsumerState<_HabitForm> {
       section: Value(_section),
       reminders: Value(_reminders.join(',')),
       autoShowLog: Value(_autoLog),
+      tags: Value(_tags.join(',')),
     );
     final repo = ref.read(repositoryProvider);
     final editing = _h;
@@ -376,6 +379,42 @@ class _HabitFormState extends ConsumerState<_HabitForm> {
                     if (v != _newSection) return setState(() => _section = v ?? _section);
                     final name = await promptText(context, title: t.habitAddSection, hint: t.sectionNew);
                     if (name != null && name.trim().isNotEmpty) setState(() => _section = name.trim());
+                  },
+                ),
+              ),
+              // The tasks' tags: chips (× takes one off) and "+" to pick or create.
+              _row(
+                t.menuTags,
+                Builder(
+                  builder: (context) {
+                    final tagById = ref.watch(snapshotProvider).value?.tagById ?? const <String, Tag>{};
+                    return Wrap(
+                      spacing: 6,
+                      runSpacing: 4,
+                      children: [
+                        for (final id in _tags)
+                          if (tagById[id] case final tag? when tag.deletedAt == null)
+                            InputChip(
+                              label: Text(tag.name),
+                              backgroundColor: (parseHexColor(tag.color) ?? context.tt.textTertiary).withValues(alpha: 0.2),
+                              side: BorderSide.none,
+                              onDeleted: () => setState(() => _tags.remove(id)),
+                            ),
+                        ActionChip(
+                          key: const ValueKey('habitTags'),
+                          avatar: const Icon(Icons.add, size: 16),
+                          label: Text(t.detailAddTag),
+                          onPressed: () async {
+                            final picked = await pickTags(context, ref, initial: _tags);
+                            if (picked != null) {
+                              setState(() => _tags
+                                ..clear()
+                                ..addAll(picked));
+                            }
+                          },
+                        ),
+                      ],
+                    );
                   },
                 ),
               ),

@@ -75,6 +75,9 @@ class FinEntries extends Table with SyncedRow {
   TextColumn get recurringId => text().nullable().references(FinRecurrings, #id)();
   DateTimeColumn get recurringDue => dateTime().nullable()();
   TextColumn get note => text().withDefault(const Constant(''))();
+
+  /// Order among the entries of the same day, dragged by the user (schema v21); lower first.
+  IntColumn get sortOrder => integer().withDefault(const Constant(0))();
 }
 
 /// Payments of a card's invoice. They are not expenses: the purchases already are.

@@ -67,6 +67,9 @@ void main() {
     expect(find.text('Resumo do dia'), findsOneWidget);
     expect(find.text('1 tarefa concluída'), findsOneWidget);
     expect(find.textContaining('saiu R\$ 45,90'), findsOneWidget);
+    expect(find.textContaining('· saldo '), findsOneWidget);
+    // The field once called "Destaque / Gratidão".
+    expect(find.text('Meta Principal de Amanhã:'), findsOneWidget);
 
     await tester.tap(find.byKey(const ValueKey('mood4')));
     await settle(tester);

@@ -668,10 +668,14 @@ class AgendaLine extends StatelessWidget {
     this.onMenu,
     this.faded = false,
     this.struck = false,
+    this.handle,
   });
 
   final Color color;
   final String title;
+
+  /// The drag handle, before the dot, when the lines can be put in order ([ReorderableRows]).
+  final Widget? handle;
   final String? secondary;
   final String? subtitle;
   final Widget? trailing;
@@ -693,9 +697,10 @@ class AgendaLine extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(6),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 7),
+          padding: EdgeInsets.fromLTRB(handle == null ? 6 : 0, 7, 6, 7),
           child: Row(
             children: [
+              if (handle case final handle?) SizedBox(width: 18, child: handle),
               Container(
                 width: 10,
                 height: 10,

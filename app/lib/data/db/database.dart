@@ -56,7 +56,7 @@ class AppDatabase extends _$AppDatabase {
   /// Bump on every schema change and run `dart run drift_dev make-migrations` to freeze the new
   /// schema and generate its migration test.
   @override
-  int get schemaVersion => 20;
+  int get schemaVersion => 21;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -159,6 +159,13 @@ class AppDatabase extends _$AppDatabase {
         await m.createTable(schema.finGoalMoves);
         await m.createTable(schema.journalEntries);
         await _createMeals();
+      },
+      from20To21: (m, schema) async {
+        await m.addColumn(schema.habits, schema.habits.tags);
+        await m.addColumn(schema.countdowns, schema.countdowns.habitId);
+        await m.addColumn(schema.countdowns, schema.countdowns.habitSection);
+        await m.addColumn(schema.countdowns, schema.countdowns.goalDays);
+        await m.addColumn(schema.finEntries, schema.finEntries.sortOrder);
       },
     ),
     beforeOpen: (details) async {

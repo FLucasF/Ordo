@@ -1196,6 +1196,48 @@ abstract class AppLocalizations {
   /// **'Área: {name}'**
   String countdownLinkArea(String name);
 
+  /// No description provided for @countdownFollow.
+  ///
+  /// In pt, this message translates to:
+  /// **'Seguir a sequência de'**
+  String get countdownFollow;
+
+  /// No description provided for @countdownFollowNone.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhum hábito (conta até a data)'**
+  String get countdownFollowNone;
+
+  /// No description provided for @countdownFollowSection.
+  ///
+  /// In pt, this message translates to:
+  /// **'Seção: {name}'**
+  String countdownFollowSection(String name);
+
+  /// No description provided for @countdownGoalDays.
+  ///
+  /// In pt, this message translates to:
+  /// **'Meta (dias seguidos)'**
+  String get countdownGoalDays;
+
+  /// No description provided for @countdownStreakProgress.
+  ///
+  /// In pt, this message translates to:
+  /// **'{streak} de {goal} dias seguidos'**
+  String countdownStreakProgress(int streak, int goal);
+
+  /// No description provided for @countdownStreakReached.
+  ///
+  /// In pt, this message translates to:
+  /// **'Meta de {goal} dias alcançada'**
+  String countdownStreakReached(int goal);
+
+  /// No description provided for @countdownStreakRun.
+  ///
+  /// In pt, this message translates to:
+  /// **'{streak, plural, =1{1 dia seguido · meta {goal}} other{{streak} dias seguidos · meta {goal}}}'**
+  String countdownStreakRun(int streak, int goal);
+
   /// No description provided for @projectDashboard.
   ///
   /// In pt, this message translates to:
@@ -8033,7 +8075,7 @@ abstract class AppLocalizations {
   /// No description provided for @xlsxColHighlight.
   ///
   /// In pt, this message translates to:
-  /// **'Destaque'**
+  /// **'Meta de amanhã'**
   String get xlsxColHighlight;
 
   /// No description provided for @xlsxStatusOpen.
@@ -10112,6 +10154,12 @@ abstract class AppLocalizations {
   /// **'Faltam'**
   String get habitPanelLeft;
 
+  /// No description provided for @habitNavProgress.
+  ///
+  /// In pt, this message translates to:
+  /// **'{done} de {due} hoje'**
+  String habitNavProgress(int done, int due);
+
   /// No description provided for @habitPanelNone.
   ///
   /// In pt, this message translates to:
@@ -10547,13 +10595,13 @@ abstract class AppLocalizations {
   /// No description provided for @journalHighlight.
   ///
   /// In pt, this message translates to:
-  /// **'Destaque / Gratidão'**
+  /// **'Meta Principal de Amanhã:'**
   String get journalHighlight;
 
   /// No description provided for @journalHighlightHint.
   ///
   /// In pt, this message translates to:
-  /// **'O melhor do dia, ou algo pelo qual você é grato'**
+  /// **'O que mais importa fazer amanhã'**
   String get journalHighlightHint;
 
   /// No description provided for @journalNotes.
@@ -10631,8 +10679,8 @@ abstract class AppLocalizations {
   /// No description provided for @journalSummaryFinance.
   ///
   /// In pt, this message translates to:
-  /// **'Entrou {income} · saiu {expense}'**
-  String journalSummaryFinance(String income, String expense);
+  /// **'Entrou {income} · saiu {expense} · saldo {balance}'**
+  String journalSummaryFinance(String income, String expense, String balance);
 
   /// No description provided for @journalSummaryEmpty.
   ///

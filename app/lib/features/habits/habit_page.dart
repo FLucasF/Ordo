@@ -21,7 +21,9 @@ import '../../data/preferences_repository.dart';
 import '../../domain/habits.dart';
 import '../../domain/snapshot.dart';
 import '../../l10n/app_localizations.dart';
+import '../common/color_choice.dart';
 import '../common/feedback.dart';
+import '../common/reorderable_rows.dart';
 import '../common/shell_widgets.dart';
 import '../date_picker/month_calendar.dart';
 import '../shell/app_shell.dart';
@@ -162,8 +164,9 @@ class _HabitPageState extends ConsumerState<HabitPage> {
 
     // The left panel: the month (a day filters the list), today's progress and Ativo / Arquivado.
     final active = s.habits.where((h) => h.archivedAt == null).toList();
-    final dueToday = active.where((h) => habitIsDue(h, today)).toList();
-    final doneToday = dueToday.where((h) => habitDayState(h, _checkinOn(s, h.id, today), today) == HabitDayState.done).length;
+    final progress = habitProgressOn(active, (h) => _checkinOn(s, h.id, today), today);
+    final doneToday = progress.done;
+    final dueToday = progress.due;
     final shownMonth = _panelMonth ?? DateTime((filterDay ?? today).year, (filterDay ?? today).month);
     final panel = ShellPanel(
       children: [
@@ -193,9 +196,9 @@ class _HabitPageState extends ConsumerState<HabitPage> {
                 (name: t.habitPanelDone, value: doneToday.toDouble(), color: tt.primary, valueLabel: '$doneToday'),
                 (
                   name: t.habitPanelLeft,
-                  value: (dueToday.length - doneToday).toDouble(),
+                  value: (dueToday - doneToday).toDouble(),
                   color: tt.divider,
-                  valueLabel: '${dueToday.length - doneToday}',
+                  valueLabel: '${dueToday - doneToday}',
                 ),
               ],
               empty: t.habitPanelNone,
@@ -282,7 +285,11 @@ class _HabitPageState extends ConsumerState<HabitPage> {
       ),
     );
 
-    Widget row(Habit h) {
+    // Habits are put in order by dragging, within their section; not while sorted by status or
+    // filtered by a day (part of the section is hidden then).
+    final canReorder = !sortByStatus && filterDay == null;
+
+    Widget row(Habit h, Widget? handle) {
       final stats = habitStats(h, s.checkinsOf(h.id), now);
       return InkWell(
         onTap: () => _open(context, h.id),
@@ -290,9 +297,10 @@ class _HabitPageState extends ConsumerState<HabitPage> {
         onLongPress: () => unawaited(_habitMenu(context, h, Offset(MediaQuery.sizeOf(context).width / 2, 200))),
         child: Container(
           color: _selected == h.id ? tt.selected : null,
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+          padding: EdgeInsets.fromLTRB(handle == null ? 20 : 2, 8, 20, 8),
           child: Row(
             children: [
+              if (handle != null) SizedBox(width: 18, child: handle),
               HabitIcon(habit: h),
               const SizedBox(width: 12),
               Expanded(
@@ -305,8 +313,21 @@ class _HabitPageState extends ConsumerState<HabitPage> {
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(color: tt.text, fontSize: TtText.body),
                     ),
-                    Text(
-                      t.habitSummary(stats.totalDays, stats.streak),
+                    // The totals, then the habit's tags in their colors.
+                    Text.rich(
+                      TextSpan(
+                        text: t.habitSummary(stats.totalDays, stats.streak),
+                        children: [
+                          for (final id in habitTagIds(h))
+                            if (s.tagById[id] case final tag? when tag.deletedAt == null)
+                              TextSpan(
+                                text: '  #${tag.name}',
+                                style: TextStyle(color: parseHexColor(tag.color) ?? tt.textSecondary),
+                              ),
+                        ],
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(fontSize: TtText.small, color: tt.textTertiary),
                     ),
                   ],
@@ -427,7 +448,19 @@ class _HabitPageState extends ConsumerState<HabitPage> {
                       style: TextStyle(fontWeight: FontWeight.w600, color: tt.text, fontSize: TtText.body),
                     ),
                   ),
-                  for (final h in shown.where((h) => h.section == section)) row(h),
+                  Builder(
+                    builder: (context) {
+                      final inSection = shown.where((h) => h.section == section).toList();
+                      return ReorderableRows(
+                        enabled: canReorder,
+                        orders: [for (final h in inSection) h.sortOrder],
+                        onReorder: (changed) => unawaited(
+                          ref.read(repositoryProvider).reorderHabits({for (final e in changed.entries) inSection[e.key].id: e.value}),
+                        ),
+                        rows: [for (final h in inSection) (key: ValueKey(h.id), build: (handle) => row(h, handle))],
+                      );
+                    },
+                  ),
                 ],
             ];
     }

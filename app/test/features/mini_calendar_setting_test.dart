@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -32,7 +34,7 @@ void main() {
       await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 20)));
       await tester.pump(const Duration(milliseconds: 100));
     }
-    showSettings(tester.element(find.byType(Scaffold).first), tab: SettingsTab.notifications);
+    unawaited(showSettings(tester.element(find.byType(Scaffold).first), tab: SettingsTab.notifications));
     await tester.pumpAndSettle();
     final tile = find.widgetWithText(SwitchListTile, 'Mini calendário');
     await tester.scrollUntilVisible(tile, 200, scrollable: find.byType(Scrollable).last);

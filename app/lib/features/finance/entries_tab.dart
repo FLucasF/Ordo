@@ -11,6 +11,7 @@ import '../../domain/finance/finance.dart';
 import '../../domain/finance/finance_enums.dart';
 import '../../domain/finance/money.dart';
 import '../../l10n/app_localizations.dart';
+import '../common/reorderable_rows.dart';
 import '../common/shell_widgets.dart';
 import 'entry_form.dart';
 import 'finance_widgets.dart';
@@ -54,6 +55,8 @@ class EntriesBody extends ConsumerWidget {
           m,
     ];
     final groups = groupEntries(s, shown, moves: moves);
+    // Dragging puts a day's entries in order only when the day shows all of them (no filter).
+    final canReorder = kind == null && words.isEmpty && hiddenCategories.isEmpty;
 
     return ListView(
       padding: EdgeInsets.fromLTRB(narrow ? 12 : 20, 4, narrow ? 12 : 20, 32),
@@ -87,7 +90,18 @@ class EntriesBody extends ConsumerWidget {
             onAdd: g.card == null ? () => unawaited(showEntryForm(context, date: g.day)) : null,
             addTooltip: t.finNewEntryOnDay,
             children: [
-              for (final e in g.entries) EntryLine(entry: e, snapshot: s, inInvoice: g.card != null),
+              // A day's own entries are put in order by dragging; an invoice's follow their days.
+              ReorderableRows(
+                enabled: canReorder && g.card == null,
+                orders: [for (final e in g.entries) e.sortOrder],
+                onReorder: (changed) => unawaited(
+                  ref.read(financeRepositoryProvider).reorderEntries({for (final c in changed.entries) g.entries[c.key].id: c.value}),
+                ),
+                rows: [
+                  for (final e in g.entries)
+                    (key: ValueKey(e.id), build: (handle) => EntryLine(entry: e, snapshot: s, inInvoice: g.card != null, handle: handle)),
+                ],
+              ),
               for (final m in g.moves) GoalMoveLine(move: m, goal: goals[m.goalId]!),
             ],
           ),
@@ -101,7 +115,7 @@ class EntriesBody extends ConsumerWidget {
 /// invoice), the description and the amount; a click edits, its ⋯ (the right click, a long press)
 /// opens Editar · Duplicar · Deletar.
 class EntryLine extends ConsumerWidget {
-  const EntryLine({super.key, required this.entry, required this.snapshot, this.inInvoice = false, this.showCard = true});
+  const EntryLine({super.key, required this.entry, required this.snapshot, this.inInvoice = false, this.showCard = true, this.handle});
 
   final FinEntry entry;
   final FinanceSnapshot snapshot;
@@ -109,6 +123,9 @@ class EntryLine extends ConsumerWidget {
 
   /// Off on the card's own screen, where its name is the heading.
   final bool showCard;
+
+  /// The drag handle, when the day's entries can be put in order.
+  final Widget? handle;
 
   Future<void> _menu(BuildContext context, WidgetRef ref, Offset at) async {
     final t = AppLocalizations.of(context);
@@ -159,6 +176,7 @@ class EntryLine extends ConsumerWidget {
       ),
       onTap: () => unawaited(showEntryForm(context, editing: entry)),
       onMenu: (at) => unawaited(_menu(context, ref, at)),
+      handle: handle,
     );
   }
 }

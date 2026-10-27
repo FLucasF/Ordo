@@ -67,7 +67,7 @@ final journalFilterProvider = NotifierProvider<JournalFilterNotifier, JournalFil
 /// Diário in the Calendar's look: the month on the left (days written are marked; a click opens the
 /// day), the tabs Dia, Linha do tempo and Calendário under the top bar, and "+ Escrever hoje".
 ///
-/// Dia: the day's mood, energy, highlight and notes (the tasks' editor, with pictures), saved as they
+/// Dia: the day's mood, energy, main goal for tomorrow (the "highlight" column) and notes (the tasks' editor, with pictures), saved as they
 /// change, and the day's summary from the other modules. Linha do tempo: the entries, newest first,
 /// with search and filters. Calendário: each day tinted by its mood, and the month's mood and energy.
 class JournalPage extends ConsumerStatefulWidget {
@@ -526,6 +526,10 @@ class _DayEntryState extends ConsumerState<_DayEntry> {
   final _highlightFocus = FocusNode();
   Timer? _debounce;
 
+  /// The page's scroll: its bar stays in sight on a computer, where a long day's notes go past the
+  /// window's bottom.
+  final _scroll = ScrollController();
+
   /// Read once: the last save runs in [dispose], when ref can no longer be used.
   late final JournalRepository _repo;
 
@@ -557,6 +561,7 @@ class _DayEntryState extends ConsumerState<_DayEntry> {
     }
     _highlight.dispose();
     _highlightFocus.dispose();
+    _scroll.dispose();
     super.dispose();
   }
 
@@ -574,7 +579,8 @@ class _DayEntryState extends ConsumerState<_DayEntry> {
         style: TextStyle(fontWeight: FontWeight.w600, color: tt.text),
       ),
     );
-    return ListView(
+    final page = ListView(
+      controller: _scroll,
       padding: EdgeInsets.fromLTRB(narrow ? 12 : 20, 16, narrow ? 12 : 20, 40),
       children: [
         Align(
@@ -620,7 +626,7 @@ class _DayEntryState extends ConsumerState<_DayEntry> {
                   textCapitalization: TextCapitalization.sentences,
                   decoration: InputDecoration(
                     hintText: t.journalHighlightHint,
-                    prefixIcon: const Icon(Icons.star_outline, size: 20),
+                    prefixIcon: const Icon(Icons.flag_outlined, size: 20),
                     isDense: true,
                     filled: true,
                     fillColor: tt.fieldFill,
@@ -657,6 +663,13 @@ class _DayEntryState extends ConsumerState<_DayEntry> {
           ),
         ),
       ],
+    );
+    if (narrow) return page;
+    // In place of the platform's own bar, which only shows while scrolling.
+    return Scrollbar(
+      controller: _scroll,
+      thumbVisibility: true,
+      child: ScrollConfiguration(behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false), child: page),
     );
   }
 }

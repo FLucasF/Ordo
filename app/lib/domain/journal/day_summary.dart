@@ -18,6 +18,7 @@ class JournalDaySummary {
     this.focusMinutes = 0,
     this.income = 0,
     this.expense = 0,
+    this.finance = false,
   });
 
   final int tasksDone;
@@ -36,9 +37,12 @@ class JournalDaySummary {
   final int income;
   final int expense;
 
-  bool get hasFinance => income != 0 || expense != 0;
+  /// Whether Finanças is on: its line shows every day, even with nothing entered (R$ 0,00).
+  final bool finance;
 
-  bool get isEmpty => tasksDone == 0 && habitsTotal == 0 && kcal == null && focusMinutes == 0 && !hasFinance;
+  int get balance => income - expense;
+
+  bool get isEmpty => tasksDone == 0 && habitsTotal == 0 && kcal == null && focusMinutes == 0 && !finance;
 }
 
 /// The summary of [day] (a local day) from the tasks' snapshot (tasks and, unless [habits] is false,
@@ -89,6 +93,7 @@ JournalDaySummary journalDaySummary({
     focusMinutes: focusBetween(focus, from, to).inMinutes,
     income: totals.income,
     expense: totals.expense,
+    finance: finance != null,
   );
 }
 
