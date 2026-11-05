@@ -27,7 +27,7 @@ Os dados ficam **só no seu aparelho**: não tem conta, login nem servidor. Para
 
 ### Baixar e instalar (jeito fácil)
 
-1. Abra a página de [**Releases**](https://github.com/FLucasF/Ordo/releases/latest) e baixe o **`OrdoSetup-1.7.0.exe`**.
+1. Abra a página de [**Releases**](https://github.com/FLucasF/Ordo/releases/latest) e baixe o **`OrdoSetup-1.7.1.exe`**.
 2. Dê dois cliques no arquivo baixado.
 3. O Windows pode mostrar o aviso azul do **SmartScreen** ("O Windows protegeu o computador"), porque o instalador não tem assinatura digital paga. Clique em **Mais informações → Executar assim mesmo**.
 4. Siga o instalador: **Avançar → Instalar → Concluir**. Ele não pede senha de administrador e cria o atalho **Ordo** no menu Iniciar. Se você marcar a opção, cria também na área de trabalho.
@@ -51,7 +51,7 @@ Funciona no Android 7.0 ou mais novo.
 
 ### Baixar e instalar (jeito fácil)
 
-1. **No celular**, abra a página de [**Releases**](https://github.com/FLucasF/Ordo/releases/latest) e toque em **`Ordo-1.7.0.apk`** para baixar.
+1. **No celular**, abra a página de [**Releases**](https://github.com/FLucasF/Ordo/releases/latest) e toque em **`Ordo-1.7.1.apk`** para baixar.
 2. Quando terminar, toque na notificação do download, ou abra o app **Arquivos → Downloads** e toque no arquivo.
 3. O Android avisa que, por segurança, o app de onde você está instalando (Chrome ou Arquivos) não pode instalar apps. Toque em **Configurações**, ligue **Permitir desta fonte** e volte.
 4. Toque em **Instalar** e depois em **Abrir**.
@@ -129,7 +129,7 @@ Escreva tudo no título e o app entende:
 - **Lembretes:** na hora, 5 ou 30 minutos antes, 1 hora antes, 1 dia antes, no dia às 9h, 1/2/3 dias ou 1 semana antes às 9h, no fim, ou personalizado. Vários por tarefa.
 - Os avisos chegam **com o app fechado**, com os botões **Concluído** e **Adiar 15 min**. Com o app aberto, aparece um pop-up com **Adiar** (15 min, 30 min, 1h, 3h, hoje à noite, amanhã, personalizado), **Concluído** e **Dispensar**.
 - **Lembrete constante:** a notificação fica até você agir. **Notificações diárias:** um resumo por dia, no horário que você escolher, com as tarefas de hoje.
-- **Repetição:** diária, semanal, mensal, anual, dias úteis ou **Personalizado**: a cada N dias/semanas/meses/anos, com os **dias da semana em botões** (e atalhos "Dias úteis", "Fim de semana", "Todos"), "no dia N", "na primeira/última sexta", "primeiro/último dia útil", **datas específicas** escolhidas no calendário, e **pular fins de semana**. Repete **pela data de vencimento** ou **pela data de conclusão**. Termina nunca, numa data ou depois de N vezes.
+- **Repetição:** diária, semanal, mensal, anual, dias úteis ou **Personalizado**: a cada N dias/semanas/meses/anos, com os **dias da semana em botões** (e atalhos "Dias úteis", "Fim de semana", "Todos"), "no dia N", "na primeira/última sexta", "primeiro/último dia útil", **datas específicas** escolhidas no calendário, e **pular fins de semana**. Repete **pela data de vencimento** ou **pela data de conclusão**. Termina nunca, numa data ou depois de N vezes. Ao concluir (ou pular) uma ocorrência, a próxima volta com as **subtarefas e a checklist por fazer**.
 
 ### Visualizações
 
@@ -201,11 +201,11 @@ Valores em reais. As partes ficam nas **abas** do topo; o painel da esquerda esc
 
 - **Lançamentos:** receitas e despesas com valor, data, descrição, categoria, cartão e observação. Veja por mês, ano ou período; filtre por categoria, tipo ou palavra. O **+** ao lado de cada dia cria um lançamento naquela data. **Arraste** pela alça (⠿) para mudar a ordem dos lançamentos do mesmo dia (sem filtros ligados). As caixinhas aparecem como "Guardado"/"Retirado", sem contar como gasto.
 - **Categorias:** as prontas (Alimentação, Mercado, Transporte, Moradia, Contas da casa, Saúde, Educação, Lazer, Compras, Assinaturas, Salário, Renda extra, Outros) e as suas, com **ícone**, cor e **limite por mês** (aviso a partir de 80%). Arraste para mudar a ordem.
-- **Cartões:** fechamento e vencimento, limite e quanto está disponível, **fatura de cada mês** (aberta, fechada, paga ou vencida), compras **parceladas** distribuídas nas faturas seguintes, **Pagar fatura** (em partes também; o pagamento não conta como gasto de novo). A compra conta no mês da fatura. Arquivar cartões.
+- **Cartões:** fechamento e vencimento, limite e quanto está disponível (conta o que falta pagar de cada fatura: o pagamento de uma fatura antiga não libera o limite das outras), **fatura de cada mês** (aberta, fechada, paga ou vencida), compras **parceladas** distribuídas nas faturas seguintes, **Pagar fatura** (em partes também; o pagamento não conta como gasto de novo). A compra conta no mês da fatura. Arquivar cartões.
 - **Contas fixas:** aluguel, internet, assinaturas, salário, mensais ou anuais, com início, fim e lembrete. Atrasadas e vencimentos do mês aparecem em destaque; **Pagar** (ou **Receber**) vira lançamento, e dá para desfazer.
 - **Empréstimos:** quem pegou, valor emprestado, data, vencimento e juros (em % ou pelo total a receber). **À vista ou parcelado** (2 a 60 parcelas mensais, valor calculado ou digitado). Cada parcela tem status (paga, em aberto, atrasada), lembrete e **Receber parcela** com 1 toque; pagamentos a mais ou adiantados abatem as próximas. O app mostra lucro, recebido, saldo e se está **em dia, atrasado ou quitado**; filtre por situação e agrupe por mês do vencimento ou do empréstimo.
 - **Caixinhas:** metas de dinheiro guardado (viagem, reserva…) com nome, **ícone**, cor, meta e data-alvo. Barra de progresso, quanto falta e **quanto guardar por mês** para chegar na data. **Guardar** e **Retirar** não contam como receita nem despesa. Arquivar e restaurar.
-- **Relatórios:** gastos por categoria (rosca); **receitas × despesas** dos últimos 6 meses em **Geral** ou **Detalhado** (por categoria), com os **juros dos empréstimos** como parte separada; saldo dos meses; **comparação entre dois meses** por categoria; resumo dos empréstimos; total guardado nas caixinhas.
+- **Relatórios:** gastos por categoria (rosca); **receitas × despesas** dos últimos 6 meses em **Geral** ou **Detalhado** (por categoria), com os **juros dos empréstimos** como parte separada; saldo dos meses; **ganhos por origem** (todos, juros de empréstimos, contas fixas recebidas, lançamentos avulsos ou uma categoria de receita, com total e média dos 6 meses); **comparação entre dois meses** por categoria; resumo dos empréstimos; total guardado nas caixinhas.
 - Contas, faturas, cobranças de empréstimo e parcelas aparecem no **Calendário**, no **widget** e nos **lembretes**.
 
 ### Dieta
